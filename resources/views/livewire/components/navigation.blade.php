@@ -1,7 +1,7 @@
 <nav class="bg-gray-50 border border-gray-100">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
         <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-2">
-            <x-dynamic-button tag="a" href="{{ route('dashboard') }}" color="blue">
+            <x-dynamic-button tag="a" href="{{ route('dashboard') }}" color="blue" class="{{ request()->routeIs('dashboard') ? 'border-blue-500 text-blue-500 bg-blue-100' : '' }}">
                 Tableau de bord
             </x-dynamic-button>
             <form action="{{ route('logout') }}" method="POST">

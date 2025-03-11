@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['auth', 'role:driver']], function () {
+Route::group(['middleware' => ['auth', 'role:driver|admin|super-admin']], function () {
     Route::get('/', function () {
         return view('home');
     })->name('home');
@@ -12,7 +12,7 @@ Route::group(['middleware' => ['auth', 'role:driver']], function () {
     })->name('tracking');
 });
 
-Route::group(['middleware' => ['auth', 'role:admin']], function () {
+Route::group(['middleware' => ['auth', 'role:admin|super-admin']], function () {
     Route::get('/dashboard', function () {
         return view('pages.dashboard.index');
     })->name('dashboard');
