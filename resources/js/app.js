@@ -8,3 +8,6 @@ registerAllModules();
 
 // Make Handsontable available globally
 window.Handsontable = Handsontable;
+
+// Import du composant HotTable
+import './components/HotTable';
