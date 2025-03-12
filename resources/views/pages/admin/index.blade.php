@@ -21,18 +21,17 @@
                 Intérimaires
             </x-links.menu>
 
-            <x-links.menu href="#" :active="request()->routeIs('projects.*')" icon="fas fa-briefcase">
-                <x-icons.projects class="w-4 h-4" />
+            <x-links.menu href="{{ route('admin.projects.index') }}" :active="request()->routeIs('admin.projects.*')">
+                <x-icons.employees class="w-4 h-4" />
                 Chantiers
             </x-links.menu>
 
-            <x-links.menu href="#" :active="request()->routeIs('projects.*')" icon="fas fa-briefcase">
-                <x-icons.zones class="w-4 h-4" />
+            <x-links.menu href="{{ route('admin.zones.index') }}" :active="request()->routeIs('admin.zones.*')">
+                <x-icons.employees class="w-4 h-4" />
                 Zones
             </x-links.menu>
 
-            <x-links.menu href="#" :active="request()->routeIs('projects.*')" icon="fas fa-briefcase">
-                <x-icons.settings class="w-4 h-4" />
+            <x-links.menu href="{{ route('admin.settings.index') }}" :active="request()->routeIs('admin.settings.*')">
                 Paramètrages
             </x-links.menu>
 

@@ -108,7 +108,7 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="text-gray-500 mt-2">Aucun projet disponible.</p>
+                        <p class="text-gray-500 mt-2">Aucun chantier disponible.</p>
                     @endif
 
                     @error('projects')

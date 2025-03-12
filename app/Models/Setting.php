@@ -8,6 +8,11 @@ class Setting extends Model
 {
     protected $fillable = ['key', 'value', 'start_date', 'end_date'];
 
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+    ];
+
     /**
      * Get the value of the setting by key.
      *

@@ -53,7 +53,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Projets assignés</label>
+                    <label class="block text-sm font-medium text-gray-700">Chantiers assignés</label>
 
                     @if ($projects->count() > 0)
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
@@ -70,7 +70,7 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="text-gray-500 mt-2">Aucun projet disponible.</p>
+                        <p class="text-gray-500 mt-2">Aucun chantier disponible.</p>
                     @endif
 
                     @error('projects')

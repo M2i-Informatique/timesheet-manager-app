@@ -42,7 +42,7 @@
             </div>
 
             <div class="mt-8">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Projets assignés</h2>
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Chantiers assignés</h2>
 
                 @if ($interim->projects->count() > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -61,7 +61,7 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="text-gray-500">Aucun projet assigné à cet intérimaire.</p>
+                    <p class="text-gray-500">Aucun chantier assigné à cet intérimaire.</p>
                 @endif
             </div>
 
@@ -78,7 +78,7 @@
                                         Date</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Projet</th>
+                                        Chantier</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Catégorie</th>
