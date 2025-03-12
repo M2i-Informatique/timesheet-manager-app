@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\InterimController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ZoneController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\TimeSheetController;
+use App\Http\Controllers\Admin\ReportingController;
 
 Route::middleware(['auth', 'role:driver|admin|super-admin', 'verified'])->group(function () {
     Route::get('/', function () {
@@ -15,8 +17,21 @@ Route::middleware(['auth', 'role:driver|admin|super-admin', 'verified'])->group(
     })->name('home');
 
     Route::get('/tracking', function () {
-        return view('pages.tracking.index');
+        return view('pages.tracking');
     })->name('tracking');
+
+    // Route API pour récupérer les informations d'un projet
+    Route::get('/api/projects/{id}', function ($id) {
+        $project = App\Models\Project::with('zone')->findOrFail($id);
+        return response()->json([
+            'id' => $project->id,
+            'code' => $project->code,
+            'name' => $project->name,
+            'address' => $project->address,
+            'city' => $project->city,
+            'zone_name' => $project->zone ? $project->zone->name : 'Inconnue'
+        ]);
+    });
 });
 
 Route::middleware(['auth', 'role:admin|super-admin', 'verified'])->group(function () {

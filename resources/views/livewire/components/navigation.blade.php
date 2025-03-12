@@ -28,7 +28,7 @@
         </div>
         <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-cta">
 
-            @if (request()->routeIs('admin.*'))
+            @if (request()->routeIs('admin') || request()->routeIs('admin.*'))
                 <x-buttons.dynamic tag="a" href="{{ route('home') }}" color="blue" class="my-2">
                     Retour à l'accueil
                 </x-buttons.dynamic>
@@ -46,7 +46,6 @@
                     @endforeach
                 </ul>
             @endif
-
         </div>
     </div>
 </nav>

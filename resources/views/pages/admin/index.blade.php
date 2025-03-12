@@ -32,7 +32,8 @@
             </x-links.menu>
 
             <x-links.menu href="{{ route('admin.settings.index') }}" :active="request()->routeIs('admin.settings.*')">
-                Paramètrages
+                <x-icons.settings class="w-4 h-4" />
+                Paramétrages
             </x-links.menu>
 
             <!-- Autres liens -->
