@@ -24,9 +24,7 @@
         <!-- En-tête de page -->
         @hasSection('header')
             <header>
-                <div>
-                    @yield('header')
-                </div>
+                @yield('header')
             </header>
         @endif
 
@@ -36,6 +34,9 @@
         </main>
 
     </div>
+
+    <!-- Messages flash -->
+    {{-- <livewire:components.flash-messages /> --}}
 
     <!-- Stack pour tous les scripts additionnels -->
     @stack('scripts')

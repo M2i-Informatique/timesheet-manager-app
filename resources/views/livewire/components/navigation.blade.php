@@ -1,18 +1,19 @@
 <nav class="bg-gray-50 border border-gray-100">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
         <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-2">
-            <x-dynamic-button tag="a" href="{{ route('dashboard') }}" color="blue" class="{{ request()->routeIs('dashboard') ? 'border-blue-500 text-blue-500 bg-blue-100' : '' }}">
+
+            <x-buttons.dynamic tag="a" href="{{ route('admin') }}" color="blue"
+                class="{{ request()->routeIs('admin') || request()->routeIs('admin.*') ? 'border-blue-500 text-blue-500 bg-blue-100' : '' }}">
                 Tableau de bord
-            </x-dynamic-button>
+            </x-buttons.dynamic>
+
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <x-dynamic-button tag="button" type="submit" color="red">
-                        Se déconnecter
-                    </x-dynamic-button>
-                </form>
+                <x-buttons.dynamic tag="button" type="submit" color="red">
+                    Se déconnecter
+                </x-buttons.dynamic>
             </form>
+
             <button data-collapse-toggle="navbar-cta" type="button"
                 class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400"
                 aria-controls="navbar-cta" aria-expanded="false">
@@ -23,21 +24,29 @@
                         d="M1 1h15M1 7h15M1 13h15" />
                 </svg>
             </button>
+
         </div>
         <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-cta">
-            <ul
-                class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 relative md:h-14">
-                @foreach ($links as $link)
-                    <li class="h-full relative">
-                        <x-nav-link href="{{ route($link['route']) }}" :active="request()->routeIs($link['route'])" class="h-full py-4">
-                            {{ $link['name'] }}
-                        </x-nav-link>
-                        @if (request()->routeIs($link['route']))
-                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 hidden md:block"></div>
-                        @endif
-                    </li>
-                @endforeach
-            </ul>
+
+            @if (request()->routeIs('admin.*'))
+                <x-buttons.dynamic tag="a" href="{{ route('home') }}" color="blue" class="my-2">
+                    Retour à l'accueil
+                </x-buttons.dynamic>
+            @else
+                <ul class="flex gap-4">
+                    @foreach ($links as $link)
+                        <li class="h-full relative">
+                            <x-links.nav href="{{ route($link['route']) }}" :active="request()->routeIs($link['route'])" class="h-full py-4">
+                                {{ $link['name'] }}
+                            </x-links.nav>
+                            @if (request()->routeIs($link['route']))
+                                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 hidden md:block"></div>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+
         </div>
     </div>
 </nav>
