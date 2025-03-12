@@ -1,4 +1,4 @@
-<aside class="w-auto border-gray-200">
+<aside class="w-auto">
     <nav class="sticky top-4" id="sidebar-nav">
         <div class="mb-6">
             <h2 class="font-bold mb-4 ml-4">Sur cette page</h2>

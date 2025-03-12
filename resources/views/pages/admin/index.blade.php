@@ -11,12 +11,12 @@
                 Utilisateurs
             </x-links.menu>
 
-            <x-links.menu href="#" :active="request()->routeIs('projects.*')" icon="fas fa-briefcase">
+            <x-links.menu href="{{ route('admin.workers.index') }}" :active="request()->routeIs('admin.workers.*')">
                 <x-icons.employees class="w-4 h-4" />
                 Salariés
             </x-links.menu>
 
-            <x-links.menu href="#" :active="request()->routeIs('projects.*')" icon="fas fa-briefcase">
+            <x-links.menu href="{{ route('admin.interims.index') }}" :active="request()->routeIs('admin.interims.*')">
                 <x-icons.employees class="w-4 h-4" />
                 Intérimaires
             </x-links.menu>

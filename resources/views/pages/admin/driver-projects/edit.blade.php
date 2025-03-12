@@ -5,7 +5,7 @@
 @section('admin-content')
     <div class="container mx-auto px-4 py-8">
         <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-bold">Attribuer des projets à: {{ $driver->name }}</h1>
+            <h1 class="text-2xl font-bold">Attribuer des projets à: {{ $driver->last_name }} {{ $driver->first_name }}</h1>
             <a href="{{ route('admin.driver-projects.index') }}" class="text-gray-600 hover:text-gray-900">
                 Retour à la liste
             </a>

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DriverProjectController;
+use App\Http\Controllers\Admin\WorkerController;
+use App\Http\Controllers\Admin\InterimController;
 
 Route::middleware(['auth', 'role:driver|admin|super-admin', 'verified'])->group(function () {
     Route::get('/', function () {
@@ -22,6 +24,8 @@ Route::middleware(['auth', 'role:admin|super-admin', 'verified'])->group(functio
 
 Route::middleware(['auth', 'role:admin|super-admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class);
+    Route::resource('workers', WorkerController::class);
+    Route::resource('interims', InterimController::class);
 
     // Gestion de l'attribution des projets aux drivers
     Route::get('driver-projects', [DriverProjectController::class, 'index'])->name('driver-projects.index');
