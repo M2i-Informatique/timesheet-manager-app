@@ -11,7 +11,7 @@ class DataTable extends Component
     use WithPagination;
 
     public $search = '';
-    public $perPage = 10;
+    public $perPage = 1;
     public $sortField = 'id';
     public $sortDirection = 'asc';
     public $columns = [];
@@ -22,7 +22,6 @@ class DataTable extends Component
     public $hasSearch = true;
     protected $modelClass;
 
-    // Définir explicitement le thème Tailwind pour la pagination
     protected $paginationTheme = 'tailwind';
 
     protected $queryString = ['search' => ['except' => ''], 'perPage', 'sortField', 'sortDirection'];
