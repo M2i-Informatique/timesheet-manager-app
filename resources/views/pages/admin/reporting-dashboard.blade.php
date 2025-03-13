@@ -244,7 +244,7 @@
             new Chart(costsByCategoryCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Maison d\'habitation', 'Gros œuvre', 'Autre'],
+                    labels: ['MH', 'GO', 'Autre'],
                     datasets: [{
                         data: [
                             @json($costsByCategory['mh'] ?? 0),
