@@ -243,8 +243,7 @@ class ReportingController extends Controller
         $activityLogs = Activity::with(['causer', 'subject'])
             ->where('subject_type', TimeSheetable::class) // Utiliser la référence de classe
             ->latest()
-            ->paginate(10)
-            ->appends($request->except('page'));
+            ->paginate(10);
 
         // Pour déboguer, vérifiez si des logs sont récupérés
         Log::info('Nombre de logs d\'activité: ' . $activityLogs->count());

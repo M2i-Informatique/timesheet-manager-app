@@ -140,7 +140,7 @@
         </div>
         <!-- Logs d'activité -->
         <div class="bg-white rounded-lg shadow-md p-6">
-            @include('pages.admin.reportings.partials.activity-logs')
+            @livewire('admin.activity-logs')
         </div>
     </div>
 @endsection
