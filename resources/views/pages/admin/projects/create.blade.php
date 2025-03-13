@@ -37,20 +37,6 @@
                     </div>
 
                     <div>
-                        <label for="category" class="block text-sm font-medium text-gray-700">Catégorie</label>
-                        <select name="category" id="category"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                            required>
-                            <option value="mh" {{ old('category') === 'mh' ? 'selected' : '' }}>MH</option>
-                            <option value="go" {{ old('category') === 'go' ? 'selected' : '' }}>GO</option>
-                            <option value="other" {{ old('category') === 'other' ? 'selected' : '' }}>Autre</option>
-                        </select>
-                        @error('category')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
                         <label for="address" class="block text-sm font-medium text-gray-700">Adresse</label>
                         <input type="text" name="address" id="address" value="{{ old('address') }}"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -76,24 +62,6 @@
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                             required>
                         @error('distance')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="zone_id" class="block text-sm font-medium text-gray-700">Zone</label>
-                        <select name="zone_id" id="zone_id"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                            required>
-                            <option value="">Sélectionner une zone</option>
-                            @foreach ($zones as $zone)
-                                <option value="{{ $zone->id }}" {{ old('zone_id') == $zone->id ? 'selected' : '' }}>
-                                    {{ $zone->name }} ({{ number_format($zone->min_km, 1) }} -
-                                    {{ $zone->max_km ? number_format($zone->max_km, 1) : '+∞' }} km)
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('zone_id')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>

@@ -80,7 +80,10 @@
                     @enderror
                 </div>
 
-                <div class="flex justify-end">
+                <div class="flex justify-between">
+                    <a href="{{ route('admin.driver-projects.edit', $user->id) }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        Assigner un chantier
+                    </a>
                     <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                         Mettre à jour l'utilisateur
                     </button>

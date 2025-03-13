@@ -113,13 +113,13 @@
                     <h2 class="text-xl font-semibold mb-4">Détails</h2>
 
                     @if ($reportType === 'project_hours')
-                        @include('pages.admin.partials.report-project-hours')
+                        @include('pages.admin.reportings.partials.project-hours')
                     @elseif($reportType === 'worker_hours')
-                        @include('pages.admin.partials.report-worker-hours')
+                        @include('pages.admin.reportings.partials.worker-hours')
                     @elseif($reportType === 'project_costs')
-                        @include('pages.admin.partials.report-project-costs')
+                        @include('pages.admin.reportings.partials.project-costs')
                     @elseif($reportType === 'worker_costs')
-                        @include('pages.admin.partials.report-worker-costs')
+                        @include('pages.admin.reportings.partials.worker-costs')
                     @endif
                 </div>
             </div>

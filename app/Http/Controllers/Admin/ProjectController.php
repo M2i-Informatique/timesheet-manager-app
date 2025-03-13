@@ -42,12 +42,10 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'code' => 'required|integer|unique:projects,code',
             'name' => 'required|string|max:255',
-            'category' => 'required|in:mh,go,other',
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'distance' => 'required|numeric|min:0',
             'status' => 'required|in:active,inactive',
-            'zone_id' => 'required|exists:zones,id',
             'workers' => 'nullable|array',
             'workers.*' => 'exists:workers,id',
             'interims' => 'nullable|array',
@@ -60,12 +58,10 @@ class ProjectController extends Controller
         $project = Project::create([
             'code' => $validated['code'],
             'name' => $validated['name'],
-            'category' => $validated['category'],
             'address' => $validated['address'],
             'city' => $validated['city'],
             'distance' => $validated['distance'],
             'status' => $validated['status'],
-            'zone_id' => $validated['zone_id'],
         ]);
 
         // Associer les travailleurs au projet
@@ -124,12 +120,10 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'code' => 'required|integer|unique:projects,code,' . $project->id,
             'name' => 'required|string|max:255',
-            'category' => 'required|in:mh,go,other',
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'distance' => 'required|numeric|min:0',
             'status' => 'required|in:active,inactive',
-            'zone_id' => 'required|exists:zones,id',
             'workers' => 'nullable|array',
             'workers.*' => 'exists:workers,id',
             'interims' => 'nullable|array',
@@ -142,12 +136,10 @@ class ProjectController extends Controller
         $project->update([
             'code' => $validated['code'],
             'name' => $validated['name'],
-            'category' => $validated['category'],
             'address' => $validated['address'],
             'city' => $validated['city'],
             'distance' => $validated['distance'],
             'status' => $validated['status'],
-            'zone_id' => $validated['zone_id'],
         ]);
 
         // Synchroniser les travailleurs

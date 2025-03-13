@@ -86,7 +86,7 @@ class ReportingController extends Controller
                 break;
         }
 
-        return view('pages.admin.reporting', compact(
+        return view('pages.admin.reportings.index', compact(
             'reportType',
             'projects',
             'workers',
@@ -238,7 +238,7 @@ class ReportingController extends Controller
             $monthlyInterimsData[] = $monthlyInterimHours;
         }
 
-        return view('pages.admin.reporting-dashboard', compact(
+        return view('pages.admin.reportings.dashboard', compact(
             'totalHoursCurrentMonth',
             'totalWorkerHoursCurrentMonth',
             'totalInterimHoursCurrentMonth',

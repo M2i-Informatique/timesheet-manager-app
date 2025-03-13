@@ -1,5 +1,5 @@
 @if ($paginator->hasPages())
-    <div class="flex justify-between items-center bg-transparent w-full ">
+    <div class="flex justify-between items-center p-4 bg-gray-50">
         {{-- Information sur le nombre d'éléments --}}
         <div class="text-sm text-gray-500">
             @if ($paginator->total() > 0)
@@ -16,7 +16,7 @@
                 <p>Aucun élément trouvé</p>
             @endif
         </div>
-
+        
         {{-- Pagination --}}
         <nav aria-label="Pagination">
             <ul class="inline-flex -space-x-px text-sm">

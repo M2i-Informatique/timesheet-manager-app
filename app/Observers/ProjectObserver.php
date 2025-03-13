@@ -12,8 +12,8 @@ class ProjectObserver
     public function saving(Project $project): void
     {
         $this->assignZone($project);
+        $this->assignCategory($project);
     }
-
 
     /**
      * Assign the zone to the project based on the distance.
@@ -36,5 +36,26 @@ class ProjectObserver
         } else {
             throw new \Exception('No zone found for the given distance');
         }
+    }
+
+    /**
+     * Assign category to project based on code prefix
+     * - If code starts with '1', category = 'go'
+     * - If code starts with '2', category = 'mh'
+     * - Otherwise leave as is
+     *
+     * @param Project $project
+     */
+    protected function assignCategory(Project $project): void
+    {
+        // Convertir le code en string pour s'assurer de pouvoir utiliser la fonction startsWith
+        $codeStr = (string) $project->code;
+
+        if (str_starts_with($codeStr, '1')) {
+            $project->category = 'go';
+        } elseif (str_starts_with($codeStr, '2')) {
+            $project->category = 'mh';
+        }
+        // Si le code commence par un autre chiffre, on garde la catégorie existante
     }
 }

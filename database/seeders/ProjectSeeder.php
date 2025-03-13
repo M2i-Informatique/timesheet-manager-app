@@ -15,7 +15,6 @@ class ProjectSeeder extends Seeder
         $project = [
             [
                 'code' => 119018,
-                'category' => 'go',
                 'name' => 'Gardes Suisses',
                 'address' => 'Place d\'armes',
                 'city' => 'VERSAILLES',
@@ -24,7 +23,6 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'code' => 223014,
-                'category' => 'mh',
                 'name' => 'Le Stephenson',
                 'address' => '1 rue Stephenson',
                 'city' => 'MONTIGNY-LE-BRETONNEUX',
@@ -33,7 +31,6 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'code' => 124008,
-                'category' => 'go',
                 'name' => 'Rénovation du pigeonnier',
                 'address' => 'Grande rue',
                 'city' => 'MAROLLES EN HUREPOIX',

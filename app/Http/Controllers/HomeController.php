@@ -10,13 +10,6 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        $assignedProjects = $user->projects()
-            ->where('status', 'active')
-            ->orderBy('code')
-            ->get();
-
-        return view('pages.home', compact('assignedProjects'));
+        return view('pages.home');
     }
 }
