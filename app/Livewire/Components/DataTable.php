@@ -11,7 +11,7 @@ class DataTable extends Component
     use WithPagination;
 
     public $search = '';
-    public $perPage = 1;
+    public $perPage = 10;
     public $sortField = 'id';
     public $sortDirection = 'asc';
     public $columns = [];
