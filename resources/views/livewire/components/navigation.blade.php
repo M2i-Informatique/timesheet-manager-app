@@ -2,8 +2,8 @@
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
         <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-2">
 
-            <x-buttons.dynamic tag="a" href="{{ route('admin') }}" color="blue"
-                class="{{ request()->routeIs('admin') || request()->routeIs('admin.*') ? 'border-blue-500 text-blue-500 bg-blue-100' : '' }}">
+            <x-buttons.dynamic tag="a" href="{{ route('admin.reporting.index') }}" color="blue"
+                class="{{ request()->routeIs('admin.*') ? 'border-blue-500 text-blue-500 bg-blue-100' : '' }}">
                 Tableau de bord
             </x-buttons.dynamic>
 

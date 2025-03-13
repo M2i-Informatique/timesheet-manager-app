@@ -13,7 +13,7 @@ class Navigation extends Component
         ],
         [
             'name' => 'Pointage',
-            'route' => 'tracking'
+            'route' => 'tracking.index'
         ]
     ];
 

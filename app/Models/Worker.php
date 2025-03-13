@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\Log;
 
 class Worker extends Model
 {
@@ -21,7 +22,11 @@ class Worker extends Model
     {
         if ($this->contract_hours && $this->monthly_salary) {
             $monthlyHours = $this->contract_hours * (52 / 12);
-            return $this->monthly_salary / $monthlyHours;
+            $hourlyRate = $this->monthly_salary / $monthlyHours;
+            
+            Log::info("Worker {$this->id} ({$this->first_name} {$this->last_name}) hourly rate calculated: {$hourlyRate}");
+            
+            return $hourlyRate;
         }
         return null;
     }
@@ -40,8 +45,11 @@ class Worker extends Model
 
         $chargePercentage = (float) Setting::getValue('rate_charged', 70);
         $factor = 1 + ($chargePercentage / 100);
+        $hourlyRateCharged = $hourlyRate * $factor;
+        
+        Log::info("Worker {$this->id} ({$this->first_name} {$this->last_name}) hourly rate charged calculated: {$hourlyRateCharged} (base: {$hourlyRate}, factor: {$factor})");
 
-        return $hourlyRate * $factor;
+        return $hourlyRateCharged;
     }
 
     /**

@@ -8,30 +8,25 @@ use App\Http\Controllers\Admin\InterimController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ZoneController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\TimeSheetController;
 use App\Http\Controllers\Admin\ReportingController;
+use App\Http\Controllers\TrackingController;
+use App\Http\Controllers\HomeController;
 
-Route::middleware(['auth', 'role:driver|admin|super-admin', 'verified'])->group(function () {
-    Route::get('/', function () {
-        return view('pages.home');
-    })->name('home');
+Route::middleware(['auth', 'role:driver|admin|super-admin'])->group(function () {
 
-    Route::get('/tracking', function () {
-        return view('pages.tracking');
-    })->name('tracking');
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
-    // Route API pour récupérer les informations d'un projet
-    Route::get('/api/projects/{id}', function ($id) {
-        $project = App\Models\Project::with('zone')->findOrFail($id);
-        return response()->json([
-            'id' => $project->id,
-            'code' => $project->code,
-            'name' => $project->name,
-            'address' => $project->address,
-            'city' => $project->city,
-            'zone_name' => $project->zone ? $project->zone->name : 'Inconnue'
-        ]);
-    });
+    Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
+
+    Route::get('/tracking/show', [TrackingController::class, 'show'])->name('tracking.show');
+
+    Route::post('/tracking/store', [TrackingController::class, 'store'])->name('tracking.store');
+
+    Route::post('/tracking/assign-employee', [TrackingController::class, 'assignEmployee'])
+        ->name('tracking.assignEmployee');
+
+    Route::delete('/tracking/detach-employee', [TrackingController::class, 'detachEmployee'])
+        ->name('tracking.detachEmployee');
 });
 
 Route::middleware(['auth', 'role:admin|super-admin', 'verified'])->group(function () {
@@ -52,4 +47,8 @@ Route::middleware(['auth', 'role:admin|super-admin'])->prefix('admin')->name('ad
     Route::get('driver-projects', [DriverProjectController::class, 'index'])->name('driver-projects.index');
     Route::get('driver-projects/{driver}/edit', [DriverProjectController::class, 'edit'])->name('driver-projects.edit');
     Route::put('driver-projects/{driver}', [DriverProjectController::class, 'update'])->name('driver-projects.update');
+
+    // Reporting
+    Route::get('reporting', [ReportingController::class, 'index'])->name('reporting.index');
+    Route::get('reporting/dashboard', [ReportingController::class, 'dashboard'])->name('reporting.dashboard');
 });
