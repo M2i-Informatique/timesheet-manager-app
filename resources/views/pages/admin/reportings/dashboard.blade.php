@@ -110,7 +110,7 @@
         </div>
 
         <!-- Liens rapides vers les rapports -->
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h3 class="text-lg font-medium text-gray-800 mb-4">Rapports détaillés</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <a href="{{ route('admin.reporting.index', ['report_type' => 'project_hours']) }}"
@@ -137,6 +137,10 @@
                     <p class="text-sm text-gray-600">Coûts générés par travailleur avec détail par pointage</p>
                 </a>
             </div>
+        </div>
+        <!-- Logs d'activité -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            @include('pages.admin.reportings.partials.activity-logs')
         </div>
     </div>
 @endsection

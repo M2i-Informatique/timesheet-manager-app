@@ -16,6 +16,7 @@ use App\Services\Hours\WorkerHoursService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Spatie\Activitylog\Models\Activity;
 
 class ReportingController extends Controller
 {
@@ -29,9 +30,9 @@ class ReportingController extends Controller
      */
     public function __construct(
         ProjectCostsService $projectCostsService,
-        WorkerCostsService $workerCostsService,
+        WorkerCostsService  $workerCostsService,
         ProjectHoursService $projectHoursService,
-        WorkerHoursService $workerHoursService
+        WorkerHoursService  $workerHoursService
     ) {
         $this->projectCostsService = $projectCostsService;
         $this->workerCostsService = $workerCostsService;
@@ -46,7 +47,7 @@ class ReportingController extends Controller
     {
         // Check if dashboard view is requested
         if ($request->input('view') === 'dashboard' || !$request->has('report_type')) {
-            return $this->dashboard();
+            return $this->dashboard($request);
         }
 
         $projects = Project::where('status', 'active')->orderBy('code')->get();
@@ -96,14 +97,14 @@ class ReportingController extends Controller
             'workerId',
             'category',
             'reportData',
-            'chartData'
+            'chartData',
         ));
     }
 
     /**
      * Display the dashboard with key metrics
      */
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         // Périodes pour les calculs
         $currentMonthStart = Carbon::now()->startOfMonth();
@@ -238,6 +239,16 @@ class ReportingController extends Controller
             $monthlyInterimsData[] = $monthlyInterimHours;
         }
 
+        // Récupérer les logs d'activité liés aux timeSheetables
+        $activityLogs = Activity::with(['causer', 'subject'])
+            ->where('subject_type', TimeSheetable::class) // Utiliser la référence de classe
+            ->latest()
+            ->paginate(10)
+            ->appends($request->except('page'));
+
+        // Pour déboguer, vérifiez si des logs sont récupérés
+        Log::info('Nombre de logs d\'activité: ' . $activityLogs->count());
+
         return view('pages.admin.reportings.dashboard', compact(
             'totalHoursCurrentMonth',
             'totalWorkerHoursCurrentMonth',
@@ -255,7 +266,8 @@ class ReportingController extends Controller
             'monthlyHoursLabels',
             'monthlyHoursData',
             'monthlyWorkersData',
-            'monthlyInterimsData'
+            'monthlyInterimsData',
+            'activityLogs'
         ));
     }
 
