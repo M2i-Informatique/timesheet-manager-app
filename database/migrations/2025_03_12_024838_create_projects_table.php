@@ -23,8 +23,9 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive']);
 
             $table->foreignIdFor(\App\Models\Zone::class)
+                ->nullable()
                 ->constrained()
-                ->onDelete('set null');
+                ->nullOnDelete();
 
             $table->timestamps();
         });

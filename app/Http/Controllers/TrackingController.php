@@ -286,7 +286,7 @@ class TrackingController extends Controller
     }
 
     /**
-     * Détacher un employé (Worker ou Interim) du projet 
+     * Détacher un employé (Worker ou Interim) du projet
      * (et effacer ses heures sur ce mois).
      */
     public function detachEmployee(Request $request)

@@ -25,6 +25,11 @@ return new class extends Migration
             $table->unsignedBigInteger('timesheetable_id');
             $table->string('timesheetable_type');
 
+            $table->foreignIdFor(\App\Models\User::class, 'created_by')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+
             $table->timestamps();
         });
     }
