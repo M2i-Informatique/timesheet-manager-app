@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\Worker;
+use App\Models\Interim;
 use App\Models\Setting;
 use App\Models\TimeSheetable;
 use App\Services\Costs\ProjectCostsService;
@@ -43,8 +44,6 @@ class ReportingController extends Controller
      */
     public function index(Request $request)
     {
-        Log::info("ReportingController@index - Start with view: " . $request->input('view') . ", report_type: " . $request->input('report_type'));
-
         // Check if dashboard view is requested
         if ($request->input('view') === 'dashboard' || !$request->has('report_type')) {
             return $this->dashboard();
@@ -64,8 +63,6 @@ class ReportingController extends Controller
 
         $reportData = [];
         $chartData = [];
-
-        Log::info("Getting report data for type: {$reportType}, start_date: {$startDate}, end_date: {$endDate}, project_id: {$projectId}, worker_id: {$workerId}, category: {$category}");
 
         switch ($reportType) {
             case 'project_hours':
@@ -89,21 +86,6 @@ class ReportingController extends Controller
                 break;
         }
 
-        // Log the summary of the report data
-        Log::info("Report data summary:");
-        if ($reportType === 'project_hours' || $reportType === 'project_costs') {
-            foreach ($reportData as $index => $project) {
-                $hours = $reportType === 'project_hours' ? $project['total_hours'] : $project['total_hours'];
-                $name = $reportType === 'project_hours' ? $project['name'] : $project['attributes']['name'];
-                Log::info("  Project {$index}: {$name}, Hours: {$hours}");
-            }
-        } else {
-            foreach ($reportData as $index => $worker) {
-                Log::info("  Worker {$index}: {$worker['first_name']} {$worker['last_name']}, Hours/Cost: " .
-                    ($reportType === 'worker_hours' ? $worker['total_hours'] : $worker['total_cost']));
-            }
-        }
-
         return view('pages.admin.reporting', compact(
             'reportType',
             'projects',
@@ -123,19 +105,26 @@ class ReportingController extends Controller
      */
     public function dashboard()
     {
-        Log::info("ReportingController@dashboard - Starting dashboard generation");
-
         // Périodes pour les calculs
         $currentMonthStart = Carbon::now()->startOfMonth();
         $currentMonthEnd = Carbon::now()->endOfMonth();
         $previousMonthStart = Carbon::now()->subMonth()->startOfMonth();
         $previousMonthEnd = Carbon::now()->subMonth()->endOfMonth();
 
-        Log::info("Current month: {$currentMonthStart->format('Y-m-d')} to {$currentMonthEnd->format('Y-m-d')}");
-        Log::info("Previous month: {$previousMonthStart->format('Y-m-d')} to {$previousMonthEnd->format('Y-m-d')}");
+        // Obtenir les classes pour les requêtes
+        $workerClass = get_class(new Worker());
+        $interimClass = get_class(new Interim());
 
-        // KPI 1 & 2: Heures et coûts du mois courant et variation vs mois précédent
+        // KPI 1: Heures travaillées (worker vs interim)
         $totalHoursCurrentMonth = TimeSheetable::whereBetween('date', [$currentMonthStart, $currentMonthEnd])
+            ->sum('hours');
+
+        $totalWorkerHoursCurrentMonth = TimeSheetable::whereBetween('date', [$currentMonthStart, $currentMonthEnd])
+            ->where('timesheetable_type', $workerClass)
+            ->sum('hours');
+
+        $totalInterimHoursCurrentMonth = TimeSheetable::whereBetween('date', [$currentMonthStart, $currentMonthEnd])
+            ->where('timesheetable_type', $interimClass)
             ->sum('hours');
 
         $totalHoursPreviousMonth = TimeSheetable::whereBetween('date', [$previousMonthStart, $previousMonthEnd])
@@ -145,9 +134,7 @@ class ReportingController extends Controller
             ? (($totalHoursCurrentMonth - $totalHoursPreviousMonth) / $totalHoursPreviousMonth) * 100
             : 0;
 
-        Log::info("Total hours - Current month: {$totalHoursCurrentMonth}, Previous month: {$totalHoursPreviousMonth}, Change: {$hoursChangePercent}%");
-
-        // Les coûts totaux nécessitent plus de calculs et utilisent les services
+        // KPI 2: Coûts du mois courant (workers uniquement)
         $currentMonthDateRange = [$currentMonthStart->format('Y-m-d'), $currentMonthEnd->format('Y-m-d')];
         $previousMonthDateRange = [$previousMonthStart->format('Y-m-d'), $previousMonthEnd->format('Y-m-d')];
 
@@ -162,8 +149,6 @@ class ReportingController extends Controller
             ? (($totalCostCurrentMonth - $totalCostPreviousMonth) / $totalCostPreviousMonth) * 100
             : 0;
 
-        Log::info("Total costs - Current month: {$totalCostCurrentMonth}, Previous month: {$totalCostPreviousMonth}, Change: {$costChangePercent}%");
-
         // KPI 3: Projets actifs et avec activité
         $activeProjectsCount = Project::where('status', 'active')->count();
         $projectsWithActivityCount = TimeSheetable::whereBetween('date', [$currentMonthStart, $currentMonthEnd])
@@ -171,38 +156,35 @@ class ReportingController extends Controller
             ->distinct()
             ->count();
 
-        Log::info("Projects - Active: {$activeProjectsCount}, With activity this month: {$projectsWithActivityCount}");
-
         // KPI 4: Travailleurs actifs et avec activité
         $activeWorkersCount = Worker::where('status', 'active')->count();
         $workersWithActivityCount = TimeSheetable::whereBetween('date', [$currentMonthStart, $currentMonthEnd])
-            ->where('timesheetable_type', Worker::class)
+            ->where('timesheetable_type', $workerClass)
             ->select('timesheetable_id')
             ->distinct()
             ->count();
 
-        Log::info("Workers - Active: {$activeWorkersCount}, With activity this month: {$workersWithActivityCount}");
-
         // Top 5 projets par heures
         $topProjects = DB::table('time_sheetables')
             ->join('projects', 'time_sheetables.project_id', '=', 'projects.id')
-            ->select('projects.id', 'projects.name', DB::raw('SUM(time_sheetables.hours) as total_hours'))
+            ->select(
+                'projects.id',
+                'projects.name',
+                DB::raw('SUM(time_sheetables.hours) as total_hours'),
+                DB::raw("SUM(CASE WHEN time_sheetables.timesheetable_type = '{$workerClass}' THEN time_sheetables.hours ELSE 0 END) as worker_hours"),
+                DB::raw("SUM(CASE WHEN time_sheetables.timesheetable_type = '{$interimClass}' THEN time_sheetables.hours ELSE 0 END) as interim_hours")
+            )
             ->whereBetween('date', [$currentMonthStart, $currentMonthEnd])
             ->groupBy('projects.id', 'projects.name')
             ->orderByDesc('total_hours')
             ->take(5)
             ->get();
 
-        Log::info("Top projects by hours: " . $topProjects->count());
-        foreach ($topProjects as $index => $project) {
-            Log::info("  Project {$index}: {$project->name}, Hours: {$project->total_hours}");
-        }
-
         // Top 5 travailleurs par heures
         $topWorkers = DB::table('time_sheetables')
-            ->join('workers', function ($join) {
+            ->join('workers', function ($join) use ($workerClass) {
                 $join->on('time_sheetables.timesheetable_id', '=', 'workers.id')
-                    ->where('time_sheetables.timesheetable_type', '=', Worker::class);
+                    ->where('time_sheetables.timesheetable_type', '=', $workerClass);
             })
             ->select(
                 'workers.id',
@@ -216,12 +198,7 @@ class ReportingController extends Controller
             ->take(5)
             ->get();
 
-        Log::info("Top workers by hours: " . $topWorkers->count());
-        foreach ($topWorkers as $index => $worker) {
-            Log::info("  Worker {$index}: {$worker->first_name} {$worker->last_name}, Hours: {$worker->total_hours}");
-        }
-
-        // Répartition des coûts par catégorie de projet
+        // Répartition des coûts par catégorie de projet (workers uniquement)
         $costsByCategory = [];
         foreach ($currentMonthCosts as $project) {
             $category = $project['attributes']['category'];
@@ -231,14 +208,11 @@ class ReportingController extends Controller
             $costsByCategory[$category] += $project['total_cost'];
         }
 
-        Log::info("Costs by category:");
-        foreach ($costsByCategory as $category => $cost) {
-            Log::info("  {$category}: {$cost}");
-        }
-
-        // Tendance heures sur 6 derniers mois
+        // Tendance heures sur 6 derniers mois (workers vs interims)
         $monthlyHoursData = [];
         $monthlyHoursLabels = [];
+        $monthlyWorkersData = [];
+        $monthlyInterimsData = [];
 
         for ($i = 5; $i >= 0; $i--) {
             $month = Carbon::now()->subMonths($i);
@@ -249,13 +223,25 @@ class ReportingController extends Controller
                 ->whereMonth('date', $month->month)
                 ->sum('hours');
 
-            $monthlyHoursData[] = $monthlyHours;
+            $monthlyWorkerHours = TimeSheetable::whereYear('date', $month->year)
+                ->whereMonth('date', $month->month)
+                ->where('timesheetable_type', $workerClass)
+                ->sum('hours');
 
-            Log::info("  {$monthLabel}: {$monthlyHours} hours");
+            $monthlyInterimHours = TimeSheetable::whereYear('date', $month->year)
+                ->whereMonth('date', $month->month)
+                ->where('timesheetable_type', $interimClass)
+                ->sum('hours');
+
+            $monthlyHoursData[] = $monthlyHours;
+            $monthlyWorkersData[] = $monthlyWorkerHours;
+            $monthlyInterimsData[] = $monthlyInterimHours;
         }
 
         return view('pages.admin.reporting-dashboard', compact(
             'totalHoursCurrentMonth',
+            'totalWorkerHoursCurrentMonth',
+            'totalInterimHoursCurrentMonth',
             'hoursChangePercent',
             'totalCostCurrentMonth',
             'costChangePercent',
@@ -267,7 +253,9 @@ class ReportingController extends Controller
             'topWorkers',
             'costsByCategory',
             'monthlyHoursLabels',
-            'monthlyHoursData'
+            'monthlyHoursData',
+            'monthlyWorkersData',
+            'monthlyInterimsData'
         ));
     }
 
@@ -276,8 +264,6 @@ class ReportingController extends Controller
      */
     private function prepareProjectHoursChartData(array $data): array
     {
-        Log::info("Preparing chart data for project hours");
-
         $chartData = [
             'labels' => [],
             'datasets' => [
@@ -306,8 +292,6 @@ class ReportingController extends Controller
             $chartData['labels'][] = $project['name'];
             $chartData['datasets'][0]['data'][] = $project['total_hours'];
             $chartData['datasets'][0]['backgroundColor'][] = $colors[$index % count($colors)];
-
-            Log::info("  Chart data for {$project['name']}: {$project['total_hours']} hours");
         }
 
         return $chartData;
@@ -318,8 +302,6 @@ class ReportingController extends Controller
      */
     private function prepareWorkerHoursChartData(array $data): array
     {
-        Log::info("Preparing chart data for worker hours");
-
         $chartData = [
             'labels' => [],
             'datasets' => [
@@ -345,12 +327,9 @@ class ReportingController extends Controller
         ];
 
         foreach ($data as $index => $worker) {
-            $label = $worker['first_name'] . ' ' . $worker['last_name'];
-            $chartData['labels'][] = $label;
+            $chartData['labels'][] = $worker['first_name'] . ' ' . $worker['last_name'];
             $chartData['datasets'][0]['data'][] = $worker['total_hours'];
             $chartData['datasets'][0]['backgroundColor'][] = $colors[$index % count($colors)];
-
-            Log::info("  Chart data for {$label}: {$worker['total_hours']} hours");
         }
 
         return $chartData;
@@ -361,13 +340,11 @@ class ReportingController extends Controller
      */
     private function prepareProjectCostsChartData(array $data): array
     {
-        Log::info("Preparing chart data for project costs");
-
         $chartData = [
             'labels' => [],
             'datasets' => [
                 [
-                    'label' => 'Coûts par projet',
+                    'label' => 'Coûts par projet (workers uniquement)',
                     'data' => [],
                     'backgroundColor' => []
                 ]
@@ -391,8 +368,6 @@ class ReportingController extends Controller
             $chartData['labels'][] = $project['attributes']['name'];
             $chartData['datasets'][0]['data'][] = $project['total_cost'];
             $chartData['datasets'][0]['backgroundColor'][] = $colors[$index % count($colors)];
-
-            Log::info("  Chart data for {$project['attributes']['name']}: {$project['total_cost']} €");
         }
 
         return $chartData;
@@ -403,8 +378,6 @@ class ReportingController extends Controller
      */
     private function prepareWorkerCostsChartData(array $data): array
     {
-        Log::info("Preparing chart data for worker costs");
-
         $chartData = [
             'labels' => [],
             'datasets' => [
@@ -430,12 +403,9 @@ class ReportingController extends Controller
         ];
 
         foreach ($data as $index => $worker) {
-            $label = $worker['first_name'] . ' ' . $worker['last_name'];
-            $chartData['labels'][] = $label;
+            $chartData['labels'][] = $worker['first_name'] . ' ' . $worker['last_name'];
             $chartData['datasets'][0]['data'][] = $worker['total_cost'];
             $chartData['datasets'][0]['backgroundColor'][] = $colors[$index % count($colors)];
-
-            Log::info("  Chart data for {$label}: {$worker['total_cost']} €");
         }
 
         return $chartData;

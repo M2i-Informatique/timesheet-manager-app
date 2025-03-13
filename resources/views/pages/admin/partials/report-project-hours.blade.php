@@ -11,6 +11,14 @@
                 </th>
                 <th scope="col"
                     class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Heures Workers
+                </th>
+                <th scope="col"
+                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Heures Intérim
+                </th>
+                <th scope="col"
+                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Total d'heures
                 </th>
             </tr>
@@ -31,27 +39,82 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        {{ number_format($project['worker_hours'], 2) }} h
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        {{ number_format($project['interim_hours'], 2) }} h
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         {{ number_format($project['total_hours'], 2) }} h
                     </td>
                 </tr>
 
                 <!-- Worker details rows for this project -->
-                @foreach ($project['workers'] as $worker)
-                    <tr class="bg-gray-50">
-                        <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 pl-10">
-                            {{ $worker['first_name'] }} {{ $worker['last_name'] }}
-                        </td>
-                        <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500">
-                            &nbsp;
-                        </td>
-                        <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-500">
-                            {{ number_format($worker['total_hours'], 2) }} h
+                @if (count($project['workers']) > 0)
+                    <tr class="bg-blue-50">
+                        <td colspan="5" class="px-6 py-2 text-sm font-semibold text-blue-800">
+                            Travailleurs ({{ count($project['workers']) }})
                         </td>
                     </tr>
-                @endforeach
+
+                    @foreach ($project['workers'] as $worker)
+                        <tr class="bg-blue-50">
+                            <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-700 pl-10">
+                                {{ $worker['first_name'] }} {{ $worker['last_name'] }}
+                            </td>
+                            <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-700">
+                                @if ($worker['category'] === 'worker')
+                                    Ouvrier
+                                @elseif($worker['category'] === 'etam')
+                                    ETAM
+                                @else
+                                    Autre
+                                @endif
+                            </td>
+                            <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                                {{ number_format($worker['total_hours'], 2) }} h
+                            </td>
+                            <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                                <!-- Aucune heure d'intérim pour un worker -->
+                            </td>
+                            <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                                {{ number_format($worker['total_hours'], 2) }} h
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
+
+                <!-- Interim details rows for this project -->
+                @if (count($project['interims']) > 0)
+                    <tr class="bg-green-50">
+                        <td colspan="5" class="px-6 py-2 text-sm font-semibold text-green-800">
+                            Intérims ({{ count($project['interims']) }})
+                        </td>
+                    </tr>
+
+                    @foreach ($project['interims'] as $interim)
+                        <tr class="bg-green-50">
+                            <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-700 pl-10">
+                                {{ $interim['agency'] }}
+                            </td>
+                            <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-700">
+                                Intérim
+                            </td>
+                            <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                                <!-- Aucune heure de worker pour un intérim -->
+                            </td>
+                            <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                                {{ number_format($interim['total_hours'], 2) }} h
+                            </td>
+                            <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                                {{ number_format($interim['total_hours'], 2) }} h
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
             @empty
                 <tr>
-                    <td colspan="3" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                         Aucune donnée disponible pour la période sélectionnée.
                     </td>
                 </tr>
@@ -62,6 +125,14 @@
                 <th scope="col" colspan="2"
                     class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Total
+                </th>
+                <th scope="col"
+                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ number_format(array_sum(array_column($reportData, 'worker_hours')), 2) }} h
+                </th>
+                <th scope="col"
+                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ number_format(array_sum(array_column($reportData, 'interim_hours')), 2) }} h
                 </th>
                 <th scope="col"
                     class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">

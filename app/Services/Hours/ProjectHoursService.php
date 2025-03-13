@@ -3,6 +3,8 @@
 namespace App\Services\Hours;
 
 use App\Models\Project;
+use App\Models\Worker;
+use App\Models\Interim;
 use Illuminate\Support\Facades\Log;
 
 class ProjectHoursService
@@ -24,8 +26,6 @@ class ProjectHoursService
      */
     public function getProjectHours(?string $id, ?string $category, ?string $startDate, ?string $endDate): array
     {
-        Log::info("getProjectHours - Start with filters: ID={$id}, Category={$category}, StartDate={$startDate}, EndDate={$endDate}");
-
         $query = Project::query();
 
         if ($id) {
@@ -39,13 +39,12 @@ class ProjectHoursService
         $projects = $query->get();
         $results  = [];
 
-        Log::info("Found " . $projects->count() . " projects matching filters");
-
         foreach ($projects as $project) {
-            Log::info("Processing Project ID: {$project->id}, Name: {$project->name}");
-
-            $projectHours = 0.0;
-            $workersData  = [];
+            $projectTotalHours = 0.0;
+            $workerTotalHours = 0.0;
+            $interimTotalHours = 0.0;
+            $workersData = [];
+            $interimsData = [];
 
             // Retrieve workers and their timesheets (with date filtering)
             $workers = $project->workers()->with(['timesheets' => function ($query) use ($project, $startDate, $endDate) {
@@ -59,18 +58,24 @@ class ProjectHoursService
                 }
             }])->get();
 
-            Log::info("Found " . $workers->count() . " workers for this project");
+            // Retrieve interims and their timesheets
+            $interims = $project->interims()->with(['timesheets' => function ($query) use ($project, $startDate, $endDate) {
+                $query->where('project_id', $project->id);
+                if ($startDate && $endDate) {
+                    $query->whereBetween('date', [$startDate, $endDate]);
+                } elseif ($startDate) {
+                    $query->where('date', '>=', $startDate);
+                } elseif ($endDate) {
+                    $query->where('date', '<=', $endDate);
+                }
+            }])->get();
 
+            // Process workers data
             foreach ($workers as $worker) {
-                Log::info("  Worker: {$worker->id} - {$worker->first_name} {$worker->last_name}");
-                Log::info("  Timesheets count: " . $worker->timesheets->count());
-
-                $workerHours   = 0.0;
+                $workerHours = 0.0;
                 $timesheetData = [];
 
                 foreach ($worker->timesheets as $timesheet) {
-                    Log::info("    Timesheet ID: {$timesheet->id}, Project ID: {$timesheet->project_id}, Date: {$timesheet->date}, Category: {$timesheet->category}, Hours: {$timesheet->hours}");
-
                     $workerHours += $timesheet->hours;
                     $timesheetData[] = [
                         'date'     => $timesheet->date->format('Y-m-d'),
@@ -79,33 +84,59 @@ class ProjectHoursService
                     ];
                 }
 
-                Log::info("  Worker total hours: {$workerHours}");
-
                 if ($workerHours > 0) {
                     $workersData[] = [
                         'id'          => $worker->id,
                         'first_name'  => $worker->first_name,
                         'last_name'   => $worker->last_name,
+                        'category'    => $worker->category,
                         'total_hours' => $workerHours,
                         'timesheets'  => $timesheetData,
                     ];
-                    $projectHours += $workerHours;
+                    $workerTotalHours += $workerHours;
                 }
             }
 
-            Log::info("Project total hours: {$projectHours}");
+            // Process interims data
+            foreach ($interims as $interim) {
+                $interimHours = 0.0;
+                $timesheetData = [];
+
+                foreach ($interim->timesheets as $timesheet) {
+                    $interimHours += $timesheet->hours;
+                    $timesheetData[] = [
+                        'date'     => $timesheet->date->format('Y-m-d'),
+                        'category' => $timesheet->category,
+                        'hours'    => $timesheet->hours,
+                    ];
+                }
+
+                if ($interimHours > 0) {
+                    $interimsData[] = [
+                        'id'          => $interim->id,
+                        'agency'      => $interim->agency,
+                        'hourly_rate' => $interim->hourly_rate,
+                        'total_hours' => $interimHours,
+                        'timesheets'  => $timesheetData,
+                    ];
+                    $interimTotalHours += $interimHours;
+                }
+            }
+
+            $projectTotalHours = $workerTotalHours + $interimTotalHours;
 
             $results[] = [
-                'id'          => $project->id,
-                'code'        => $project->code,
-                'category'    => $project->category,
-                'name'        => $project->name,
-                'total_hours' => $projectHours,
-                'workers'     => $workersData,
+                'id'                => $project->id,
+                'code'              => $project->code,
+                'category'          => $project->category,
+                'name'              => $project->name,
+                'total_hours'       => $projectTotalHours,
+                'worker_hours'      => $workerTotalHours,
+                'interim_hours'     => $interimTotalHours,
+                'workers'           => $workersData,
+                'interims'          => $interimsData,
             ];
         }
-
-        Log::info("getProjectHours - Returning " . count($results) . " projects");
 
         return $results;
     }
