@@ -14,6 +14,7 @@
         "vite": "^6.0.11"
     },
     "dependencies": {
+        "flowbite": "^3.1.2",
         "handsontable": "^15.1.0"
     }
 }

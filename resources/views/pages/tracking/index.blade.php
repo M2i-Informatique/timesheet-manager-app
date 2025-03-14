@@ -1,108 +1,94 @@
 @extends('layouts.app')
 
-@section('title', 'Tracking')
+@section('title', 'Pointage')
+
+@php
+    $links = [['id' => 'tracking', 'text' => 'Saisie des heures']];
+    $showInfo = false;
+@endphp
 
 @section('content')
-    <div class="max-w-screen-xl mx-auto pt-24 min-h-screen">
-        <h1 class="text-2xl font-bold mb-4">Sélection du projet</h1>
-        <form method="get" action="{{ route('tracking.show') }}" class="space-y-4">
-            @csrf
+    <div class="max-w-screen-xl flex mx-auto gap-16 pt-24 h-full">
+        <!-- Contenu principal -->
+        <div class="flex-1">
+            <div id="tracking" class="max-w-screen-xl mx-auto mb-24">
+                <h1 class="text-xl font-bold mb-4"># Saisie des heures</h1>
+                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 bg-white shadow-md rounded-lg">
+                    <form class="flex flex-col md:flex-row justify-center items-center gap-4"
+                        action="{{ route('tracking.show') }}" method="GET">
+                        @csrf
+                        <div class="flex flex-col md:flex-row w-full md:w-auto">
+                            <!-- Sélecteur de chantier -->
+                            <label for="project_id" class="sr-only">Choisir un chantier</label>
+                            <select name="project_id" id="project_id"
+                                class="w-full md:w-auto bg-gray-50 border border-gray-300 text-gray-900 text-sm md:rounded-l-md focus:ring-blue-500 focus:border-blue-500 block"
+                                required>
+                                <option value="" disabled selected>Choisir un chantier</option>
+                                @foreach ($projects as $proj)
+                                    <option value="{{ $proj->id }}">{{ $proj->code }} - {{ $proj->name }}</option>
+                                @endforeach
+                            </select>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    <label for="project_id" class="block font-medium">Projet</label>
-                    <select name="project_id" id="project_id" class="w-full border-gray-300 rounded-md shadow-sm">
-                        <option value="">-- Choisir --</option>
-                        @foreach ($projects as $proj)
-                            <option value="{{ $proj->id }}">{{ $proj->code }} - {{ $proj->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="space-y-2">
-                    <label for="month_year" class="block font-medium">Période</label>
-                    <select name="month_year" id="month_year" class="w-full border-gray-300 rounded-md shadow-sm">
-                        @php
-                            $months = [
-                                1 => 'Janvier',
-                                2 => 'Février',
-                                3 => 'Mars',
-                                4 => 'Avril',
-                                5 => 'Mai',
-                                6 => 'Juin',
-                                7 => 'Juillet',
-                                8 => 'Août',
-                                9 => 'Septembre',
-                                10 => 'Octobre',
-                                11 => 'Novembre',
-                                12 => 'Décembre',
-                            ];
-                        @endphp
-
-                        @for ($y = 2023; $y <= 2030; $y++)
-                            @for ($m = 1; $m <= 12; $m++)
+                            <!-- Sélecteur de mois -->
+                            <label for="month" class="sr-only">Choisir un mois</label>
+                            <select name="month" id="month"
+                                class="w-full md:w-auto bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block"
+                                required>
+                                <option value="" disabled>Choisir un mois</option>
                                 @php
-                                    $selected = $y == $year && $m == $month ? 'selected' : '';
-
-                                    // Si on est en 2025, on affiche tous les mois sans restriction
-                                    // Pour les autres années, on applique la restriction habituelle
-                                    if ($y == date('Y') && $y != 2025 && $m > date('n')) {
-                                        continue;
-                                    }
+                                    $months = [
+                                        1 => 'Janvier',
+                                        2 => 'Février',
+                                        3 => 'Mars',
+                                        4 => 'Avril',
+                                        5 => 'Mai',
+                                        6 => 'Juin',
+                                        7 => 'Juillet',
+                                        8 => 'Août',
+                                        9 => 'Septembre',
+                                        10 => 'Octobre',
+                                        11 => 'Novembre',
+                                        12 => 'Décembre',
+                                    ];
+                                    $currentMonth = $month ?? date('n');
                                 @endphp
-                                <option value="{{ $m }}-{{ $y }}" {{ $selected }}>
-                                    {{ $months[$m] }} {{ $y }}
-                                </option>
-                            @endfor
-                        @endfor
-                    </select>
+                                @foreach ($months as $key => $monthName)
+                                    <option value="{{ $key }}" {{ $key == $currentMonth ? 'selected' : '' }}>
+                                        {{ $monthName }}</option>
+                                @endforeach
+                            </select>
+
+                            <!-- Sélecteur d'année -->
+                            <label for="year" class="sr-only">Choisir une année</label>
+                            <select name="year" id="year"
+                                class="w-full md:w-auto bg-gray-50 border border-gray-300 text-gray-900 text-sm md:rounded-r-md focus:ring-blue-500 focus:border-blue-500 block"
+                                required>
+                                <option value="" disabled>Choisir une année</option>
+                                @php
+                                    $currentYear = $year ?? date('Y');
+                                @endphp
+                                @for ($y = 2023; $y <= 2030; $y++)
+                                    <option value="{{ $y }}" {{ $currentYear == $y ? 'selected' : '' }}>
+                                        {{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <div class="flex gap-2 mt-4 md:mt-0">
+                            <!-- Bouton pour afficher le chantier -->
+                            <x-buttons.dynamic tag="button" type="submit" color="blue">
+                                Afficher le pointage
+                            </x-buttons.dynamic>
+
+                            <!-- Champ caché pour la catégorie -->
+                            <input type="hidden" name="category" value="day">
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <div class="pt-2">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                    Afficher
-                </button>
-            </div>
-
-            {{-- Champ caché pour la catégorie, toujours défini sur "day" --}}
-            <input type="hidden" name="category" value="day">
-        </form>
+            {{-- ajouter ici le filtre pour selectionner un user->driver et afficher ces chantier --}}
+        </div>
+        <!-- Fin contenu principal -->
+        <x-sidebars.nav :links="$links" title="Sur cette page" infoTitle="" />
     </div>
-
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Fonction pour diviser la valeur de month_year en month et year
-                const monthYearSelect = document.getElementById('month_year');
-                const form = monthYearSelect.closest('form');
-
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-
-                    // Récupérer la valeur sélectionnée et la séparer
-                    const selectedValue = monthYearSelect.value;
-                    const [month, year] = selectedValue.split('-');
-
-                    // Créer des champs cachés pour month et year
-                    const monthInput = document.createElement('input');
-                    monthInput.type = 'hidden';
-                    monthInput.name = 'month';
-                    monthInput.value = month;
-
-                    const yearInput = document.createElement('input');
-                    yearInput.type = 'hidden';
-                    yearInput.name = 'year';
-                    yearInput.value = year;
-
-                    // Ajouter les champs au formulaire
-                    form.appendChild(monthInput);
-                    form.appendChild(yearInput);
-
-                    // Soumettre le formulaire
-                    form.submit();
-                });
-            });
-        </script>
-    @endpush
 @endsection

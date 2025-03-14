@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 
 <head>
     <meta charset="utf-8">
@@ -16,24 +16,21 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gray-100">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <livewire:components.navigation />
+<body class="bg-gray-100 min-h-[150vh] h-full">
+    <!-- Navigation -->
+    <livewire:components.navigation />
 
-        <!-- En-tête de page -->
-        @hasSection('header')
-            <header>
-                @yield('header')
-            </header>
-        @endif
+    <!-- En-tête de page -->
+    @hasSection('header')
+        <header>
+            @yield('header')
+        </header>
+    @endif
 
-        <!-- Contenu principal -->
-        <main>
-            @yield('content')
-        </main>
-
-    </div>
+    <!-- Contenu principal -->
+    <main class="h-full">
+        @yield('content')
+    </main>
 
     <!-- Messages flash -->
     {{-- <livewire:components.flash-messages /> --}}

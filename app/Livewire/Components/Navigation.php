@@ -9,11 +9,13 @@ class Navigation extends Component
     public $links = [
         [
             'name' => 'Accueil',
-            'route' => 'home'
+            'route' => 'home',
+            'active_route' => 'home'
         ],
         [
             'name' => 'Pointage',
-            'route' => 'tracking.index'
+            'route' => 'tracking.index',
+            'active_route' => 'tracking.*'
         ]
     ];
 
