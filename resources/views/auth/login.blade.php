@@ -5,12 +5,12 @@
 @section('content')
     <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div class="container mx-auto p-4">
-            <h1 class="flex justify-center my-8 items-center text-5xl font-extrabold text-black">
+            <h1 class="flex justify-center my-8 items-center text-3xl font-extrabold text-black">
                 Dubocq
-                <span class="bg-blue-100 text-blue-800 text-2xl font-semibold me-2 px-2.5 py-0.5 rounded-sm ms-2">
+                <span class="bg-blue-100 text-blue-800 text-xl font-semibold me-2 px-2.5 py-0.5 rounded-sm ms-2">
                     POINTAGE
                 </span>
-                <small class="ms-2 font-semibold text-gray-400">| Connectez-vous</small>
+                <small class="text-xl ms-2 font-semibold text-gray-400">| Connectez-vous</small>
             </h1>
 
             <!-- Message d'erreur (initialement caché) -->
@@ -27,7 +27,7 @@
                 @csrf
                 <div class="mb-5 relative">
                     <input type="email" id="email" name="email" autocomplete="email" placeholder=" " required
-                        class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+                        class="block p-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer">
                     <label for="email"
                         class="bg-gray-50 absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
                         Votre email
@@ -36,7 +36,7 @@
                 <div class="mb-5 relative">
                     <input type="password" id="password" name="password" autocomplete="current-password" placeholder=" "
                         required
-                        class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+                        class="block p-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer">
                     <label for="password"
                         class="bg-gray-50 absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
                         Votre mot de passe
@@ -51,6 +51,9 @@
                             Se souvenir de moi
                         </label>
                     </div>
+                    <div class="flex justify-center">
+                        <a href="/forgot-password" class="text-blue-700 text-sm hover:underline">Mot de passe oublié ?</a>
+                    </div>
                 </div>
 
                 <button type="submit"
@@ -58,10 +61,6 @@
                     Se connecter
                 </button>
             </form>
-
-            <div class="flex justify-center mt-12">
-                <a href="/forgot-password" class="text-blue-700 hover:underline">Mot de passe oublié ?</a>
-            </div>
         </div>
     </div>
 @endsection
