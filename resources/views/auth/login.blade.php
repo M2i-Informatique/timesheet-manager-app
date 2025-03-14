@@ -7,7 +7,7 @@
         <div class="container mx-auto p-4">
             <h1 class="flex justify-center my-8 items-center text-3xl font-extrabold text-black">
                 Dubocq
-                <span class="bg-blue-100 text-blue-800 text-xl font-semibold me-2 px-2.5 py-0.5 rounded-sm ms-2">
+                <span class="bg-blue-100 text-blue-800 text-lg font-semibold me-2 px-2.5 py-0.5 rounded-sm ms-2">
                     POINTAGE
                 </span>
                 <small class="text-xl ms-2 font-semibold text-gray-400">| Connectez-vous</small>
