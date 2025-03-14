@@ -16,7 +16,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gray-100 min-h-[150vh] h-full">
+<body class="flex flex-col min-h-screen">
     <!-- Navigation -->
     <livewire:components.navigation />
 
@@ -28,9 +28,14 @@
     @endif
 
     <!-- Contenu principal -->
-    <main class="h-full">
+    <main class="flex-grow">
         @yield('content')
     </main>
+
+    <!-- Pied de page -->
+    @if (!request()->routeIs('admin.*'))
+        @include('partials.footer')
+    @endif
 
     <!-- Messages flash -->
     {{-- <livewire:components.flash-messages /> --}}
