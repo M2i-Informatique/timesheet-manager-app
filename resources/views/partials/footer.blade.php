@@ -1,17 +1,18 @@
 <footer class="bg-white">
-    <div class="mx-auto max-w-screen-xl px-4 pt-16 pb-8 sm:px-6 lg:px-8 lg:pt-24">
+    <div class="mx-auto max-w-screen-xl pt-16 pb-8 lg:pt-24">
 
         <div class="mt-16 border-t border-gray-100 pt-8 sm:flex sm:items-center sm:justify-between lg:mt-24">
             <ul class="flex flex-wrap justify-center gap-4 text-xs lg:justify-end">
                 <li>
-                    <a href="https://informatique-m2i.fr" class="text-gray-500 transition hover:opacity-75">&copy; M2i
+                    <a href="https://informatique-m2i.fr" targer="_blank"
+                        class="text-gray-500 transition hover:opacity-75">&copy; M2i
                         Informatique</a>
                 </li>
             </ul>
 
             <ul class="mt-8 flex justify-center gap-6 sm:mt-0 lg:justify-end">
                 <li>
-                    <a href="#" rel="noreferrer" target="_blank" 
+                    <a href="mailto:lucas@informatique-m2i.fr" rel="noreferrer" target="_blank"
                         class="flex flex-wrap justify-center items-center gap-2 text-xs lg:justify-end text-gray-500 transition hover:opacity-75">
                         <span class="text-gray-500 transition hover:opacity-75">Contacter le support</span>
 
