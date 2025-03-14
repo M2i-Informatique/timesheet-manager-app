@@ -2,46 +2,24 @@
 <div>
     <div class="flex justify-between p-5 text-lg text-left rtl:text-right text-gray-900 bg-white">
         @if ($title || $description)
-            <div class="flex items-center gap-1">
-                <svg class="w-5 h-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                </svg>
-                <p class="text-sm font-normal text-blue-600">
-                    {{ $description }}
-                </p>
-            </div>
+            <p class="text-sm font-normal text-blue-600">
+                {{ $description }}
+            </p>
         @endif
 
         @if ($hasSearch)
-            <div class="relative">
-                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
-                </div>
-                <div class="relative">
-                    <label for="Search" class="sr-only">Rechercher</label>
-
-                    <input id="Search" type="search" wire:model.live.debounce.300ms="search"
-                        placeholder="Rechercher..."
-                        class="w-full rounded-md border-gray-200 py-1.5 pe-10 shadow-xs sm:text-sm" />
-
-                    <span class="absolute inset-y-0 end-0 grid w-10 place-content-center">
-                        <button type="button" class="text-gray-600 hover:text-gray-700">
-                            <span class="sr-only">Rechercher</span>
-
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="size-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                            </svg>
-                        </button>
-                    </span>
-                </div>
+            <div class="w-64">
+                <x-forms.floating-input type="search" label="Rechercher" inputClass="py-1.5"
+                    labelClass="bg-white pointer-events-auto" id="search-input-{{ $this->id }}"
+                    wire:model.live.debounce.300ms="search" wire:ignore.self>
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                    </div>
+                </x-forms.floating-input>
             </div>
         @endif
     </div>

@@ -21,6 +21,7 @@ class AllProjectsTable extends DataTable
     public $description = 'Liste de tous les chantiers disponibles';
     public $sortField = 'code';
     public $actions = [];
+    public $id;
 
     public function __construct()
     {
@@ -69,6 +70,12 @@ class AllProjectsTable extends DataTable
             'year' => now()->year,
             'category' => 'day',
         ]);
+    }
+
+    public function mount()
+    {
+        // Générer un ID unique pour cette instance
+        $this->id = uniqid('user-projects-');
     }
 
     public function downloadProject($projectId)

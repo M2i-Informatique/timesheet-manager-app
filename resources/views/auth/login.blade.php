@@ -23,14 +23,14 @@
                 </div>
             @endif
 
-            <form class="max-w-sm mx-auto" action="{{ route('login') }}" method="post">
+            <form class="max-w-sm mx-auto space-y-5" action="{{ route('login') }}" method="post">
                 @csrf
 
                 <x-forms.floating-input type="email" name="email" id="email" label="Votre email"
-                    autocomplete="email" :value="old('email')" :error="$errors->first('email')" required />
+                    labelClass="bg-gray-50" autocomplete="email" :value="old('email')" :error="$errors->first('email')" required />
 
                 <x-forms.floating-input type="password" name="password" id="password" label="Votre mot de passe"
-                    autocomplete="current-password" :error="$errors->first('password')" required />
+                    labelClass="bg-gray-50" autocomplete="current-password" :error="$errors->first('password')" required />
 
                 <div class="flex items-center justify-between mb-5">
                     <x-forms.checkbox id="remember" name="remember" label="Se souvenir de moi" :checked="old('remember')" />

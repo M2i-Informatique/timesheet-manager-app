@@ -18,9 +18,10 @@ class UserProjectsTable extends DataTable
     ];
     public $searchFields = ['code', 'name', 'address', 'city'];
     public $title = 'Projets';
-    public $description = 'Ici vous pouvez rechercher tous les chantiers qui vous sont assignés';
+    public $description = 'Liste tous les chantiers qui vous sont assignés';
     public $sortField = 'code';
     public $actions = [];
+    public $id;
 
     public function __construct()
     {
@@ -75,6 +76,12 @@ class UserProjectsTable extends DataTable
             'year' => now()->year,
             'category' => 'day',
         ]);
+    }
+
+    public function mount()
+    {
+        // Générer un ID unique pour cette instance
+        $this->id = uniqid('user-projects-');
     }
 
     public function downloadProject($projectId)
