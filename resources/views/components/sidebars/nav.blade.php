@@ -1,14 +1,14 @@
 @props([
     'links' => [],
     'title' => 'Sur cette page',
-    'showInfo' => true,
+    'showInfo' => false,
     'infoTitle' => 'Informations',
     'infoText' => '',
     'infoIcon' => null,
 ])
 
 <aside {{ $attributes->merge(['class' => 'w-auto']) }}>
-    <nav class="sticky top-4" id="sidebar-nav">
+    <nav class="sticky top-4 w-44" id="sidebar-nav">
         @if (!empty($links))
             <div class="mb-6">
                 <h2 class="font-bold mb-4 ml-4">{{ $title }}</h2>
@@ -35,19 +35,28 @@
 
         @if ($showInfo)
             <div class="mb-6">
-                <h3 class="font-bold mb-4 ml-4">{{ $infoTitle }}</h3>
+                <div role="alert" class="rounded-sm border-s-4 border-yellow-500 bg-yellow-50 p-4">
+                    <div class="flex items-center gap-1 text-yellow-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                        </svg>
+                        <strong class="block font-medium">{{ $infoTitle }}</strong>
+                    </div>
 
-                <div class="flex flex-col gap-6 w-38 pl-4 text-sm">
-                    @if ($infoText)
-                        <p>
-                            {{ $infoText }}
-                            @if ($infoIcon)
-                                {!! $infoIcon !!}
-                            @endif
-                        </p>
-                    @endif
+                    <div class="flex flex-col gap-6 mt-2 text-sm text-yellow-700">
+                        @if ($infoText)
+                            <p>
+                                {{ $infoText }}
+                                @if ($infoIcon)
+                                    {!! $infoIcon !!}
+                                @endif
+                            </p>
+                        @endif
 
-                    {{ $info ?? '' }}
+                        {{ $info ?? '' }}
+                    </div>
                 </div>
             </div>
         @endif

@@ -89,6 +89,6 @@
             {{-- ajouter ici le filtre pour selectionner un user->driver et afficher ces chantier --}}
         </div>
         <!-- Fin contenu principal -->
-        <x-sidebars.nav :links="$links" title="Sur cette page" infoTitle="" />
+        <x-sidebars.nav :links="$links" title="Sur cette page" />
     </div>
 @endsection
