@@ -1,5 +1,5 @@
 import './bootstrap';
-import 'flowbite'
+import 'flowbite';
 
 import 'handsontable/dist/handsontable.full.min.css';
 import { registerAllModules } from 'handsontable/registry';
