@@ -38,9 +38,8 @@ class UserController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            // password must have at least 8 characters, contain at least one uppercase letter, one lowercase letter, one number and one special character
-            'password' => 'required|string|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*(_|[^\w])).+$/',
-            'roles' => 'required|array',
+            'password' => 'required|string|min:8|confirmed',
+            'roles' => 'required|array'
         ]);
 
         $user = User::create([

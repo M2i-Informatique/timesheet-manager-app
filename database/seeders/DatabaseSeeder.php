@@ -21,9 +21,6 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
         ]);
 
-        // create 2 users
-        User::factory(2)->create();
-
         // assign the first user the role of admin
         $user = User::get()->first();
         $user->assignRole('driver');

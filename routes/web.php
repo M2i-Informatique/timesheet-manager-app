@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\ReportingController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\HomeController;
 
-Route::middleware(['auth', 'role:driver|admin|super-admin'])->group(function () {
+Route::middleware(['verified', 'auth', 'role:driver|admin|super-admin'])->group(function () {
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -29,13 +29,8 @@ Route::middleware(['auth', 'role:driver|admin|super-admin'])->group(function () 
         ->name('tracking.detachEmployee');
 });
 
-Route::middleware(['auth', 'role:admin|super-admin', 'verified'])->group(function () {
-    Route::get('/admin', function () {
-        return view('pages.admin.index');
-    })->name('admin');
-});
 
-Route::middleware(['auth', 'role:admin|super-admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('workers', WorkerController::class);
     Route::resource('interims', InterimController::class);
@@ -49,6 +44,6 @@ Route::middleware(['auth', 'role:admin|super-admin'])->prefix('admin')->name('ad
     Route::put('driver-projects/{driver}', [DriverProjectController::class, 'update'])->name('driver-projects.update');
 
     // Reporting
-    Route::get('reporting', [ReportingController::class, 'index'])->name('reporting.index');
-    Route::get('reporting/dashboard', [ReportingController::class, 'dashboard'])->name('reporting.dashboard');
+    Route::get('/', [ReportingController::class, 'index'])->name('reporting.index');
+    Route::get('dashboard', [ReportingController::class, 'dashboard'])->name('reporting.dashboard');
 });

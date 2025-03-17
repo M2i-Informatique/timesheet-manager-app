@@ -113,6 +113,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'email' => 'driver@example.com',
             'password' => Hash::make('password'),
         ]);
+        
         $driverUser->assignRole('driver');
     }
 }
