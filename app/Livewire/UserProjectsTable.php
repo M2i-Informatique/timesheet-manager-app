@@ -18,7 +18,7 @@ class UserProjectsTable extends DataTable
     ];
     public $searchFields = ['code', 'name', 'address', 'city'];
     public $title = 'Projets';
-    public $description = 'Liste tous les chantiers qui vous sont assignés';
+    public $description = 'Liste de tous les chantiers qui vous sont assignés.';
     public $sortField = 'code';
     public $actions = [];
     public $id;

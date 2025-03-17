@@ -14,11 +14,10 @@ class AllProjectsTable extends DataTable
         'name' => 'Nom',
         'address' => 'Adresse',
         'city' => 'Ville',
-        'status' => 'Statut'
     ];
     public $searchFields = ['code', 'name', 'address', 'city'];
     public $title = 'Tous les Projets';
-    public $description = 'Liste de tous les chantiers disponibles';
+    public $description = 'Liste de tous les chantiers disponibles.';
     public $sortField = 'code';
     public $actions = [];
     public $id;
