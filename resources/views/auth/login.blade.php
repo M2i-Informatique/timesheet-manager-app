@@ -10,17 +10,12 @@
                 <span class="bg-blue-100 text-blue-500 text-lg font-semibold me-2 px-2.5 py-0.5 rounded-sm ms-2">
                     POINTAGE
                 </span>
-                <small class="text-xl ms-2 font-semibold text-gray-400">| Connectez-vous</small>
+                <small class="text-xl font-semibold text-gray-400">| Connectez-vous</small>
             </h1>
 
             <!-- Message d'erreur (initialement caché) -->
             @if ($errors->any())
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 max-w-sm mx-auto"
-                    role="alert">
-                    @foreach ($errors->all() as $error)
-                        <span class="block sm:inline">{{ $error }}</span>
-                    @endforeach
-                </div>
+                <x-alert-error :errors="$errors" />
             @endif
 
             <form class="max-w-sm mx-auto space-y-5" action="{{ route('login') }}" method="post">
@@ -30,7 +25,7 @@
                     labelClass="bg-gray-50" autocomplete="email" :value="old('email')" :error="$errors->first('email')" required />
 
                 <x-forms.floating-input type="password" name="password" id="password" label="Votre mot de passe"
-                    labelClass="bg-gray-50" autocomplete="current-password" :error="$errors->first('password')" required />
+                    labelClass="bg-gray-50" autocomplete="current-password" :error="$errors->first('email')" required />
 
                 <div class="flex items-center justify-between mb-5">
                     <x-forms.checkbox id="remember" name="remember" label="Se souvenir de moi" :checked="old('remember')" />

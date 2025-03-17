@@ -17,10 +17,10 @@
 @php
     $id = $id ?? $name;
     $inputClasses =
-        'block p-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border appearance-none focus:outline-none focus:ring-0 focus:border-blue-500 peer ' .
+        'block p-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border appearance-none focus:outline-none focus:ring-0 peer ' .
         $inputClass;
     $labelClasses =
-        'absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-2 ' .
+        'absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 start-2 ' .
         $labelClass;
 
     // Ajout des classes conditionnelles en fonction des erreurs
@@ -28,7 +28,8 @@
         $inputClasses .= ' border-red-500 focus:border-red-500';
         $labelClasses .= ' text-red-500 peer-focus:text-red-500';
     } else {
-        $inputClasses .= ' border-gray-300';
+        $inputClasses .= ' border-gray-300 focus:border-blue-500';
+        $labelClasses .= ' text-gray-500 peer-focus:text-blue-500';
     }
 
     // Ajout des classes conditionnelles en fonction de l'état désactivé
@@ -45,10 +46,6 @@ if ($disabled) {
     <label for="{{ $id }}" class="{{ $labelClasses }}">
         {{ $label }}
     </label>
-
-    @if ($error)
-        <p class="mt-1 text-sm text-red-600">{{ $error }}</p>
-    @endif
 
     {{ $slot ?? '' }}
 </div>
