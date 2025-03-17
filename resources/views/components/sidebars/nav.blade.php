@@ -35,8 +35,8 @@
 
         @if ($showInfo)
             <div class="mb-6">
-                <div role="alert" class="rounded-sm border-s-4 border-yellow-500 bg-yellow-50 p-4">
-                    <div class="flex items-center gap-1 text-yellow-800">
+                <div role="alert" class="rounded-sm border-s-4 border-blue-500 bg-blue-50 p-4">
+                    <div class="flex items-center gap-1 text-blue-800">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -45,7 +45,7 @@
                         <strong class="block font-medium">{{ $infoTitle }}</strong>
                     </div>
 
-                    <div class="flex flex-col gap-6 mt-2 text-sm text-yellow-700">
+                    <div class="flex flex-col gap-2 mt-2 text-sm text-blue-700">
                         @if ($infoText)
                             <p>
                                 {{ $infoText }}
