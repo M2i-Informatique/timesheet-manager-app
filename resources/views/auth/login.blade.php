@@ -15,7 +15,7 @@
 
             <!-- Message d'erreur (initialement caché) -->
             @if ($errors->any())
-                <x-alert-error :errors="$errors" />
+                <x-alert-error :messages="$errors" />
             @endif
 
             <form class="max-w-sm mx-auto space-y-5" action="{{ route('login') }}" method="post">

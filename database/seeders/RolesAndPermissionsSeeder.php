@@ -92,28 +92,28 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdminUser = User::create([
             'first_name' => 'Super',
             'last_name' => 'Admin',
-            'email' => 'super-admin@example.com',
+            'email' => 'lucas@informatique-m2i.fr',
             'password' => Hash::make('password'),
         ]);
         $superAdminUser->assignRole('super-admin');
 
         // Créer un utilisateur admin par défaut
-        $adminUser = User::create([
-            'first_name' => 'Admin',
-            'last_name' => 'User',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
-        $adminUser->assignRole('admin');
+        // $adminUser = User::create([
+        //     'first_name' => 'Admin',
+        //     'last_name' => 'User',
+        //     'email' => 'admin@example.com',
+        //     'password' => Hash::make('password'),
+        // ]);
+        // $adminUser->assignRole('admin');
 
-        // Créer un utilisateur driver par défaut
-        $driverUser = User::create([
-            'first_name' => 'Driver',
-            'last_name' => 'User',
-            'email' => 'driver@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        // // Créer un utilisateur driver par défaut
+        // $driverUser = User::create([
+        //     'first_name' => 'Driver',
+        //     'last_name' => 'User',
+        //     'email' => 'driver@example.com',
+        //     'password' => Hash::make('password'),
+        // ]);
         
-        $driverUser->assignRole('driver');
+        // $driverUser->assignRole('driver');
     }
 }

@@ -1,11 +1,11 @@
 @props([
-    'errors' => null,
+    'messages' => null,
     'title' => 'Erreur',
     'type' => 'error',
 ])
 
 @php
-// Définir les couleurs en fonction du type d'alerte
+    // Définir les couleurs en fonction du type d'alerte
 $colors = [
     'error' => [
         'border' => 'border-red-500',
@@ -66,24 +66,30 @@ $currentColors = $colors[$type] ?? $colors['error'];
     }
 </style>
 
-@if ($errors && count($errors) > 0)
+@if ($messages)
     <div class="alert-wrapper">
         <div role="alert"
             class="rounded-sm border-s-4 {{ $currentColors['border'] }} {{ $currentColors['bg'] }} p-4 shadow-md alert-container"
             {{ $attributes }}>
             <div class="flex items-center gap-1 {{ $currentColors['text'] }}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"
-                    class="w-4 h-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    stroke-width="1.5" class="w-4 h-4">
                     {!! $currentIcon !!}
                 </svg>
                 <strong class="block font-medium">{{ $title }}</strong>
             </div>
 
-            @foreach ($errors->all() as $error)
+            @if (is_array($messages) || is_object($messages))
+                @foreach (is_object($messages) && method_exists($messages, 'all') ? $messages->all() : (array) $messages as $message)
+                    <p class="mt-2 text-sm {{ $currentColors['textContent'] }}">
+                        {{ $message }}
+                    </p>
+                @endforeach
+            @else
                 <p class="mt-2 text-sm {{ $currentColors['textContent'] }}">
-                    {{ $error }}
+                    {{ $messages }}
                 </p>
-            @endforeach
+            @endif
         </div>
     </div>
 @endif
