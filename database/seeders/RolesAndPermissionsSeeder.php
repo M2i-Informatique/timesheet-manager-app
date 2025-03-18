@@ -90,10 +90,10 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Créer un utilisateur super-admin par défaut
         $superAdminUser = User::create([
-            'first_name' => 'Super',
-            'last_name' => 'Admin',
+            'first_name' => 'Lucas',
+            'last_name' => 'M2i',
             'email' => 'lucas@informatique-m2i.fr',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('#M2@Informatique&!'),
         ]);
         $superAdminUser->assignRole('super-admin');
 
