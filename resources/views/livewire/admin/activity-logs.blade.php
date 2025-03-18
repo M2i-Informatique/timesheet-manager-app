@@ -1,5 +1,5 @@
 <div>
-    @if ($activityLogs->isEmpty())
+    {{-- @if ($activityLogs->isEmpty())
         <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
             <p>Aucun log d'activité n'a été trouvé. Assurez-vous que:</p>
             <ul class="list-disc ml-5 mt-2">
@@ -8,7 +8,7 @@
                 <li>La table activity_log contient des données</li>
             </ul>
         </div>
-    @endif
+    @endif --}}
 
     <div class="mt-8">
         <h2 class="text-xl font-semibold mb-4">Journal d'activité récent</h2>
