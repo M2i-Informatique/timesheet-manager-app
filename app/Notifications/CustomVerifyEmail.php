@@ -41,7 +41,7 @@ class CustomVerifyEmail extends Notification
 
         return (new MailMessage)
             ->subject('Vérifiez votre adresse email')
-            ->greeting('Bonjour ' . $notifiable->first_name . ' ' . $notifiable->last_name . ',')
+            ->greeting('Bonjour ' . $notifiable->first_name . ',')
             ->line('Merci de vous être inscrit! Veuillez cliquer sur le bouton ci-dessous pour vérifier votre adresse email.')
             ->action('Vérifier l\'adresse email', $verificationUrl)
             ->line('Si vous n\'avez pas créé de compte, aucune action n\'est requise.')
