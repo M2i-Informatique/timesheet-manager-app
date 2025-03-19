@@ -23,5 +23,4 @@ yarn-error.log
 /.zed
 
 .DS_Store
-sendgrid.env
 **/.DS_Store
