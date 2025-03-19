@@ -82,7 +82,7 @@ $currentColors = $colors[$type] ?? $colors['error'];
             @if (is_array($messages) || is_object($messages))
                 @foreach (is_object($messages) && method_exists($messages, 'all') ? $messages->all() : (array) $messages as $message)
                     <p class="mt-2 text-sm {{ $currentColors['textContent'] }}">
-                        {{ $message }}
+                        {{ is_array($message) ? implode(', ', $message) : $message }}
                     </p>
                 @endforeach
             @else
