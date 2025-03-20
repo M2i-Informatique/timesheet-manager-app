@@ -136,7 +136,7 @@
                     <input type="hidden" name="employee_type" value="worker">
 
                     <select name="employee_id" class="border-gray-300 rounded py-1">
-                        <option value="">-- Worker --</option>
+                        <option value="">-- Salariés --</option>
                         @foreach ($availableWorkers as $w)
                             <option value="{{ $w->id }}">
                                 {{ $w->first_name }} {{ $w->last_name }}
@@ -144,7 +144,7 @@
                         @endforeach
                     </select>
                     <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                        + Worker
+                        Ajouter
                     </button>
                 </form>
 
@@ -166,7 +166,7 @@
                         @endforeach
                     </select>
                     <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                        + Interim
+                        Ajouter
                     </button>
                 </form>
             </div>
