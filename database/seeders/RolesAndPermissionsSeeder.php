@@ -59,7 +59,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'manage blank timesheets']);
 
         // Créer les rôles et leur attribuer des permissions
-        
+
         // 1. Rôle Driver (accès limité aux projets assignés et pointages)
         $driverRole = Role::create(['name' => 'driver']);
         $driverRole->givePermissionTo([
@@ -97,23 +97,123 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
         $superAdminUser->assignRole('super-admin');
 
-        // Créer un utilisateur admin par défaut
-        // $adminUser = User::create([
-        //     'first_name' => 'Admin',
-        //     'last_name' => 'User',
-        //     'email' => 'admin@example.com',
-        //     'password' => Hash::make('password'),
-        // ]);
-        // $adminUser->assignRole('admin');
+        // Créer un utilisateur administrateur
+        // Mickael DUBOCQ
+        $admin1 = User::create([
+            'first_name' => 'Mickael',
+            'last_name' => 'DUBOCQ',
+            'email' => 'mickael.dubocq@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $admin1->assignRole('admin');
 
-        // // Créer un utilisateur driver par défaut
-        // $driverUser = User::create([
-        //     'first_name' => 'Driver',
-        //     'last_name' => 'User',
-        //     'email' => 'driver@example.com',
-        //     'password' => Hash::make('password'),
-        // ]);
-        
-        // $driverUser->assignRole('driver');
+        // Marion CÔME
+        $admin2 = User::create([
+            'first_name' => 'Marion',
+            'last_name' => 'CÔME',
+            'email' => 'm.come@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $admin2->assignRole('admin');
+
+        // Philippe DUBOCQ
+        $admin3 = User::create([
+            'first_name' => 'Philippe',
+            'last_name' => 'DUBOCQ',
+            'email' => 'ph.dubocq@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $admin3->assignRole('admin');
+
+        // Anais DALLA RIVA
+        $admin4 = User::create([
+            'first_name' => 'Anais',
+            'last_name' => 'DALLA RIVA',
+            'email' => 'a.dallariva@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $admin4->assignRole('admin');
+
+        // Créer un utilisateur conducteur
+        // Geoffroy GRASSIN D'ALPHONSE
+        $driver5 = User::create([
+            'first_name' => 'Geoffroy',
+            'last_name' => 'GRASSIN D\'ALPHONSE',
+            'email' => 'g.grassin@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $driver5->assignRole('driver');
+
+        // Gilles FERREIRA
+        $driver6 = User::create([
+            'first_name' => 'Gilles',
+            'last_name' => 'FERREIRA',
+            'email' => 'g.ferreira@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $driver6->assignRole('driver');
+
+        // Carlos RIBEIRO
+        $driver7 = User::create([
+            'first_name' => 'Carlos',
+            'last_name' => 'RIBEIRO',
+            'email' => 'c.ribeiro@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $driver7->assignRole('driver');
+
+        // Bruno PELLETIER
+        $driver8 = User::create([
+            'first_name' => 'Bruno',
+            'last_name' => 'PELLETIER',
+            'email' => 'b.pelletier@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $driver8->assignRole('driver');
+
+        // Antoine THEVRET
+        $driver9 = User::create([
+            'first_name' => 'Antoine',
+            'last_name' => 'THEVRET',
+            'email' => 'a.thevret@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $driver9->assignRole('driver');
+
+        // Stanislas WILHELEM
+        $driver10 = User::create([
+            'first_name' => 'Stanislas',
+            'last_name' => 'WILHELEM',
+            'email' => 's.wilhelem@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $driver10->assignRole('driver');
+
+        // Eric DEBRAY
+        $driver11 = User::create([
+            'first_name' => 'Eric',
+            'last_name' => 'DEBRAY',
+            'email' => 'e.debray@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $driver11->assignRole('driver');
+
+        // Cyril POCHON
+        $driver12 = User::create([
+            'first_name' => 'Cyril',
+            'last_name' => 'POCHON',
+            'email' => 'c.pochon@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $driver12->assignRole('driver');
+
+        // Alexandre BOULARD
+        $driver13 = User::create([
+            'first_name' => 'Alexandre',
+            'last_name' => 'BOULARD',
+            'email' => 'a.boulard@dubocqsa.com',
+            'password' => Hash::make('#M2@Informatique&!'),
+        ]);
+        $driver13->assignRole('driver');
     }
 }

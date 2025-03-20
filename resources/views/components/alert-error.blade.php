@@ -73,16 +73,20 @@ $currentColors = $colors[$type] ?? $colors['error'];
             {{ $attributes }}>
             <div class="flex items-center gap-1 {{ $currentColors['text'] }}">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    stroke-width="1.5" class="w-4 h-4">
+                    stroke-width="2" class="w-4 h-4">
                     {!! $currentIcon !!}
                 </svg>
                 <strong class="block font-medium">{{ $title }}</strong>
             </div>
 
-            @if (is_array($messages) || is_object($messages))
-                @foreach (is_object($messages) && method_exists($messages, 'all') ? $messages->all() : (array) $messages as $message)
+            @if ($errors->any())
+                <p class="mt-2 text-sm {{ $currentColors['textContent'] }}">
+                    {{ $errors->first() }}
+                </p>
+            @elseif (is_array($messages))
+                @foreach ($messages as $message)
                     <p class="mt-2 text-sm {{ $currentColors['textContent'] }}">
-                        {{ is_array($message) ? implode(', ', $message) : $message }}
+                        {{ $message }}
                     </p>
                 @endforeach
             @else

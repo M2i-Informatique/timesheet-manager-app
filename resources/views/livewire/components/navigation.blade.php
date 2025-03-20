@@ -6,8 +6,11 @@
                 <x-buttons.dynamic tag="a" href="{{ route('home') }}" color="blue" class="my-2">
                     Retour à l'accueil
                 </x-buttons.dynamic>
-            @else
-                <x-buttons.dynamic tag="a" href="{{ route('admin.reporting.index') }}" color="blue" class="my-2">
+            @endif
+
+            @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('super-admin'))
+                <x-buttons.dynamic tag="a" href="{{ route('admin.reporting.index') }}" color="blue"
+                    class="my-2">
                     Tableau de bord
                 </x-buttons.dynamic>
             @endif
