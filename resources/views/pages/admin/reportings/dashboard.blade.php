@@ -156,7 +156,7 @@
                 data: {
                     labels: @json($topProjects->pluck('name')),
                     datasets: [{
-                            label: 'Workers',
+                            label: 'Salariés',
                             data: @json($topProjects->pluck('worker_hours')),
                             backgroundColor: '#3B82F6', // Bleu
                             borderWidth: 0,
@@ -316,7 +316,7 @@
                             fill: true
                         },
                         {
-                            label: 'Workers',
+                            label: 'Salariés',
                             data: @json($workersData),
                             borderColor: '#3B82F6',
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
