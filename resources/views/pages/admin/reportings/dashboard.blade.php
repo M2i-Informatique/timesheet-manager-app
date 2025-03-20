@@ -19,7 +19,7 @@
                 <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalHoursCurrentMonth, 2) }} h</p>
                 <div class="mt-2 text-sm">
                     <div class="flex justify-between items-center">
-                        <span class="text-blue-600 font-medium">Workers:</span>
+                        <span class="text-blue-600 font-medium">Salariés:</span>
                         <span class="text-blue-600">{{ number_format($totalWorkerHoursCurrentMonth ?? 0, 2) }} h
                             ({{ $totalHoursCurrentMonth > 0 ? number_format((($totalWorkerHoursCurrentMonth ?? 0) / $totalHoursCurrentMonth) * 100, 1) : 0 }}%)</span>
                     </div>
@@ -41,10 +41,10 @@
 
             <!-- KPI: Coût total (uniquement workers) -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-sm font-medium text-gray-500 mb-1">Coût total des Workers (mois courant)</h3>
+                <h3 class="text-sm font-medium text-gray-500 mb-1">Coût total des salariés (mois courant)</h3>
                 <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalCostCurrentMonth, 2) }} €</p>
                 <div class="mt-2 text-sm text-gray-500">
-                    <div class="text-gray-500 mb-1 text-xs italic">Uniquement coûts des travailleurs</div>
+                    <div class="text-gray-500 mb-1 text-xs italic">Uniquement coûts des salariés</div>
                     @if ($costChangePercent > 0)
                         <span class="text-red-600">+{{ number_format($costChangePercent, 1) }}%</span>
                     @else
@@ -94,7 +94,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <!-- Répartition des coûts par catégorie de projet -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-medium text-gray-800 mb-4">Coûts par catégorie (workers uniquement)</h3>
+                <h3 class="text-lg font-medium text-gray-800 mb-4">Coûts par catégorie (salariés uniquement)</h3>
                 <div style="height: 300px;">
                     <canvas id="costsByCategoryChart"></canvas>
                 </div>
@@ -116,12 +116,12 @@
                 <a href="{{ route('admin.reporting.index', ['report_type' => 'project_hours']) }}"
                     class="block p-4 border border-gray-200 rounded-md hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
                     <h4 class="font-medium text-indigo-600 mb-2">Rapport heures par projet</h4>
-                    <p class="text-sm text-gray-600">Analyse détaillée des heures par projet et par travailleur</p>
+                    <p class="text-sm text-gray-600">Analyse détaillée des heures par projet et par salarié</p>
                 </a>
 
                 <a href="{{ route('admin.reporting.index', ['report_type' => 'worker_hours']) }}"
                     class="block p-4 border border-gray-200 rounded-md hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
-                    <h4 class="font-medium text-indigo-600 mb-2">Rapport heures par travailleur</h4>
+                    <h4 class="font-medium text-indigo-600 mb-2">Rapport heures par salarié</h4>
                     <p class="text-sm text-gray-600">Heures travaillées par personne avec détail des pointages</p>
                 </a>
 
@@ -133,8 +133,8 @@
 
                 <a href="{{ route('admin.reporting.index', ['report_type' => 'worker_costs']) }}"
                     class="block p-4 border border-gray-200 rounded-md hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
-                    <h4 class="font-medium text-indigo-600 mb-2">Rapport coûts par travailleur</h4>
-                    <p class="text-sm text-gray-600">Coûts générés par travailleur avec détail par pointage</p>
+                    <h4 class="font-medium text-indigo-600 mb-2">Rapport coûts par salarié</h4>
+                    <p class="text-sm text-gray-600">Coûts générés par salarié avec détail par pointage</p>
                 </a>
             </div>
         </div>

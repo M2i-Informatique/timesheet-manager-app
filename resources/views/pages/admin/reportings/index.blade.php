@@ -25,11 +25,11 @@
                             <option value="project_hours" {{ $reportType === 'project_hours' ? 'selected' : '' }}>Heures par
                                 projet</option>
                             <option value="worker_hours" {{ $reportType === 'worker_hours' ? 'selected' : '' }}>Heures par
-                                travailleur</option>
+                                salarié</option>
                             <option value="project_costs" {{ $reportType === 'project_costs' ? 'selected' : '' }}>Coûts par
                                 projet</option>
                             <option value="worker_costs" {{ $reportType === 'worker_costs' ? 'selected' : '' }}>Coûts par
-                                travailleur</option>
+                                salarié</option>
                         </select>
                     </div>
 
@@ -67,7 +67,7 @@
                         <label for="worker_id" class="block text-sm font-medium text-gray-700 mb-1">Travailleur</label>
                         <select id="worker_id" name="worker_id"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                            <option value="">Tous les travailleurs</option>
+                            <option value="">Tous les salariés</option>
                             @foreach ($workers as $worker)
                                 <option value="{{ $worker->id }}" {{ $workerId == $worker->id ? 'selected' : '' }}>
                                     {{ $worker->first_name }} {{ $worker->last_name }}

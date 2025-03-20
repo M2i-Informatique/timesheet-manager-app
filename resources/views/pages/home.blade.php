@@ -51,7 +51,7 @@
         <x-sidebars.nav :links="$links" title="Sur cette page" showInfo="true" infoTitle="Informations">
             <x-slot:info>
                 <p>Cliquez sur "{!! $trackingIcon !!}" pour aller vers la page de pointage.</p>
-                <p>Cliquez sur "{!! $downloadIcon !!}" pour télécharger une feuille de pointage vierge.</p>
+                {{-- <p>Cliquez sur "{!! $downloadIcon !!}" pour télécharger une feuille de pointage vierge.</p> --}}
             </x-slot:info>
         </x-sidebars.nav>
     </div>

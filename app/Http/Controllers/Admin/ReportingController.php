@@ -317,7 +317,7 @@ class ReportingController extends Controller
             'labels' => [],
             'datasets' => [
                 [
-                    'label' => 'Heures par travailleur',
+                    'label' => 'Heures par salarié',
                     'data' => [],
                     'backgroundColor' => []
                 ]
@@ -355,7 +355,7 @@ class ReportingController extends Controller
             'labels' => [],
             'datasets' => [
                 [
-                    'label' => 'Coûts par projet (workers uniquement)',
+                    'label' => 'Coûts par projet (salariés uniquement)',
                     'data' => [],
                     'backgroundColor' => []
                 ]
@@ -393,7 +393,7 @@ class ReportingController extends Controller
             'labels' => [],
             'datasets' => [
                 [
-                    'label' => 'Coûts par travailleur',
+                    'label' => 'Coûts par salarié',
                     'data' => [],
                     'backgroundColor' => []
                 ]

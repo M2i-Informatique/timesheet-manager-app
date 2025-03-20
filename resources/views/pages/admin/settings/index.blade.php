@@ -92,7 +92,7 @@
         </div>
 
         <!-- Section d'aide -->
-        <div class="mt-8 bg-blue-50 p-6 rounded-lg shadow-sm">
+        {{-- <div class="mt-8 bg-blue-50 p-6 rounded-lg shadow-sm">
             <h2 class="text-lg font-semibold text-blue-800 mb-3">Paramètres système</h2>
             <p class="text-sm text-blue-700 mb-4">
                 Les paramètres système permettent de configurer différentes valeurs utilisées dans l'application. Voici les
@@ -108,6 +108,6 @@
                 <li><strong>max_daily_hours</strong> : Nombre maximum d'heures par jour autorisé pour les pointages</li>
                 <!-- Ajoutez d'autres paramètres selon vos besoins -->
             </ul>
-        </div>
+        </div> --}}
     </div>
 @endsection

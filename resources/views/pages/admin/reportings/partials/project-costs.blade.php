@@ -11,7 +11,7 @@
                 </th>
                 <th scope="col"
                     class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Heures Workers
+                    Heures Salariés
                 </th>
                 <th scope="col"
                     class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -55,7 +55,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-indigo-600 font-bold">
                         {{ number_format($project['total_cost'], 2) }} €
-                        <div class="text-xs text-gray-500 font-normal">(uniquement workers)</div>
+                        <div class="text-xs text-gray-500 font-normal">(uniquement salariés)</div>
                     </td>
                 </tr>
 
@@ -63,7 +63,7 @@
                 @if (isset($project['relationships']['workers']))
                     <tr class="bg-blue-50">
                         <td colspan="6" class="px-6 py-2 text-sm font-semibold text-blue-800">
-                            Travailleurs ({{ count($project['relationships']['workers']) }})
+                            Salariés ({{ count($project['relationships']['workers']) }})
                         </td>
                     </tr>
 
@@ -176,7 +176,7 @@
                 <th scope="col"
                     class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {{ number_format(array_sum(array_column($reportData, 'total_cost')), 2) }} €
-                    <div class="text-xs text-gray-500 font-normal">(uniquement workers)</div>
+                    <div class="text-xs text-gray-500 font-normal">(uniquement salariés)</div>
                 </th>
             </tr>
         </tfoot>
