@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\Models\User;
+use Carbon\Carbon;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -93,7 +94,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'first_name' => 'Lucas',
             'last_name' => 'M2i',
             'email' => 'lucas@informatique-m2i.fr',
-            'password' => Hash::make('#M2@Informatique&!'),
+            'email_verified_at' => Carbon::now(),
+            'password' => Hash::make('#M2@Informatique&!')
         ]);
         $superAdminUser->assignRole('super-admin');
 
