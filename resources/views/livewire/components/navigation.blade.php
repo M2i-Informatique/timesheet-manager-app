@@ -8,7 +8,7 @@
                 </x-buttons.dynamic>
             @endif
 
-            @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('super-admin'))
+            @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('super-admin') && !request()->routeIs('admin.*'))
                 <x-buttons.dynamic tag="a" href="{{ route('admin.reporting.index') }}" color="blue"
                     class="my-2">
                     Tableau de bord
