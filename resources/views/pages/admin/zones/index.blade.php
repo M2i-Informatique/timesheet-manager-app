@@ -79,7 +79,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $zones->links() }}
+            {{ $zones->links('vendor.pagination.custom-pagination') }}
         </div>
     </div>
 @endsection

@@ -87,7 +87,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $interims->links() }}
+            {{ $interims->links('vendor.pagination.custom-pagination') }}
         </div>
     </div>
 @endsection

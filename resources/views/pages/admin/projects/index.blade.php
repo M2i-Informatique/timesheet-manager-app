@@ -100,7 +100,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $projects->links() }}
+            {{ $projects->links('vendor.pagination.custom-pagination') }}
         </div>
     </div>
 @endsection

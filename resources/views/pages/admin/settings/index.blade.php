@@ -88,7 +88,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $settings->links() }}
+            {{ $settings->links('vendor.pagination.custom-pagination') }}
         </div>
 
         <!-- Section d'aide -->

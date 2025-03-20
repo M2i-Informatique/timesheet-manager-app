@@ -92,7 +92,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $workers->links() }}
+            {{ $workers->links('vendor.pagination.custom-pagination') }}
         </div>
     </div>
 @endsection
