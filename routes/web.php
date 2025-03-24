@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ReportingController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\NonWorkingDayController;
+use App\Http\Controllers\Admin\ExportController;
 
 Route::middleware(['verified', 'auth', 'role:driver|admin|super-admin'])->group(function () {
 
@@ -46,4 +48,14 @@ Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin
     // Reporting
     Route::get('/', [ReportingController::class, 'index'])->name('reporting.index');
     Route::get('dashboard', [ReportingController::class, 'dashboard'])->name('reporting.dashboard');
+
+    // Jours non travaillés
+    Route::resource('non-working-days', NonWorkingDayController::class);
+    Route::post('non-working-days/generate-french-holidays', [NonWorkingDayController::class, 'generateFrenchHolidays'])
+        ->name('non-working-days.generate-french-holidays');
+
+    // Exports
+    Route::get('exports', [ExportController::class, 'index'])->name('exports.index');
+    Route::post('exports/workers-monthly', [ExportController::class, 'exportWorkersMonthly'])->name('exports.workers-monthly');
+    Route::post('exports/blank-monthly', [ExportController::class, 'exportBlankMonthly'])->name('exports.blank-monthly');
 });

@@ -55,23 +55,30 @@
                                     : ($role->name === 'admin'
                                         ? 'bg-yellow-100 text-yellow-800'
                                         : 'bg-green-100 text-green-800') }}">
-                                        {{ $role->name }}
+                                        {{-- {{ $role->name }} --}}
+                                        @if ($role->name === 'super-admin')
+                                            Super Admin
+                                        @elseif ($role->name === 'admin')
+                                            Admin
+                                        @elseif ($role->name === 'driver')
+                                            Conducteur
+                                        @endif
                                     </span>
                                 @endforeach
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <td class="px-6 py-4 whitespace-nowrap flex items-center justify-between">
                                 <a href="{{ route('admin.users.show', $user) }}"
-                                    class="text-indigo-600 hover:text-indigo-900 mr-3">Voir</a>
+                                    class="text-indigo-600 hover:text-indigo-900"><x-icons.show class="w-4 h-4" /></a>
                                 <a href="{{ route('admin.users.edit', $user) }}"
-                                    class="text-indigo-600 hover:text-indigo-900 mr-3">Modifier</a>
+                                    class="text-indigo-600 hover:text-indigo-900"><x-icons.edit class="w-4 h-4" /></a>
                                 @if ($user->id !== auth()->id())
                                     <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
-                                        class="inline-block">
+                                        class="flex items-center">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-900"
                                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?')">
-                                            Supprimer
+                                            <x-icons.trash class="w-4 h-4" />
                                         </button>
                                     </form>
                                 @endif

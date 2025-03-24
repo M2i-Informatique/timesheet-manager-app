@@ -20,7 +20,7 @@
 @endphp
 
 @section('content')
-    <div class="max-w-screen-xl flex mx-auto gap-16 pt-24">
+    <div class="max-w-screen-xl flex mx-auto gap-8 pt-24">
         <!-- Contenu principal -->
         <div class="flex-1">
             <!-- Mes chantiers -->

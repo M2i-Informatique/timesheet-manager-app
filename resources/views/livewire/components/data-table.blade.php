@@ -16,18 +16,21 @@
         @endif
 
         @if ($hasSearch)
-            <div class="w-64">
+            <div class="w-64 relative">
                 <x-forms.floating-input type="search" label="Rechercher" inputClass="py-1.5"
                     labelClass="bg-white pointer-events-auto" id="search-input-{{ $this->id }}"
                     wire:model.live.debounce.300ms="search" wire:ignore.self>
-                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>
-                    </div>
                 </x-forms.floating-input>
+
+                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none search-icon"
+                    x-data="{ shouldShow: true }" x-init="document.getElementById('search-input-{{ $this->id }}').addEventListener('focus', () => { shouldShow = false; });
+                    document.getElementById('search-input-{{ $this->id }}').addEventListener('blur', () => { shouldShow = true; });" x-show="shouldShow">
+                    <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </div>
             </div>
         @endif
     </div>

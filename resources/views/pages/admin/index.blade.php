@@ -35,6 +35,16 @@
                 Zones
             </x-links.menu>
 
+            <x-links.menu href="{{ route('admin.non-working-days.index') }}" :active="request()->routeIs('admin.non-working-days.*')">
+                <x-icons.calendar class="w-4 h-4" />
+                Jours de fermeture
+            </x-links.menu>
+
+            <x-links.menu href="{{ route('admin.exports.index') }}" :active="request()->routeIs('admin.exports.*')">
+                <x-icons.export class="w-4 h-4" />
+                Exporter
+            </x-links.menu>
+
             <x-links.menu href="{{ route('admin.settings.index') }}" :active="request()->routeIs('admin.settings.*')">
                 <x-icons.setting class="w-4 h-4" />
                 Paramétrages
