@@ -74,7 +74,7 @@
             </div>
 
             <!-- Export d'une feuille de pointage vierge -->
-            {{-- <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
                 <div class="bg-green-600 text-white px-6 py-4">
                     <h2 class="text-xl font-semibold">Export d'une feuille de pointage vierge</h2>
                 </div>
@@ -135,6 +135,6 @@
                     </form>
                 </div>
             </div>
-        </div> --}}
+        </div>
     </div>
 @endsection

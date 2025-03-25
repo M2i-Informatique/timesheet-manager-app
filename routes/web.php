@@ -29,6 +29,8 @@ Route::middleware(['verified', 'auth', 'role:driver|admin|super-admin'])->group(
 
     Route::delete('/tracking/detach-employee', [TrackingController::class, 'detachEmployee'])
         ->name('tracking.detachEmployee');
+
+    Route::get('/exports/blank-monthly', [ExportController::class, 'exportBlankMonthly'])->name('exports.blank-monthly');
 });
 
 

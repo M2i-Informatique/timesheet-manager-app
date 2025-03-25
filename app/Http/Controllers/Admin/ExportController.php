@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Exports\WorkerMonthlyExport;
 use App\Exports\BlankMonthlyExport;
-use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\NonWorkingDay;
 use Illuminate\Http\Request;
@@ -49,14 +49,14 @@ class ExportController extends Controller
     }
 
     /**
-     * Exporte une feuille de pointage vierge pour un projet donné
+     * Exporte une feuille de pointage vierge pour un projet donné (version admin)
      */
     public function exportBlankMonthly(Request $request)
     {
         $request->validate([
+            'project_id' => 'required|exists:projects,id',
             'month' => 'required|integer|min:1|max:12',
             'year' => 'required|integer|min:1900|max:2099',
-            'project_id' => 'required|exists:projects,id',
         ]);
 
         $month = $request->input('month');
@@ -72,9 +72,12 @@ class ExportController extends Controller
             ->get();
 
         // Log des valeurs reçues
-        Log::info("Exportation Feuille Vierge: Mois = {$month}, Année = {$year}, Projet ID = {$projectId}");
+        Log::info("Exportation Feuille Vierge (Admin): Mois = {$month}, Année = {$year}, Projet ID = {$projectId}");
 
-        $filename = "Feuille_Pointage_{$project->name}_{$project->city}_{$month}_{$year}.xlsx";
+        // Formater le mois et l'année pour le nom de fichier
+        $monthFormatted = str_pad($month, 2, '0', STR_PAD_LEFT);
+
+        $filename = "Feuille_Pointage_{$project->name}_{$project->city}_{$monthFormatted}_{$year}.xlsx";
 
         return Excel::download(new BlankMonthlyExport($month, $year, $nonWorkingDays, $project), $filename);
     }

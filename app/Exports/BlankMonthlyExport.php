@@ -3,7 +3,6 @@
 namespace App\Exports;
 
 use App\Models\Project;
-use App\Models\Worker;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -20,9 +19,6 @@ class BlankMonthlyExport implements FromArray, WithStyles, WithEvents
     protected $year;
     protected $project;
     protected $holidays;
-
-    // Propriété pour stocker les numéros de ligne des salariés
-    protected $workerRows = [];
 
     public function __construct($month, $year, $holidays = [], Project $project = null)
     {
@@ -44,82 +40,50 @@ class BlankMonthlyExport implements FromArray, WithStyles, WithEvents
 
         $data = [];
 
-        // *** Première ligne : Titre du projet ***
-        $projectName = "";
-        if ($this->project) {
-            $projectName = $this->project->name . " - " . $this->project->city . " (" . $this->project->code . ")";
-        }
-        $monthName = strtoupper(Carbon::create($this->year, $this->month, 1)->translatedFormat('F Y'));
-        $firstRow = [$projectName . " - " . $monthName];
-        for ($i = 1; $i <= $daysInMonth + 2; $i++) { // +2 pour "SALARIES" et "TOTAL HEURES TRAVAILLEES"
+        // *** Première ligne : En-tête général ***
+        $headerTitle = $this->project
+            ? "{$this->project->code} - {$this->project->name} - {$this->project->address} - " . strtoupper($this->project->city)
+            : "Code - Nom - Adresse - VILLE";
+
+        $firstRow = [$headerTitle];
+        for ($i = 1; $i <= $daysInMonth; $i++) {
             $firstRow[] = '';
         }
+        // Ajouter une colonne pour "TOTAL" à la fin
+        $firstRow[] = '';
         $data[] = $firstRow;
 
-        // *** Ajouter une ligne vide entre la première ligne et les en-têtes ***
-        $data[] = array_fill(0, $daysInMonth + 3, '');
+        // *** Deuxième ligne : En-têtes avec numéros des jours ***
+        // Formater le mois et l'année
+        $monthFormatted = str_pad($this->month, 2, '0', STR_PAD_LEFT);
+        $yearFormatted = substr($this->year, -2); // Prend les deux derniers chiffres de l'année
+        $dateFormatted = "{$monthFormatted}/{$yearFormatted}";
 
-        // *** Troisième ligne : En-têtes ***
-        $headerRow = ['SALARIES', '']; // Colonne B vide
+        $headerRow = ["DUBOCQ OUVRIERS {$dateFormatted}"];
+
         for ($day = 1; $day <= $daysInMonth; $day++) {
             $headerRow[] = $day;
         }
-        $headerRow[] = 'TOTAL HEURES TRAVAILLEES';
+        // Ajouter une colonne "TOTAL" à la fin
+        $headerRow[] = "TOTAL";
         $data[] = $headerRow;
 
-        // Si un projet est spécifié, récupérer les travailleurs assignés à ce projet
-        if ($this->project) {
-            $workers = $this->project->workers()->where('status', 'active')->get();
-        } else {
-            $workers = Worker::where('status', 'active')->get();
-        }
+        // *** Ajouter 30 lignes vides pour les données ***
+        for ($i = 0; $i < 30; $i++) {
+            $row = [];
+            // Première colonne (A) - laisser vide
+            $row[] = '';
 
-        // Parcourir chaque worker pour ajouter une ligne vide
-        foreach ($workers as $worker) {
-            // *** Ajouter une ligne pour le nom du worker ***
-            $workerNameRow = [$worker->last_name . ' ' . $worker->first_name, ''];
-
-            // Remplir les colonnes des jours avec des cellules vides
+            // Colonnes des jours (B à la fin)
             for ($day = 1; $day <= $daysInMonth; $day++) {
-                $workerNameRow[] = '';
+                $row[] = '';
             }
 
-            // Colonne du total (vide également)
-            $workerNameRow[] = '';
+            // Dernière colonne (TOTAL) - laissée vide
+            $row[] = '';
 
-            // Avant d'ajouter la ligne du salarié, enregistrer le numéro de ligne
-            $currentRow = count($data) + 1; // Numéro de ligne actuel
-            $this->workerRows[] = $currentRow;
-
-            $data[] = $workerNameRow;
-
-            // Ajouter une ligne pour les heures de jour (vide)
-            $dayRow = ['    Heures Jour', ''];
-            for ($day = 1; $day <= $daysInMonth; $day++) {
-                $dayRow[] = '';
-            }
-            $dayRow[] = ''; // Total
-            $data[] = $dayRow;
-
-            // Ajouter une ligne pour les heures de nuit (vide)
-            $nightRow = ['    Heures Nuit', ''];
-            for ($day = 1; $day <= $daysInMonth; $day++) {
-                $nightRow[] = '';
-            }
-            $nightRow[] = ''; // Total
-            $data[] = $nightRow;
-
-            // *** Ajouter une ligne vide après chaque worker pour une meilleure lisibilité ***
-            $data[] = array_fill(0, $daysInMonth + 3, '');
+            $data[] = $row;
         }
-
-        // *** Ajouter une ligne totale pour tout le mois ***
-        $totalRow = ['TOTAL', ''];
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $totalRow[] = '';
-        }
-        $totalRow[] = '';
-        $data[] = $totalRow;
 
         return $data;
     }
@@ -133,16 +97,18 @@ class BlankMonthlyExport implements FromArray, WithStyles, WithEvents
     public function styles(Worksheet $sheet)
     {
         // Déterminer la dernière colonne utilisée
-        $highestColumn = $sheet->getHighestColumn();
+        $daysInMonth = Carbon::create($this->year, $this->month, 1)->daysInMonth;
+        $totalColumns = $daysInMonth + 2; // +1 pour colonne A et +1 pour colonne TOTAL
+        $highestColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns);
 
         // *** Fusionner les cellules de la première ligne (Titre) ***
-        $sheet->mergeCells("A1:" . $highestColumn . "1");
+        $sheet->mergeCells("A1:{$highestColumn}1");
 
         // *** Appliquer les styles à la première ligne (Titre) ***
-        $sheet->getStyle("A1:" . $highestColumn . "1")->applyFromArray([
+        $sheet->getStyle("A1:{$highestColumn}1")->applyFromArray([
             'font' => [
                 'bold' => true,
-                'size' => 16,
+                'size' => 20, // Taille de police augmentée à 20
                 'name' => 'Calibri',
                 'color' => ['rgb' => '000000'],
             ],
@@ -152,12 +118,10 @@ class BlankMonthlyExport implements FromArray, WithStyles, WithEvents
             ],
         ]);
 
-        // *** Appliquer le gras aux en-têtes (ligne "SALARIES" et jours) ***
-        $sheet->getStyle("A3:" . $highestColumn . "3")->getFont()->setBold(true);
+        // *** Appliquer le gras à la ligne d'en-tête ***
+        $sheet->getStyle("A2:{$highestColumn}2")->getFont()->setBold(true);
 
-        return [
-            // Pas de styles additionnels ici
-        ];
+        return [];
     }
 
     /**
@@ -171,107 +135,95 @@ class BlankMonthlyExport implements FromArray, WithStyles, WithEvents
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
 
-                // *** Définir la largeur des colonnes ***
-                $sheet->getColumnDimension('A')->setAutoSize(true); // SALARIES / Chantiers
-                $sheet->getColumnDimension('B')->setWidth(5);      // Colonne B vide ou minimale
-
-                // Auto-ajuster les colonnes restantes (jours et total)
-                $highestRow = $sheet->getHighestRow();
+                // Calculer le nombre de colonnes basé sur le nombre de jours dans le mois
                 $daysInMonth = Carbon::create($this->year, $this->month, 1)->daysInMonth;
-                $totalColumns = 2 + $daysInMonth + 1; // 2 colonnes (A et B) + jours + total
-
-                for ($i = 3; $i <= $totalColumns; $i++) { // Colonnes C à ... (jours + Total)
-                    $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
-                    $sheet->getColumnDimension($column)->setAutoSize(true);
-                }
-
-                // *** Alignement des premières lignes (Titre et En-têtes) au centre ***
+                $totalColumns = $daysInMonth + 2; // +1 pour colonne A et +1 pour colonne TOTAL
                 $highestColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns);
-                $sheet->getStyle("A1:{$highestColumn}1")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle("A3:{$highestColumn}3")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                // *** Alignement des autres cellules à gauche ***
-                $sheet->getStyle("A4:{$highestColumn}{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                // S'assurer que nous avons 32 lignes au total (2 lignes d'en-tête + 30 lignes de données)
+                $highestRow = 32;
 
-                // *** Format personnalisé pour les heures avec le suffixe " H" ***
-                for ($i = 3; $i <= $totalColumns; $i++) { // Colonnes C à ... (jours + Total)
-                    $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
-                    // Définir le format personnalisé : nombre avec deux décimales suivi de " H"
-                    $sheet->getStyle("{$column}4:{$column}{$highestRow}")
-                        ->getNumberFormat()
-                        ->setFormatCode('0.00" H"');
+                // S'assurer que les 30 lignes du tableau sont visibles en définissant leur hauteur
+                for ($i = 3; $i <= $highestRow; $i++) {
+                    $sheet->getRowDimension($i)->setRowHeight(20); // Hauteur fixe pour toutes les lignes
                 }
 
-                // *** Ajouter des bordures à toute la plage de données ***
+                // *** Définir la largeur des colonnes ***
+                $sheet->getColumnDimension('A')->setWidth(30); // Colonne des noms plus large
+
+                // Largeur fixe pour les colonnes des jours
+                for ($i = 2; $i < $totalColumns; $i++) {
+                    $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+                    $sheet->getColumnDimension($column)->setWidth(5);
+                }
+
+                // Largeur de la colonne TOTAL pour s'adapter au texte
+                $lastColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns);
+                $sheet->getColumnDimension($lastColumn)->setAutoSize(true);
+
+                // *** Alignement des cellules ***
+                // Centrer l'en-tête (ligne 1 et ligne 2)
+                $sheet->getStyle("A1:{$highestColumn}1")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle("A2:{$highestColumn}2")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                // Centrer les cellules des jours (colonnes B à la fin)
+                for ($i = 2; $i <= $totalColumns; $i++) {
+                    $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+                    $sheet->getStyle("{$column}3:{$column}{$highestRow}")
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                }
+
+                // Aligner à gauche la colonne A à partir de la ligne 3
+                $sheet->getStyle("A3:A{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+
+                // *** Format des nombres pour les cellules de données ***
+                // Colonnes des jours permettant des valeurs numériques
+                for ($i = 2; $i < $totalColumns; $i++) {
+                    $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+                    $sheet->getStyle("{$column}3:{$column}{$highestRow}")
+                        ->getNumberFormat()
+                        ->setFormatCode('0.00');
+                }
+
+                // Ajouter des formules conditionnelles de TOTAL pour chaque ligne
+                for ($row = 3; $row <= $highestRow; $row++) {
+                    // Créer la formule de somme pour la ligne
+                    $sumRange = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . $row .
+                        ':' .
+                        \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns - 1) . $row;
+
+                    // Définir une formule conditionnelle qui ne calcule le total que si des heures sont saisies
+                    $sheet->setCellValue(
+                        \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns) . $row,
+                        "=IF(SUMPRODUCT(--(({$sumRange})<>\"\")),SUM({$sumRange}),\"\")"
+                    );
+                }
+
+                // *** IMPORTANT: Définir explicitement les cellules vides pour s'assurer que les bordures sont visibles ***
+                for ($r = 3; $r <= $highestRow; $r++) {
+                    for ($c = 1; $c <= $totalColumns; $c++) {
+                        $cellRef = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($c) . $r;
+                        if (!$sheet->getCell($cellRef)->getValue()) {
+                            // Définir explicitement comme chaîne vide si la cellule est null
+                            $sheet->setCellValue($cellRef, '');
+                        }
+                    }
+                }
+
+                // *** Ajouter des bordures à toutes les cellules ***
                 $sheet->getStyle("A1:{$highestColumn}{$highestRow}")
                     ->getBorders()
                     ->getAllBorders()
                     ->setBorderStyle(Border::BORDER_THIN);
 
-                // *** Griser les jours de weekend ***
+                // *** Griser les weekends pour toutes les lignes ***
                 $this->greyOutWeekends($sheet, $highestColumn, $highestRow);
 
-                // *** Colorer les jours fériés ***
+                // *** Colorer les jours fériés si définis ***
                 if (!empty($this->holidays)) {
                     $this->colorOutHolidays($sheet, $this->holidays);
                 }
-
-                // *** Appliquer le style gras aux lignes des workers ***
-                // Appliquer le gras uniquement aux numéros de ligne des workers stockés
-                foreach ($this->workerRows as $row) {
-                    // Mettre en gras toute la ligne du salarié
-                    $sheet->getStyle("A{$row}:{$highestColumn}{$row}")->getFont()->setBold(true);
-
-                    // Appliquer un fond jaune uniquement à la cellule du nom du salarié (colonne A)
-                    $sheet->getStyle("A{$row}")
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setRGB('FFF3C7'); // Jaune
-                }
-
-                // *** Appliquer des couleurs différentes pour les lignes heures jour et nuit ***
-                for ($row = 4; $row <= $highestRow; $row++) {
-                    $cellAValue = $sheet->getCell("A{$row}")->getValue();
-                    $trimmedCellAValue = trim($cellAValue);
-
-                    if (strpos($cellAValue, '    Heures Jour') === 0) {
-                        // Appliquer un fond vert clair à la ligne des heures de jour
-                        $sheet->getStyle("A{$row}:{$highestColumn}{$row}")
-                            ->getFill()
-                            ->setFillType(Fill::FILL_SOLID)
-                            ->getStartColor()
-                            ->setRGB('E0FFE0'); // Vert très clair
-                    } elseif (strpos($cellAValue, '    Heures Nuit') === 0) {
-                        // Appliquer un fond violet clair à la ligne des heures de nuit
-                        $sheet->getStyle("A{$row}:{$highestColumn}{$row}")
-                            ->getFill()
-                            ->setFillType(Fill::FILL_SOLID)
-                            ->getStartColor()
-                            ->setRGB('E6E6FF'); // Violet très clair
-                    }
-                }
-
-                // *** Supprimer les bordures et le fond des lignes vides ***
-                for ($row = 1; $row <= $highestRow; $row++) {
-                    $cellA = trim($sheet->getCell("A{$row}")->getValue());
-                    $cellB = trim($sheet->getCell("B{$row}")->getValue());
-
-                    // Si les colonnes A et B sont vides, considérer la ligne comme vide
-                    if ($cellA === '' && $cellB === '') {
-                        // Définir la plage de la ligne
-                        $range = "A{$row}:{$highestColumn}{$row}";
-
-                        // Supprimer toutes les bordures
-                        $sheet->getStyle($range)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_NONE);
-
-                        // Supprimer le fond gris (fill)
-                        $sheet->getStyle($range)->getFill()->setFillType(Fill::FILL_NONE);
-                    }
-                }
-
-                // *** Mettre en gras la dernière ligne (Total) ***
-                $sheet->getStyle("A{$highestRow}:{$highestColumn}{$highestRow}")->getFont()->setBold(true);
             },
         ];
     }
@@ -297,12 +249,16 @@ class BlankMonthlyExport implements FromArray, WithStyles, WithEvents
 
             if ($dayOfWeek == Carbon::SATURDAY || $dayOfWeek == Carbon::SUNDAY) {
                 // Calculer l'index de la colonne correspondant au jour
-                $columnIndex = 2 + $day; // 2 colonnes avant les jours
+                $columnIndex = 1 + $day; // 1 colonne avant les jours
                 $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex);
 
-                // Appliquer un fond gris à la colonne entière (à partir de la ligne 3 pour inclure l'en-tête)
-                $range = "{$columnLetter}3:{$columnLetter}{$highestRow}";
-                $sheet->getStyle($range)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('D3D3D3'); // Gris clair
+                // Appliquer un fond gris à la colonne entière (à partir de la ligne 2 pour inclure l'en-tête)
+                $range = "{$columnLetter}2:{$columnLetter}{$highestRow}";
+                $sheet->getStyle($range)
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setRGB('D3D3D3'); // Gris clair
             }
         }
     }
@@ -317,9 +273,9 @@ class BlankMonthlyExport implements FromArray, WithStyles, WithEvents
     public function colorOutHolidays(Worksheet $sheet, $holidays): void
     {
         foreach ($holidays as $holiday) {
-            // Obtenez la colonne correspondant au jour férié
+            // Obtenir la colonne correspondant au jour férié
             $day = $holiday->date->day;
-            $columnIndex = 2 + $day; // Les colonnes commencent après les colonnes "SALARIES" et une colonne vide
+            $columnIndex = 1 + $day; // Les colonnes commencent après la colonne A
             $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex);
 
             // Définir la couleur en fonction du type de jour non travaillé
@@ -328,8 +284,8 @@ class BlankMonthlyExport implements FromArray, WithStyles, WithEvents
                 default => 'FF6347',    // Rouge clair
             };
 
-            // Appliquez le style de remplissage
-            $sheet->getStyle("{$columnLetter}3:{$columnLetter}" . $sheet->getHighestRow())
+            // Appliquer le style de remplissage
+            $sheet->getStyle("{$columnLetter}2:{$columnLetter}" . $sheet->getHighestRow())
                 ->getFill()
                 ->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()

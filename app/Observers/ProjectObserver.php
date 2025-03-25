@@ -40,8 +40,8 @@ class ProjectObserver
 
     /**
      * Assign category to project based on code prefix
-     * - If code starts with '1', category = 'go'
-     * - If code starts with '2', category = 'mh'
+     * - If code starts with '1', category = 'mh'
+     * - If code starts with '2', category = 'go'
      * - Otherwise leave as is
      *
      * @param Project $project
@@ -52,9 +52,9 @@ class ProjectObserver
         $codeStr = (string) $project->code;
 
         if (str_starts_with($codeStr, '1')) {
-            $project->category = 'go';
-        } elseif (str_starts_with($codeStr, '2')) {
             $project->category = 'mh';
+        } elseif (str_starts_with($codeStr, '2')) {
+            $project->category = 'go';
         }
         // Si le code commence par un autre chiffre, on garde la catégorie existante
     }

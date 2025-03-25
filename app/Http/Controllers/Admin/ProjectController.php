@@ -40,7 +40,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'code' => 'required|integer|unique:projects,code',
+            'code' => 'required|integer',
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:255',

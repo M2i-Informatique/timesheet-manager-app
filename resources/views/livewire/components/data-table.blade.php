@@ -75,11 +75,22 @@
                             <td class="px-6 py-4">
                                 <div class="flex gap-2">
                                     @foreach ($actions as $action)
-                                        <button wire:click="callAction('{{ $action['method'] }}', {{ $item->id }})"
-                                            class="font-medium text-blue-600 hover:text-blue-800 cursor-pointer"
-                                            title="{{ $action['title'] ?? '' }}">
-                                            {!! $action['icon'] !!}
-                                        </button>
+                                        @if ($action['method'] === 'downloadProject')
+                                            <!-- Lien direct pour le téléchargement -->
+                                            <a href="{{ route('exports.blank-monthly', ['project_id' => $item->id, 'month' => now()->month, 'year' => now()->year]) }}"
+                                                class="font-medium text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                title="{{ $action['title'] ?? '' }}">
+                                                {!! $action['icon'] !!}
+                                            </a>
+                                        @else
+                                            <!-- Bouton wire:click normal pour les autres actions -->
+                                            <button
+                                                wire:click="callAction('{{ $action['method'] }}', {{ $item->id }})"
+                                                class="font-medium text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                title="{{ $action['title'] ?? '' }}">
+                                                {!! $action['icon'] !!}
+                                            </button>
+                                        @endif
                                     @endforeach
                                 </div>
                             </td>
