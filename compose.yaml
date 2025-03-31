@@ -1,5 +1,5 @@
 services:
-  database:
+  db:
     image: postgres:16
     environment:
       POSTGRES_DB: ${DB_DATABASE}
@@ -8,7 +8,27 @@ services:
     ports:
       - "5432:${DB_PORT}"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - dubocq_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - dubocq_network
+
+
+networks:
+  dubocq_network:
 
 volumes:
-  db-data:
+  pgdata:
