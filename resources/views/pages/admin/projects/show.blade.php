@@ -39,13 +39,13 @@
                                     : ($project->category === 'go'
                                         ? 'bg-green-100 text-green-800'
                                         : 'bg-yellow-100 text-yellow-800') }}">
-                                {{ $project->category === 'mh' ? 'MH' : ($project->category === 'go' ? 'GO' : 'Autre') }}
+                                {{ $project->formatted_category }}
                             </span>
                         </p>
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Adresse</p>
-                        <p class="mt-1">{{ $project->address }}</p>
+                        <p class="mt-1">{{ $project->formatted_address }}</p>
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Ville</p>
@@ -53,11 +53,11 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Distance</p>
-                        <p class="mt-1">{{ number_format($project->distance, 1, ',', ' ') }} km</p>
+                        <p class="mt-1">{{ $project->formatted_distance }}</p>
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Zone</p>
-                        <p class="mt-1">{{ $project->zone->name ?? 'Non définie' }}</p>
+                        <p class="mt-1">{{ $project->formatted_zone }}</p>
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Statut</p>

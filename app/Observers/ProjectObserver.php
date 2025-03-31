@@ -24,17 +24,19 @@ class ProjectObserver
      */
     protected function assignZone(Project $project): void
     {
+        if (is_null($project->distance)) {
+            return;
+        }
+    
         $zone = \App\Models\Zone::where('min_km', '<=', $project->distance)
             ->where(function ($query) use ($project) {
                 $query->whereNull('max_km')
                     ->orWhere('max_km', '>=', $project->distance);
             })
             ->first();
-
+    
         if ($zone) {
             $project->zone()->associate($zone);
-        } else {
-            throw new \Exception('No zone found for the given distance');
         }
     }
 

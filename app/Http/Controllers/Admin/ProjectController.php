@@ -42,9 +42,9 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'code' => 'required|integer',
             'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
             'city' => 'required|string|max:255',
-            'distance' => 'required|numeric|min:0',
+            'distance' => 'nullable|numeric|min:0',
             'status' => 'required|in:active,inactive',
             'workers' => 'nullable|array',
             'workers.*' => 'exists:workers,id',
@@ -120,9 +120,9 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'code' => 'required|integer',
             'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
             'city' => 'required|string|max:255',
-            'distance' => 'required|numeric|min:0',
+            'distance' => 'nullable|numeric|min:0',
             'status' => 'required|in:active,inactive',
             'workers' => 'nullable|array',
             'workers.*' => 'exists:workers,id',

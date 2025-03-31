@@ -17,7 +17,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="code" class="block text-sm font-medium text-gray-700">Code</label>
+                        <label for="code" class="block text-sm font-medium text-gray-700">Code*</label>
                         <input type="number" name="code" id="code" value="{{ old('code') }}"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                             required>
@@ -27,7 +27,7 @@
                     </div>
 
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Nom</label>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Nom*</label>
                         <input type="text" name="name" id="name" value="{{ old('name') }}"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                             required>
@@ -39,15 +39,14 @@
                     <div>
                         <label for="address" class="block text-sm font-medium text-gray-700">Adresse</label>
                         <input type="text" name="address" id="address" value="{{ old('address') }}"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                            required>
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                         @error('address')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="city" class="block text-sm font-medium text-gray-700">Ville</label>
+                        <label for="city" class="block text-sm font-medium text-gray-700">Ville*</label>
                         <input type="text" name="city" id="city" value="{{ old('city') }}"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                             required>
@@ -59,15 +58,14 @@
                     <div>
                         <label for="distance" class="block text-sm font-medium text-gray-700">Distance (km)</label>
                         <input type="number" step="0.1" name="distance" id="distance" value="{{ old('distance') }}"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                            required>
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                         @error('distance')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700">Statut</label>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Statut*</label>
                         <select name="status" id="status"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                             required>

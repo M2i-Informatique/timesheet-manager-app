@@ -28,12 +28,60 @@ class Project extends Model
     }
 
     /**
+     * Get the project category attribute.
+     *
+     * @return string
+     */
+    public function getFormattedCategoryAttribute()
+    {
+        return $this->category === 'go' 
+            ? 'GO'
+            : ($this->category === 'mh' ? 'MH' : 'Autre');
+    }
+
+    /**
+     * Get the project status attribute.
+     *
+     * @return string
+     */
+    public function getFormattedAddressAttribute()
+    {
+        return $this->address !== null
+            ? $this->address
+            : 'Non renseignée';
+    }
+
+    /**
+     * Get the project distance attribute.
+     *
+     * @return string
+     */
+    public function getFormattedDistanceAttribute()
+    {
+        return $this->distance !== null
+            ? number_format($this->distance, 1, ',', ' ') . ' km'
+            : 'Non renseignée';
+    }
+
+    /**
+     * Get the project zone name attribute.
+     *
+     * @return string
+     */
+    public function getFormattedZoneAttribute()
+    {
+        return $this->zone !== null
+            ? $this->zone->name
+            : 'Non définie';
+    }
+
+    /**
      * Get the users (drivers) assigned to this project.
      */
     public function drivers()
     {
         return $this->belongsToMany(User::class)
-        ->withTimestamps();
+            ->withTimestamps();
     }
 
     /**
