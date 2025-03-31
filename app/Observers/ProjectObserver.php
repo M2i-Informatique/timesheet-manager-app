@@ -57,7 +57,8 @@ class ProjectObserver
             $project->category = 'mh';
         } elseif (str_starts_with($codeStr, '2')) {
             $project->category = 'go';
+        } else {
+            $project->category = 'other';
         }
-        // Si le code commence par un autre chiffre, on garde la catégorie existante
     }
 }
