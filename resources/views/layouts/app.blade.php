@@ -16,7 +16,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="flex flex-col min-h-[150vh]">
+<body class="flex flex-col h-full">
     <!-- Navigation -->
     <livewire:components.navigation />
 
@@ -28,7 +28,7 @@
     @endif
 
     <!-- Contenu principal -->
-    <main class="flex-grow">
+    <main class="flex-grow min-h-full">
         @yield('content')
     </main>
 
