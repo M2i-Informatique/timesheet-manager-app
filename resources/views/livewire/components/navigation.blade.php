@@ -3,13 +3,13 @@
         <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-2">
 
             @if (request()->routeIs('admin.*'))
-                <x-buttons.dynamic tag="a" href="{{ route('home') }}" color="blue" class="my-2">
+                <x-buttons.dynamic tag="a" route="home" color="blue" class="my-2">
                     Retour à l'accueil
                 </x-buttons.dynamic>
             @endif
 
             @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('super-admin') && !request()->routeIs('admin.*'))
-                <x-buttons.dynamic tag="a" href="{{ route('admin.reporting.index') }}" color="blue"
+                <x-buttons.dynamic tag="a" route="admin.reporting.index" color="blue"
                     class="my-2">
                     Tableau de bord
                 </x-buttons.dynamic>

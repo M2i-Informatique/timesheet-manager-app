@@ -32,7 +32,7 @@
                 <p class="mt-4 text-gray-500">Nous ne trouvons pas cette page.</p>
             </div>
 
-            <x-buttons.dynamic tag="a" href="{{ route('home') }}" class="mt-6 text-center">
+            <x-buttons.dynamic tag="a" route="home" class="mt-6 text-center">
                 Retour à l'accueil
             </x-buttons.dynamic>
         </div>
