@@ -139,7 +139,7 @@
                         <option value="">-- Salariés --</option>
                         @foreach ($availableWorkers as $w)
                             <option value="{{ $w->id }}">
-                                {{ $w->first_name }} {{ $w->last_name }}
+                                {{ $w->last_name }} {{ $w->first_name }}
                             </option>
                         @endforeach
                     </select>
@@ -176,7 +176,7 @@
         <div id="handsontable" class="w-full min-h-1/2"></div>
 
         {{-- Bouton Enregistrer --}}
-        <div class="mt-4">
+        <div class="mt-4 flex justify-end">
             <button id="saveBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
                 Enregistrer
             </button>

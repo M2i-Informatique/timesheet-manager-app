@@ -92,7 +92,10 @@ class TrackingController extends Controller
         $availableWorkers = Worker::where('status', 'active')
             ->whereDoesntHave('projects', function ($q) use ($project) {
                 $q->where('projects.id', $project->id);
-            })->get();
+            })
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->get();
 
         $availableInterims = Interim::where('status', 'active')
             ->whereDoesntHave('projects', function ($q) use ($project) {
