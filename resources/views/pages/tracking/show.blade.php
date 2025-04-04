@@ -4,8 +4,16 @@
 
 @section('title', 'Saisie des heures')
 
+@section('header')
+    <div class="max-w-7xl mx-auto flex justify-between items-center mb-4 pt-24">
+        <p class="text-lg">
+            <a class="hover:text-blue-600 hover:underline" href="{{ route('tracking.index') }}">Pointage</a> > <span class="font-bold">{{ $project->code }} - {{ $project->name }} - {{ $project->city }}</span>
+        </p>
+    </div>
+@endsection
+
 @section('content')
-    <div class="max-w-7xl mx-auto p-4">
+    <div class="max-w-7xl mx-auto">
 
         {{-- Message de succès --}}
         @if (session('success'))
@@ -14,82 +22,82 @@
             </div>
         @endif
 
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold">
-                Saisie des heures – {{ $project->code }} {{ $project->name }} {{ $project->city }}
-            </h1>
-            <a href="{{ route('tracking.index') }}" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
-                Retour
-            </a>
-        </div>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
+            {{-- Boutons Jour / Nuit --}}
+            <div class="flex gap-4">
+                <x-buttons.dynamic
+                    tag="a"
+                    route="tracking.show"
+                    :routeParams="[
+                        'project_id' => $project->id,
+                        'month' => $month,
+                        'year' => $year,
+                        'category' => 'day',
+                    ]"
+                    color="{{ $category === 'day' ? 'green' : 'gray' }}"
+                    class="{{ $category === 'day' ? 'text-green-500 bg-green-50 border-green-500' : 'text-gray-700' }}">
+                    Jour
+                </x-buttons.dynamic>
 
-        {{-- Boutons Jour / Nuit --}}
-        <div class="flex gap-4 mb-4">
-            <a href="{{ route('tracking.show', [
-                'project_id' => $project->id,
-                'month' => $month,
-                'year' => $year,
-                'category' => 'day',
-            ]) }}"
-                class="px-4 py-2 border rounded
-           {{ $category === 'day' ? 'bg-green-600 text-white' : 'bg-gray-100 text-black' }}">
-                Jour
-            </a>
+                <x-buttons.dynamic
+                    tag="a"
+                    route="tracking.show"
+                    :routeParams="[
+                        'project_id' => $project->id,
+                        'month' => $month,
+                        'year' => $year,
+                        'category' => 'night',
+                    ]"
+                    color="{{ $category === 'night' ? 'purple' : 'gray' }}"
+                    class="{{ $category === 'night' ? 'text-purple-500 bg-purple-50 border-purple-500' : 'text-gray-700' }}">
+                    Nuit
+                </x-buttons.dynamic>
+            </div>
 
-            <a href="{{ route('tracking.show', [
-                'project_id' => $project->id,
-                'month' => $month,
-                'year' => $year,
-                'category' => 'night',
-            ]) }}"
-                class="px-4 py-2 border rounded
-           {{ $category === 'night' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-black' }}">
-                Nuit
-            </a>
-        </div>
+            @php
+                $months = [
+                    1 => 'Janvier',
+                    2 => 'Février',
+                    3 => 'Mars',
+                    4 => 'Avril',
+                    5 => 'Mai',
+                    6 => 'Juin',
+                    7 => 'Juillet',
+                    8 => 'Août',
+                    9 => 'Septembre',
+                    10 => 'Octobre',
+                    11 => 'Novembre',
+                    12 => 'Décembre',
+                ];
+                // Mois précédent / suivant
+                $prevMonth = $month - 1;
+                $prevYear = $year;
+                if ($prevMonth < 1) {
+                    $prevMonth = 12;
+                    $prevYear--;
+                }
+                $nextMonth = $month + 1;
+                $nextYear = $year;
+                if ($nextMonth > 12) {
+                    $nextMonth = 1;
+                    $nextYear++;
+                }
+            @endphp
 
-        @php
-            $months = [
-                1 => 'Janvier',
-                2 => 'Février',
-                3 => 'Mars',
-                4 => 'Avril',
-                5 => 'Mai',
-                6 => 'Juin',
-                7 => 'Juillet',
-                8 => 'Août',
-                9 => 'Septembre',
-                10 => 'Octobre',
-                11 => 'Novembre',
-                12 => 'Décembre',
-            ];
-            // Mois précédent / suivant
-            $prevMonth = $month - 1;
-            $prevYear = $year;
-            if ($prevMonth < 1) {
-                $prevMonth = 12;
-                $prevYear--;
-            }
-            $nextMonth = $month + 1;
-            $nextYear = $year;
-            if ($nextMonth > 12) {
-                $nextMonth = 1;
-                $nextYear++;
-            }
-        @endphp
-
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
             {{-- Navigation par mois --}}
             <div class="flex items-center gap-2">
-                <a href="{{ route('tracking.show', [
+                <x-buttons.dynamic
+                    route="tracking.show"
+                    routeParams="[
                     'project_id' => $project->id,
                     'month' => $prevMonth,
                     'year' => $prevYear,
                     'category' => $category,
-                ]) }}"
-                    class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded">
-                    ←
-                </a>
+                ]" color="gray" class="text-gray-900 hover:text-gray-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+                    </svg>
+                </x-buttons.dynamic>
 
                 {{-- Sélection du mois+année --}}
                 <form id="periodSelector" action="{{ route('tracking.show') }}" method="get"
@@ -108,20 +116,21 @@
                         @endfor
                     </select>
 
-                    <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    <x-buttons.dynamic type="submit" color="blue">
                         Afficher
-                    </button>
+                    </x-buttons.dynamic>
                 </form>
 
-                <a href="{{ route('tracking.show', [
+                <x-buttons.dynamic route="tracking.show" routeParams="[
                     'project_id' => $project->id,
                     'month' => $nextMonth,
                     'year' => $nextYear,
                     'category' => $category,
-                ]) }}"
-                    class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded">
-                    →
-                </a>
+                ]" color="gray" class="text-gray-900 hover:text-gray-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+                    </svg>
+                </x-buttons.dynamic>
             </div>
 
             {{-- Formulaires "Ajouter un salarié" --}}
@@ -143,9 +152,9 @@
                             </option>
                         @endforeach
                     </select>
-                    <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    <x-buttons.dynamic type="submit">
                         Ajouter
-                    </button>
+                    </x-buttons.dynamic>
                 </form>
 
                 {{-- + Interim --}}
@@ -165,9 +174,9 @@
                             </option>
                         @endforeach
                     </select>
-                    <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    <x-buttons.dynamic type="submit">
                         Ajouter
-                    </button>
+                    </x-buttons.dynamic>
                 </form>
             </div>
         </div>
@@ -177,15 +186,15 @@
 
         {{-- Bouton Enregistrer --}}
         <div class="mt-4 flex justify-end">
-            <button id="saveBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+            <x-buttons.dynamic id="saveBtn" color="green">
                 Enregistrer
-            </button>
+            </x-buttons.dynamic>
         </div>
 
         {{-- Tableau récap --}}
         @if (!empty($recap))
-            <div class="mt-10">
-                <h2 class="text-xl font-bold mb-3">Récapitulatif des heures</h2>
+        <div class="mt-10">
+            <h2 class="text-xl font-bold mb-3">Récapitulatif des heures</h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white border border-gray-200">
                         <thead class="bg-gray-100">
@@ -336,7 +345,7 @@
                     allowInvalid: false,
                     validator: function(value, callback) {
                         if (value === null || value === '') {
-                            // On autorise vide => => "pas d'enregistrement"
+                            // On autorise vide => "pas d'enregistrement"
                             callback(true);
                         } else {
                             let v = parseFloat(value);
@@ -367,9 +376,6 @@
                     if (col >= 3) {
                         cellProperties.renderer = function(instance, td, row, col, prop, value) {
                             Handsontable.renderers.NumericRenderer.apply(this, arguments);
-                            if (parseFloat(value) === 0) {
-                                td.textContent = 'abs';
-                            }
 
                             // Griser weekend
                             const dayNum = col - 2;
@@ -377,6 +383,21 @@
                             const dayOfWeek = date.getDay();
                             if (dayOfWeek === 0 || dayOfWeek === 6) {
                                 td.style.backgroundColor = '#f0f0f0';
+                            }
+
+                            // Ajouter la coloration selon la valeur et la catégorie
+                            if (value !== null && value !== '') {
+                                if (parseFloat(value) === 0) {
+                                    td.textContent = 'abs';
+                                    td.style.backgroundColor = '#FFCCCC'; // bg-red-200
+                                } else {
+                                    // Si catégorie est "night", utiliser violet, sinon vert
+                                    if (category === 'night') {
+                                        td.style.backgroundColor = '#E9D5FF'; // bg-purple-200
+                                    } else {
+                                        td.style.backgroundColor = '#CCFFCC'; // bg-green-200
+                                    }
+                                }
                             }
                         };
                     }

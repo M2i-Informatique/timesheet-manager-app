@@ -51,7 +51,7 @@
                                     </x-buttons.dynamic>
                                 </div>
                                 <div class="w-64">
-                                    <x-buttons.dynamic tag="a" href="{{ route('login') }}"
+                                    <x-buttons.dynamic tag="a" route="login"
                                         class="w-full text-center">
                                         Retour à la connexion
                                     </x-buttons.dynamic>
