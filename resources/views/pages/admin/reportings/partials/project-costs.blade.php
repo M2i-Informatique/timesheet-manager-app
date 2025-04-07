@@ -427,13 +427,17 @@
         const chartElement = document.getElementById('monthlyCostsChart');
         if (!chartElement) return;
 
+        // Stocker les données initiales de tous les projets
+        const originalLabels = JSON.parse('{{ json_encode($monthLabels) }}'.replace(/&quot;/g, '"'));
+        const originalData = JSON.parse('{{ json_encode($monthlyTotalCosts) }}'.replace(/&quot;/g, '"'));
+
         // Déclarer les variables à l'intérieur de la fonction pour éviter qu'elles apparaissent dans la source
         let monthlyCostsChart;
         let defaultChartData = {
-            labels: JSON.parse('{{ json_encode($monthLabels) }}'.replace(/&quot;/g, '"')),
+            labels: originalLabels,
             datasets: [{
                 label: 'Coûts (€)',
-                data: JSON.parse('{{ json_encode($monthlyTotalCosts) }}'.replace(/&quot;/g, '"')),
+                data: originalData,
                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1
@@ -507,8 +511,11 @@
         function updateChart(projectId) {
             if (!projectId) {
                 // Réinitialiser au graphique par défaut (tous les projets)
-                monthlyCostsChart.data = JSON.parse(JSON.stringify(defaultChartData));
-                monthlyCostsChart.options = createChartOptions('Coûts mensuels - Tous les chantiers');
+                // Utiliser les données originales pour garantir que nous avons toujours les bonnes valeurs
+                monthlyCostsChart.data.labels = originalLabels;
+                monthlyCostsChart.data.datasets[0].data = originalData;
+                monthlyCostsChart.data.datasets[0].label = 'Coûts (€)';
+                monthlyCostsChart.options = createChartOptions('Tous les chantiers');
                 monthlyCostsChart.update();
                 return;
             }
