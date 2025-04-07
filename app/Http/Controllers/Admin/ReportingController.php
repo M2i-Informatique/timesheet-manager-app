@@ -87,6 +87,61 @@ class ReportingController extends Controller
                 break;
         }
 
+        // Calcul des pourcentages de variation par rapport au mois précédent
+        $currentMonthStart = Carbon::parse($startDate)->startOfMonth();
+        $currentMonthEnd = Carbon::parse($endDate)->endOfMonth();
+        $previousMonthStart = Carbon::parse($startDate)->subMonth()->startOfMonth();
+        $previousMonthEnd = Carbon::parse($startDate)->subMonth()->endOfMonth();
+
+        // Obtenir les classes pour les requêtes
+        $workerClass = get_class(new Worker());
+        $interimClass = get_class(new Interim());
+
+        // Heures salariés
+        $totalWorkerHoursCurrentMonth = TimeSheetable::whereBetween('date', [$currentMonthStart, $currentMonthEnd])
+            ->where('timesheetable_type', $workerClass)
+            ->sum('hours');
+
+        $totalWorkerHoursPreviousMonth = TimeSheetable::whereBetween('date', [$previousMonthStart, $previousMonthEnd])
+            ->where('timesheetable_type', $workerClass)
+            ->sum('hours');
+
+        $workerHoursChangePercent = $totalWorkerHoursPreviousMonth > 0
+            ? (($totalWorkerHoursCurrentMonth - $totalWorkerHoursPreviousMonth) / $totalWorkerHoursPreviousMonth) * 100
+            : 0;
+
+        // Heures intérimaires
+        $totalInterimHoursCurrentMonth = TimeSheetable::whereBetween('date', [$currentMonthStart, $currentMonthEnd])
+            ->where('timesheetable_type', $interimClass)
+            ->sum('hours');
+
+        $totalInterimHoursPreviousMonth = TimeSheetable::whereBetween('date', [$previousMonthStart, $previousMonthEnd])
+            ->where('timesheetable_type', $interimClass)
+            ->sum('hours');
+
+        $interimHoursChangePercent = $totalInterimHoursPreviousMonth > 0
+            ? (($totalInterimHoursCurrentMonth - $totalInterimHoursPreviousMonth) / $totalInterimHoursPreviousMonth) * 100
+            : 0;
+
+        // Heures totales
+        $totalHoursCurrentMonth = $totalWorkerHoursCurrentMonth + $totalInterimHoursCurrentMonth;
+        $totalHoursPreviousMonth = $totalWorkerHoursPreviousMonth + $totalInterimHoursPreviousMonth;
+
+        $hoursChangePercent = $totalHoursPreviousMonth > 0
+            ? (($totalHoursCurrentMonth - $totalHoursPreviousMonth) / $totalHoursPreviousMonth) * 100
+            : 0;
+
+        // Coûts
+        $currentMonthCosts = $this->projectCostsService->getProjectCosts(null, null, $currentMonthStart->format('Y-m-d'), $currentMonthEnd->format('Y-m-d'));
+        $previousMonthCosts = $this->projectCostsService->getProjectCosts(null, null, $previousMonthStart->format('Y-m-d'), $previousMonthEnd->format('Y-m-d'));
+
+        $totalCostCurrentMonth = array_sum(array_column($currentMonthCosts, 'total_cost'));
+        $totalCostPreviousMonth = array_sum(array_column($previousMonthCosts, 'total_cost'));
+
+        $costChangePercent = $totalCostPreviousMonth > 0
+            ? (($totalCostCurrentMonth - $totalCostPreviousMonth) / $totalCostPreviousMonth) * 100
+            : 0;
+
         return view('pages.admin.reportings.index', compact(
             'reportType',
             'projects',
@@ -98,6 +153,10 @@ class ReportingController extends Controller
             'category',
             'reportData',
             'chartData',
+            'workerHoursChangePercent',
+            'interimHoursChangePercent',
+            'hoursChangePercent',
+            'costChangePercent'
         ));
     }
 

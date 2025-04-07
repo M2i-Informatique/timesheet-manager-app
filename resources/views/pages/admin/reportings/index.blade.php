@@ -3,9 +3,19 @@
 @section('title', 'Reporting')
 
 @section('admin-content')
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto py-8">
         <div class="flex justify-between mb-6">
-            <h1 class="text-2xl font-bold">Rapports et analyses</h1>
+            @php
+                $titles = [
+                    'project_hours' => 'Rapport des heures par chantier',
+                    'worker_hours' => 'Rapport des heures par salarié',
+                    'project_costs' => 'Rapport des coûts par chantier',
+                    'worker_costs' => 'Rapport des coûts par salarié',
+                ];
+                $reportType = request()->get('report_type', 'default');
+                $title = $titles[$reportType] ?? 'Rapports et analyses';
+            @endphp
+            <h1 class="text-2xl font-bold">{{ $title }}</h1>
             <a href="{{ route('admin.reporting.index', ['view' => 'dashboard']) }}"
                 class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                 Tableau de bord
@@ -13,11 +23,11 @@
         </div>
 
         <!-- Formulaire de filtres -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <!-- <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <form action="{{ route('admin.reporting.index') }}" method="GET" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"> -->
                     <!-- Type de rapport -->
-                    <div>
+                    <!-- <div>
                         <label for="report_type" class="block text-sm font-medium text-gray-700 mb-1">Type de
                             rapport</label>
                         <select id="report_type" name="report_type"
@@ -31,10 +41,10 @@
                             <option value="worker_costs" {{ $reportType === 'worker_costs' ? 'selected' : '' }}>Coûts par
                                 salarié</option>
                         </select>
-                    </div>
+                    </div> -->
 
                     <!-- Période -->
-                    <div>
+                    <!-- <div>
                         <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
                         <input type="date" id="start_date" name="start_date" value="{{ $startDate }}"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -44,10 +54,10 @@
                         <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">Date de fin</label>
                         <input type="date" id="end_date" name="end_date" value="{{ $endDate }}"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    </div>
+                    </div> -->
 
                     <!-- Projet (conditionnellement affiché) -->
-                    <div id="project_filter"
+                    <!-- <div id="project_filter"
                         class="{{ in_array($reportType, ['worker_hours', 'worker_costs']) ? 'hidden' : '' }}">
                         <label for="project_id" class="block text-sm font-medium text-gray-700 mb-1">Projet</label>
                         <select id="project_id" name="project_id"
@@ -59,10 +69,10 @@
                                 </option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> -->
 
                     <!-- Travailleur (conditionnellement affiché) -->
-                    <div id="worker_filter"
+                    <!-- <div id="worker_filter"
                         class="{{ in_array($reportType, ['project_hours', 'project_costs']) ? 'hidden' : '' }}">
                         <label for="worker_id" class="block text-sm font-medium text-gray-700 mb-1">Travailleur</label>
                         <select id="worker_id" name="worker_id"
@@ -74,10 +84,10 @@
                                 </option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> -->
 
                     <!-- Catégorie (jour/nuit) -->
-                    <div>
+                    <!-- <div>
                         <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
                         <select id="category" name="category"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -85,32 +95,24 @@
                             <option value="day" {{ $category === 'day' ? 'selected' : '' }}>Jour</option>
                             <option value="night" {{ $category === 'night' ? 'selected' : '' }}>Nuit</option>
                         </select>
-                    </div>
-                </div>
+                    </div> -->
+                <!-- </div> -->
 
-                <div class="flex justify-end">
+                <!-- <div class="flex justify-end">
                     <button type="submit"
                         class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         Générer le rapport
                     </button>
                 </div>
             </form>
-        </div>
+        </div> -->
 
         <!-- Résultats -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="flex flex-col md:flex-row gap-6">
-                <!-- Graphique -->
-                <div class="w-full md:w-1/2">
-                    <h2 class="text-xl font-semibold mb-4">Visualisation</h2>
-                    <div class="w-full h-80">
-                        <canvas id="reportChart"></canvas>
-                    </div>
-                </div>
-
                 <!-- Tableaux de données -->
-                <div class="w-full md:w-1/2 overflow-auto">
-                    <h2 class="text-xl font-semibold mb-4">Détails</h2>
+                <div class="w-full overflow-auto">
+                    <!-- <h2 class="text-xl font-semibold mb-4">Détails</h2> -->
 
                     @if ($reportType === 'project_hours')
                         @include('pages.admin.reportings.partials.project-hours')
@@ -128,7 +130,7 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle filters based on report type
@@ -220,5 +222,5 @@
                     '<div class="flex h-full items-center justify-center text-gray-500">Aucune donnée disponible pour la visualisation</div>';
             }
         });
-    </script>
+    </script> -->
 @endpush
