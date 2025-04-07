@@ -36,6 +36,9 @@ class ProjectCostsService extends CostsCalculator
             $query->where('category', $category);
         }
 
+        // Ajout du tri par code
+        $query->orderBy('code', 'asc');
+
         $projects = $query->get();
         $results  = [];
 

@@ -142,6 +142,30 @@ class ReportingController extends Controller
             ? (($totalCostCurrentMonth - $totalCostPreviousMonth) / $totalCostPreviousMonth) * 100
             : 0;
 
+        // Calcul des coûts mensuels pour l'année en cours
+        $currentYear = Carbon::now()->year;
+        $monthlyTotalCosts = [];
+        $monthLabels = [];
+
+        for ($month = 1; $month <= 12; $month++) {
+            $startOfMonth = Carbon::createFromDate($currentYear, $month, 1)->startOfMonth()->format('Y-m-d');
+            $endOfMonth = Carbon::createFromDate($currentYear, $month, 1)->endOfMonth()->format('Y-m-d');
+            $monthLabel = Carbon::createFromDate($currentYear, $month, 1)->locale('fr')->translatedFormat('F');
+            $monthLabels[] = $monthLabel;
+
+            // Utiliser le service pour obtenir les coûts du mois
+            $monthCosts = $this->projectCostsService->getProjectCosts(
+                null,  // pas de filtre par ID
+                $category, // garder le filtre de catégorie actuel
+                $startOfMonth,
+                $endOfMonth
+            );
+
+            // Calculer le total des coûts pour ce mois
+            $totalCost = array_sum(array_column($monthCosts, 'total_cost'));
+            $monthlyTotalCosts[] = $totalCost;
+        }
+
         return view('pages.admin.reportings.index', compact(
             'reportType',
             'projects',
@@ -156,7 +180,10 @@ class ReportingController extends Controller
             'workerHoursChangePercent',
             'interimHoursChangePercent',
             'hoursChangePercent',
-            'costChangePercent'
+            'costChangePercent',
+            'monthlyTotalCosts',
+            'monthLabels',
+            'currentYear'
         ));
     }
 
