@@ -180,13 +180,13 @@
 
 <!-- Tableau des coûts par chantier -->
 <div class="overflow-x-auto rounded-lg mb-8">
-    <table class="min-w-full divide-y divide-gray-100 bg-gray-50 p-4 border border-gray-200">
-        <thead class="bg-gray-100">
+    <table class="min-w-full divide-y divide-gray-200 bg-gray-50 p-4">
+        <thead class="bg-gray-50">
             <tr>
                 <th scope="col" class="px-6 py-3 text-left text-sm text-gray-800 tracking-wider">
                     Chantiers
                 </th>
-                <th scope="col" class="px-6 py-3 text-left text-sm text-gray-800 tracking-wider">
+                <th scope="col" class="px-6 py-3 text-righ text-sm text-gray-800 tracking-wider">
                     Catégorie
                 </th>
                 <th scope="col"
@@ -207,7 +207,7 @@
                 </th>
             </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-100">
+        <tbody class="bg-white divide-y divide-gray-200">
             @forelse($reportData as $project)
             @if($project['total_cost'] > 0)
             <tr>
@@ -221,7 +221,7 @@
                         </svg>
                     </button>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-500">
                     @if ($project['attributes']['category'] === 'mh')
                     MH
                     @elseif($project['attributes']['category'] === 'go')

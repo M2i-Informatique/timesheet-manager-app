@@ -4,53 +4,90 @@
 
 @section('admin-content')
 <div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between mb-6">
+    <div class="mb-6">
         <h1 class="text-2xl font-bold">Tableau de bord</h1>
-        <a href="{{ route('admin.reporting.index', ['report_type' => 'project_hours']) }}"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-            Voir les rapports détaillés
-        </a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
         <!-- KPI: Coût total (uniquement workers) -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-sm font-medium text-gray-500 mb-1">Coût total des salariés ({{ now()->locale('fr')->translatedFormat('F') }})</h3>
-            <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalCostCurrentMonth, 2) }} €</p>
-            <div class="mt-2 text-sm text-gray-500">
-                <div class="text-gray-500 mb-1 text-xs italic">Uniquement coûts des salariés</div>
-                @if ($costChangePercent > 0)
-                <span class="text-red-600">+{{ number_format($costChangePercent, 1) }}%</span>
-                @else
-                <span class="text-green-600">{{ number_format($costChangePercent, 1) }}%</span>
+        <div class="bg-white rounded-lg shadow-md p-6 h-full flex flex-col justify-between">
+            <div>
+                <h3 class="text-sm font-medium text-gray-500 mb-1">
+                    Coût total des salariés ({{ now()->locale('fr')->translatedFormat('F') }})
+                </h3>
+                <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalCostCurrentMonth, 2) }} €</p>
+                <div class="mt-2 text-sm text-gray-500">
+                    <div class="text-gray-500 mb-1 text-xs italic">Uniquement coûts des salariés</div>
+                </div>
+            </div>
+            <div class="mt-2 text-sm text-gray-500 flex items-end gap-2">
+                @if(isset($costChangePercent) && $costChangePercent !== 0)
+                <div class="inline-flex gap-2 rounded-sm {{ $costChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-100 text-red-600 border border-red-600' }} p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        @if($costChangePercent > 0)
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        @else
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                        @endif
+                    </svg>
+                    <span class="text-xs font-medium">{{ number_format(abs($costChangePercent), 2, ',', ' ') }}%</span>
+                </div>
                 @endif
-                vs mois précédent
+                <span>vs mois précédent</span>
             </div>
         </div>
 
         <!-- KPI: Total heures travaillées -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-sm font-medium text-gray-500 mb-1">Heures travaillées ({{ now()->locale('fr')->translatedFormat('F') }})</h3>
-            <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalHoursCurrentMonth, 2) }} h</p>
-            <div class="mt-2 text-sm">
-                <div class="flex justify-between items-center">
-                    <span class="text-blue-600 font-medium">Salariés:</span>
-                    <span class="text-blue-600">{{ number_format($totalWorkerHoursCurrentMonth ?? 0, 2) }} h
-                        ({{ $totalHoursCurrentMonth > 0 ? number_format((($totalWorkerHoursCurrentMonth ?? 0) / $totalHoursCurrentMonth) * 100, 1) : 0 }}%)</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-green-600 font-medium">Intérims:</span>
-                    <span class="text-green-600">{{ number_format($totalInterimHoursCurrentMonth ?? 0, 2) }} h
-                        ({{ $totalHoursCurrentMonth > 0 ? number_format((($totalInterimHoursCurrentMonth ?? 0) / $totalHoursCurrentMonth) * 100, 1) : 0 }}%)</span>
+        <div class="bg-white rounded-lg shadow-md p-6 h-full flex flex-col justify-between">
+            <div>
+                <h3 class="text-sm font-medium text-gray-500 mb-1">
+                    Heures travaillées ({{ now()->locale('fr')->translatedFormat('F') }})
+                </h3>
+                <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalHoursCurrentMonth, 2) }} h</p>
+                <div class="mt-2 text-sm space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-blue-600 font-medium">Salariés:</span>
+                        <span class="text-blue-600">
+                            {{ number_format($totalWorkerHoursCurrentMonth ?? 0, 2) }} h
+                            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2 text-blue-700">
+                                <p class="text-sm whitespace-nowrap">
+                                    {{ $totalHoursCurrentMonth > 0 ? number_format((($totalWorkerHoursCurrentMonth ?? 0) / $totalHoursCurrentMonth) * 100, 1) : 0 }}%
+                                </p>
+                            </span>
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <span class="text-green-600 font-medium">Intérims:</span>
+                        <span class="text-green-600">
+                            {{ number_format($totalInterimHoursCurrentMonth ?? 0, 2) }} h
+                            <span class="inline-flex items-center justify-center rounded-full bg-green-100 px-2 text-green-700">
+                                <p class="text-sm whitespace-nowrap">
+                                    {{ $totalHoursCurrentMonth > 0 ? number_format((($totalInterimHoursCurrentMonth ?? 0) / $totalHoursCurrentMonth) * 100, 1) : 0 }}%
+                                </p>
+                            </span>
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div class="mt-2 text-sm text-gray-500">
-                @if ($hoursChangePercent > 0)
-                <span class="text-green-600">+{{ number_format($hoursChangePercent, 1) }}%</span>
-                @else
-                <span class="text-red-600">{{ number_format($hoursChangePercent, 1) }}%</span>
+            <div class="mt-2 text-sm text-gray-500 flex items-end gap-2">
+                @if(isset($hoursChangePercent) && $hoursChangePercent !== 0)
+                <div class="inline-flex gap-2 rounded-sm {{ $hoursChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-100 text-red-600 border border-red-600' }} p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        @if($hoursChangePercent > 0)
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        @else
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                        @endif
+                    </svg>
+                    <span class="text-xs font-medium">{{ number_format(abs($hoursChangePercent), 2, ',', ' ') }}%</span>
+                </div>
                 @endif
-                vs mois précédent
+                <span>vs mois précédent</span>
             </div>
         </div>
 

@@ -15,11 +15,11 @@
                 $reportType = request()->get('report_type', 'default');
                 $title = $titles[$reportType] ?? 'Rapports et analyses';
             @endphp
-            <h1 class="text-2xl font-bold">{{ $title }}</h1>
-            <a href="{{ route('admin.reporting.index', ['view' => 'dashboard']) }}"
-                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                Tableau de bord
-            </a>
+            <h1 class="text-2xl font-bold"><a href="">Tableau de bord > </a>{{ $title }}</h1>
+            <x-buttons.dynamic tag="a" route="admin.reporting.index" routeParams="['view' => 'dashboard']"
+                color="blue">
+                Retour au tableau de bord
+            </x-buttons.dynamic>
         </div>
 
         <!-- Formulaire de filtres -->
