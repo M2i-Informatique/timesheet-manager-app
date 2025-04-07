@@ -13,7 +13,7 @@
         <div class="bg-white rounded-lg shadow-md p-6 h-full flex flex-col justify-between">
             <div>
                 <h3 class="text-sm font-medium text-gray-500 mb-1">
-                    Coût total des salariés ({{ now()->locale('fr')->translatedFormat('F') }})
+                    Coût total des salariés <span class="font-bold">({{ now()->locale('fr')->translatedFormat('F Y') }})</span>
                 </h3>
                 <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalCostCurrentMonth, 2) }} €</p>
                 <div class="mt-2 text-sm text-gray-500">
@@ -43,7 +43,7 @@
         <div class="bg-white rounded-lg shadow-md p-6 h-full flex flex-col justify-between">
             <div>
                 <h3 class="text-sm font-medium text-gray-500 mb-1">
-                    Heures travaillées ({{ now()->locale('fr')->translatedFormat('F') }})
+                    Heures travaillées <span class="font-bold">({{ now()->locale('fr')->translatedFormat('F Y') }})</span>
                 </h3>
                 <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalHoursCurrentMonth, 2) }} h</p>
                 <div class="mt-2 text-sm space-y-2">
