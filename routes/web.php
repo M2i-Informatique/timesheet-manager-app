@@ -50,6 +50,7 @@ Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin
     // Reporting
     Route::get('/', [ReportingController::class, 'index'])->name('reporting.index');
     Route::get('dashboard', [ReportingController::class, 'dashboard'])->name('reporting.dashboard');
+    Route::get('reporting/project-monthly-costs', [ReportingController::class, 'getProjectMonthlyCosts'])->name('reporting.project-monthly-costs');
 
     // Jours non travaillés
     Route::resource('non-working-days', NonWorkingDayController::class);

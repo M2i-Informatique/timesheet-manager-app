@@ -387,6 +387,18 @@
 <!-- Histogramme des coûts mensuels -->
 <div class="mt-12 mb-8">
     <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Coûts mensuels pour l'année {{ now()->year }}</h3>
+            <div class="flex items-center">
+                <label for="projectSelector" class="sr-only">Chantier :</label>
+                <select id="projectSelector" class="rounded-md border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                    <option value="">Tous les chantiers</option>
+                    @foreach($projects as $project)
+                    <option value="{{ $project->id }}">{{ $project->code }} - {{ $project->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
         <canvas id="monthlyCostsChart" height="110"></canvas>
     </div>
 </div>
@@ -415,11 +427,12 @@
         const chartElement = document.getElementById('monthlyCostsChart');
         if (!chartElement) return;
 
-        // Données pour l'histogramme
-        const monthlyCostsData = {
+        // Déclarer les variables à l'intérieur de la fonction pour éviter qu'elles apparaissent dans la source
+        let monthlyCostsChart;
+        let defaultChartData = {
             labels: JSON.parse('{{ json_encode($monthLabels) }}'.replace(/&quot;/g, '"')),
             datasets: [{
-                label: 'Coûts (€) - {{ now()->year }}',
+                label: 'Coûts (€)',
                 data: JSON.parse('{{ json_encode($monthlyTotalCosts) }}'.replace(/&quot;/g, '"')),
                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 borderColor: 'rgba(54, 162, 235, 1)',
@@ -429,10 +442,23 @@
 
         // Configuration du graphique
         const ctx = chartElement.getContext('2d');
-        new Chart(ctx, {
+        monthlyCostsChart = new Chart(ctx, {
             type: 'bar',
-            data: monthlyCostsData,
-            options: {
+            data: defaultChartData,
+            options: createChartOptions('Tous les chantiers')
+        });
+
+        // Ajouter l'écouteur d'événement pour le changement de projet
+        const projectSelector = document.getElementById('projectSelector');
+        if (projectSelector) {
+            projectSelector.addEventListener('change', function() {
+                updateChart(this.value);
+            });
+        }
+
+        // Fonction pour créer les options du graphique
+        function createChartOptions(title) {
+            return {
                 responsive: true,
                 scales: {
                     y: {
@@ -448,6 +474,21 @@
                     }
                 },
                 plugins: {
+                    legend: {
+                        display: false // Masquer la légende
+                    },
+                    title: {
+                        display: true,
+                        text: title,
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 20
+                        }
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
@@ -459,7 +500,50 @@
                         }
                     }
                 }
+            };
+        }
+
+        // Fonction pour mettre à jour le graphique
+        function updateChart(projectId) {
+            if (!projectId) {
+                // Réinitialiser au graphique par défaut (tous les projets)
+                monthlyCostsChart.data = JSON.parse(JSON.stringify(defaultChartData));
+                monthlyCostsChart.options = createChartOptions('Coûts mensuels - Tous les chantiers');
+                monthlyCostsChart.update();
+                return;
             }
-        });
+
+            // Afficher un indicateur de chargement
+            monthlyCostsChart.data.datasets[0].data = Array(12).fill(0);
+            monthlyCostsChart.data.datasets[0].label = 'Chargement...';
+            monthlyCostsChart.update();
+
+            // Récupérer les données du projet sélectionné
+            fetch(`{{ route('admin.reporting.project-monthly-costs') }}?project_id=${projectId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    monthlyCostsChart.data.labels = data.labels;
+                    monthlyCostsChart.data.datasets[0].data = data.costs;
+                    monthlyCostsChart.data.datasets[0].label = `Coûts (€)`;
+
+                    // Créer un titre sur une seule ligne avec toutes les informations
+                    const singleLineTitle = `${data.project_code} - ${data.project_name} - ${data.project_address}`;
+
+                    monthlyCostsChart.options = createChartOptions(singleLineTitle);
+                    monthlyCostsChart.update();
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des données:', error);
+                    monthlyCostsChart.data.datasets[0].label = 'Erreur de chargement';
+                    monthlyCostsChart.update();
+                    // Optionnel: afficher un message d'erreur à l'utilisateur
+                    alert('Impossible de charger les données du chantier. Veuillez réessayer.');
+                });
+        }
     });
 </script>

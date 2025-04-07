@@ -188,6 +188,62 @@ class ReportingController extends Controller
     }
 
     /**
+     * Récupère les coûts mensuels d'un projet spécifique pour l'année en cours
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getProjectMonthlyCosts(Request $request)
+    {
+        $projectId = $request->input('project_id');
+
+        if (!$projectId) {
+            return response()->json(['error' => 'ID du projet requis'], 400);
+        }
+
+        // Récupérer le projet avec tous ses détails
+        $project = Project::findOrFail($projectId);
+
+        $currentYear = Carbon::now()->year;
+        $monthlyProjectCosts = [];
+        $monthLabels = [];
+
+        for ($month = 1; $month <= 12; $month++) {
+            $startOfMonth = Carbon::createFromDate($currentYear, $month, 1)->startOfMonth()->format('Y-m-d');
+            $endOfMonth = Carbon::createFromDate($currentYear, $month, 1)->endOfMonth()->format('Y-m-d');
+            $monthLabel = Carbon::createFromDate($currentYear, $month, 1)->locale('fr')->translatedFormat('F');
+            $monthLabels[] = $monthLabel;
+
+            // Utiliser le service pour obtenir les coûts du mois pour ce projet spécifique
+            $monthCosts = $this->projectCostsService->getProjectCosts(
+                $projectId,  // Filtrer par ID du projet
+                null,        // Pas de filtre de catégorie
+                $startOfMonth,
+                $endOfMonth
+            );
+
+            // Calculer le total des coûts pour ce mois
+            $totalCost = 0;
+            foreach ($monthCosts as $projectData) {
+                if ($projectData['id'] == $projectId) {
+                    $totalCost = $projectData['total_cost'];
+                    break;
+                }
+            }
+
+            $monthlyProjectCosts[] = $totalCost;
+        }
+
+        return response()->json([
+            'labels' => $monthLabels,
+            'costs' => $monthlyProjectCosts,
+            'project_name' => $project->name,
+            'project_code' => $project->code,
+            'project_address' => $project->address ?? 'Adresse non spécifiée' // Si l'adresse existe
+        ]);
+    }
+
+    /**
      * Display the dashboard with key metrics
      */
     public function dashboard(Request $request)
