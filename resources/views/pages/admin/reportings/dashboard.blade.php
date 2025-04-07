@@ -15,7 +15,7 @@
                 <h3 class="text-sm font-medium text-gray-500 mb-1">
                     Coût total des salariés <span class="font-bold">({{ now()->locale('fr')->translatedFormat('F Y') }})</span>
                 </h3>
-                <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalCostCurrentMonth, 2) }} €</p>
+                <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalCostCurrentMonth, 2, ',', ' ') }} €</p>
                 <div class="mt-2 text-sm text-gray-500">
                     <div class="text-gray-500 mb-1 text-xs italic">Uniquement coûts des salariés</div>
                 </div>
@@ -45,12 +45,12 @@
                 <h3 class="text-sm font-medium text-gray-500 mb-1">
                     Heures travaillées <span class="font-bold">({{ now()->locale('fr')->translatedFormat('F Y') }})</span>
                 </h3>
-                <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalHoursCurrentMonth, 2) }} h</p>
+                <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalHoursCurrentMonth, 2, ',', ' ') }} h</p>
                 <div class="mt-2 text-sm space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="text-blue-600 font-medium">Salariés:</span>
                         <span class="text-blue-600">
-                            {{ number_format($totalWorkerHoursCurrentMonth ?? 0, 2) }} h
+                            {{ number_format($totalWorkerHoursCurrentMonth ?? 0, 2, ',', ' ') }} h
                             <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2 text-blue-700">
                                 <p class="text-sm whitespace-nowrap">
                                     {{ $totalHoursCurrentMonth > 0 ? number_format((($totalWorkerHoursCurrentMonth ?? 0) / $totalHoursCurrentMonth) * 100, 1) : 0 }}%
@@ -62,7 +62,7 @@
                     <div class="flex justify-between items-center">
                         <span class="text-green-600 font-medium">Intérims:</span>
                         <span class="text-green-600">
-                            {{ number_format($totalInterimHoursCurrentMonth ?? 0, 2) }} h
+                            {{ number_format($totalInterimHoursCurrentMonth ?? 0, 2, ',', ' ') }} h
                             <span class="inline-flex items-center justify-center rounded-full bg-green-100 px-2 text-green-700">
                                 <p class="text-sm whitespace-nowrap">
                                     {{ $totalHoursCurrentMonth > 0 ? number_format((($totalInterimHoursCurrentMonth ?? 0) / $totalHoursCurrentMonth) * 100, 1) : 0 }}%
