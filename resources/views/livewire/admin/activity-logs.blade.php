@@ -63,7 +63,7 @@
                                             <span class="font-medium">Heures</span>:
                                             {{ $value }} h
                                             @elseif($key === 'category')
-                                            <span class="font-medium">Categorie</span>:
+                                            <span class="font-medium">Catégorie</span>:
                                             {{ $value === 'day' ? 'Jour' : 'Nuit' }}
                                             @else
                                             <span class="font-medium">{{ ucfirst($key) }}</span>: {{ $value }}
