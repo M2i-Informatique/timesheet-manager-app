@@ -157,15 +157,20 @@ class TrackingController extends Controller
         }
 
         // Calcul des KPI à partir du recap
-        $grandTotalDay = 0;
-        $grandTotalNight = 0;
+        $totalWorkerHours = 0;
+        $totalInterimHours = 0;
+
         foreach ($recap as $r) {
-            $grandTotalDay   += $r['day_hours'];
-            $grandTotalNight += $r['night_hours'];
+            if ($r['model_type'] === 'worker') {
+                $totalWorkerHours += $r['day_hours'] + $r['night_hours'];
+            } else { // interim
+                $totalInterimHours += $r['day_hours'] + $r['night_hours'];
+            }
         }
-        $totalHoursCurrentMonth       = $grandTotalDay + $grandTotalNight;
-        $totalWorkerHoursCurrentMonth = $grandTotalDay;
-        $totalInterimHoursCurrentMonth = $grandTotalNight;
+
+        $totalHoursCurrentMonth = $totalWorkerHours + $totalInterimHours;
+        $totalWorkerHoursCurrentMonth = $totalWorkerHours;
+        $totalInterimHoursCurrentMonth = $totalInterimHours;
 
         // Calcul du mois précédent et suivant
         $prevMonth = $month - 1;

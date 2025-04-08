@@ -14,7 +14,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\NonWorkingDayController;
 use App\Http\Controllers\Admin\ExportController;
 
-Route::middleware(['verified', 'auth', 'role:driver|admin|super-admin'])->group(function () {
+Route::middleware(['verified', 'auth', 'role:driver|leader|admin|super-admin'])->group(function () {
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -33,9 +33,14 @@ Route::middleware(['verified', 'auth', 'role:driver|admin|super-admin'])->group(
     Route::get('/exports/blank-monthly', [ExportController::class, 'exportBlankMonthly'])->name('exports.blank-monthly');
 });
 
+Route::middleware(['verified', 'auth', 'role:leader|admin|super-admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Reporting
+    Route::get('/', [ReportingController::class, 'index'])->name('reporting.index');
+    Route::get('dashboard', [ReportingController::class, 'dashboard'])->name('reporting.dashboard');
+    Route::get('reporting/project-monthly-costs', [ReportingController::class, 'getProjectMonthlyCosts'])->name('reporting.project-monthly-costs');
+});
 
 Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('users', UserController::class);
     Route::resource('workers', WorkerController::class);
     Route::resource('interims', InterimController::class);
     Route::resource('projects', ProjectController::class);
@@ -47,11 +52,6 @@ Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin
     Route::get('driver-projects/{driver}/edit', [DriverProjectController::class, 'edit'])->name('driver-projects.edit');
     Route::put('driver-projects/{driver}', [DriverProjectController::class, 'update'])->name('driver-projects.update');
 
-    // Reporting
-    Route::get('/', [ReportingController::class, 'index'])->name('reporting.index');
-    Route::get('dashboard', [ReportingController::class, 'dashboard'])->name('reporting.dashboard');
-    Route::get('reporting/project-monthly-costs', [ReportingController::class, 'getProjectMonthlyCosts'])->name('reporting.project-monthly-costs');
-
     // Jours non travaillés
     Route::resource('non-working-days', NonWorkingDayController::class);
     Route::post('non-working-days/generate-french-holidays', [NonWorkingDayController::class, 'generateFrenchHolidays'])
@@ -61,4 +61,8 @@ Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin
     Route::get('exports', [ExportController::class, 'index'])->name('exports.index');
     Route::post('exports/workers-monthly', [ExportController::class, 'exportWorkersMonthly'])->name('exports.workers-monthly');
     Route::post('exports/blank-monthly', [ExportController::class, 'exportBlankMonthly'])->name('exports.blank-monthly');
+});
+
+Route::middleware(['verified', 'auth', 'role:super-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('users', UserController::class);
 });

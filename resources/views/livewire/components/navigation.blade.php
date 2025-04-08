@@ -8,7 +8,7 @@
             </x-buttons.dynamic>
             @endif
 
-            @if ((auth()->user()->hasRole('admin') || auth()->user()->hasRole('super-admin')) && !request()->routeIs('admin.*'))
+            @if ((auth()->user()->hasRole('leader') || auth()->user()->hasRole('admin') || auth()->user()->hasRole('super-admin')) && !request()->routeIs('admin.*'))
             <x-buttons.dynamic tag="a" route="admin.reporting.index" color="blue" class="my-2">
                 Tableau de bord
             </x-buttons.dynamic>
