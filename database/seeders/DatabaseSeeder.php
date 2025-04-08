@@ -26,13 +26,13 @@ class DatabaseSeeder extends Seeder
         // $user->assignRole('driver');
 
         // call the other seeders
-        $this->call([
-            SettingSeeder::class,
-            ZoneSeeder::class,
+        // $this->call([
+        //     SettingSeeder::class,
+        //     ZoneSeeder::class,
             // InterimSeeder::class,
             // WorkerSeeder::class,
             // ProjectSeeder::class,
-        ]);
+        // ]);
 
         // assign the first project to the first user
         // $user->projects()->attach(Project::first());
