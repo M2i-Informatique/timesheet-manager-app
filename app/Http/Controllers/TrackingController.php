@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Worker;
 use App\Models\Interim;
 use App\Models\TimeSheetable;
+use App\Models\NonWorkingDay;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -186,6 +187,25 @@ class TrackingController extends Controller
             $nextYear++;
         }
 
+        // Récupérer les jours non travaillés pour ce mois
+        $nonWorkingDays = NonWorkingDay::whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->get();
+
+        $formattedDays = $nonWorkingDays->pluck('date')
+            ->map(function ($date) {
+                return (int)$date->format('j');
+            })
+            ->toArray();
+
+        $nonWorkingDayTypes = NonWorkingDay::whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->get()
+            ->mapWithKeys(function ($day) {
+                return [(int)$day->date->format('j') => $day->type];
+            })
+            ->toArray();
+
         return view('pages.tracking.show', [
             'project'           => $project,
             'month'             => $month,
@@ -203,6 +223,8 @@ class TrackingController extends Controller
             'prevYear'          => $prevYear,
             'nextMonth'         => $nextMonth,
             'nextYear'          => $nextYear,
+            'nonWorkingDays'    => $formattedDays,
+            'nonWorkingDayTypes' => $nonWorkingDayTypes,
         ]);
     }
 

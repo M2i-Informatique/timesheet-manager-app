@@ -324,6 +324,23 @@
         let category = @json($category); // "day" ou "night"
         let daysInMonth = @json($daysInMonth);
         let entriesData = @json($entriesData);
+        // Ajouter les variables pour les jours non travaillés
+        let nonWorkingDays = @json($nonWorkingDays ?? []);
+        let nonWorkingDayTypes = @json($nonWorkingDayTypes ?? []);
+
+        // Fonction pour obtenir l'abréviation de 3 lettres en fonction du type
+        function getTypeAbbreviation(type) {
+            switch (type) {
+                case 'Férié':
+                    return 'FER';
+                case 'RTT Imposé':
+                    return 'RTT';
+                case 'Fermeture':
+                    return 'FRM';
+                default:
+                    return type.substring(0, 3).toUpperCase();
+            }
+        }
 
         // Gérer la sélection "month_year" -> scinder en month & year
         const monthYearSelect = document.getElementById('month_year');
@@ -506,27 +523,46 @@
                     cellProperties.renderer = function(instance, td, row, col, prop, value) {
                         Handsontable.renderers.NumericRenderer.apply(this, arguments);
 
-                        // Griser weekend
+                        // Calculer le jour du mois à partir de la colonne
                         const dayNum = col - 2;
+
+                        // Griser weekend
                         const date = new Date(year, month - 1, dayNum);
                         const dayOfWeek = date.getDay();
                         if (dayOfWeek === 0 || dayOfWeek === 6) {
                             td.style.backgroundColor = '#f0f0f0';
                         }
 
-                        // Ajouter la coloration selon la valeur et la catégorie
+                        // Vérifier si c'est un jour non travaillé
+                        const isNonWorkingDay = dayNum in nonWorkingDayTypes;
+                        const nonWorkingType = isNonWorkingDay ? nonWorkingDayTypes[dayNum] : null;
+
+                        // Colorer selon la valeur et le type de jour
                         if (value !== null && value !== '') {
                             if (parseFloat(value) === 0) {
                                 td.textContent = 'abs';
                                 td.style.backgroundColor = '#FFCCCC'; // bg-red-200
                             } else {
-                                // Si catégorie est "night", utiliser violet, sinon vert
-                                if (category === 'night') {
-                                    td.style.backgroundColor = '#E9D5FF'; // bg-purple-200
+                                // Si c'est un jour non travaillé, on garde la couleur orange
+                                if (isNonWorkingDay) {
+                                    td.style.backgroundColor = '#FFE4B5'; // Orange pour jour non travaillé
+                                    // Ajouter éventuellement un indicateur visuel supplémentaire
+                                    td.style.fontWeight = 'bold';
                                 } else {
-                                    td.style.backgroundColor = '#CCFFCC'; // bg-green-200
+                                    // Sinon, coloration normale selon la catégorie
+                                    if (category === 'night') {
+                                        td.style.backgroundColor = '#E9D5FF'; // bg-purple-200
+                                    } else {
+                                        td.style.backgroundColor = '#CCFFCC'; // bg-green-200
+                                    }
                                 }
                             }
+                        } else if (isNonWorkingDay) {
+                            // Cellule vide pour jour non travaillé
+                            td.textContent = getTypeAbbreviation(nonWorkingType);
+                            td.style.backgroundColor = '#FFE4B5';
+                            td.style.fontStyle = 'italic';
+                            td.style.fontWeight = 'bold';
                         }
                     };
                 }
