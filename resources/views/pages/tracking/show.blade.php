@@ -179,7 +179,7 @@
     {{-- Tableau récapitulatif --}}
     @if (!empty($recap))
     <div class="bg-white shadow rounded mb-6">
-        <div class="mt-10">
+        <div>
             <!-- Zone de description et de recherche pour le récapitulatif -->
             <div class="flex justify-between gap-1 p-5 text-lg text-left rtl:text-right text-blue-600 bg-white">
                 <div class="flex items-center gap-1">
@@ -204,8 +204,10 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php $hasData = false; @endphp
                         @foreach ($recap as $r)
                         @if ($r['total'] > 0)
+                        @php $hasData = true; @endphp
                         <tr class="bg-white hover:bg-gray-50">
                             <td class="px-6 py-4 text-sm text-gray-700">{{ $r['full_name'] }}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{ $r['day_hours'] ?: 0 }} h</td>
@@ -231,6 +233,14 @@
                         </tr>
                         @endif
                         @endforeach
+
+                        @if(!$hasData)
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                Aucune donnée disponible pour la période sélectionnée.
+                            </td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -243,10 +253,10 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <!-- KPI: Total heures travaillées -->
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-sm font-medium text-gray-500 mb-1">
-                Total heures travaillées <span class="font-bold">( {{ \Carbon\Carbon::create($year, $month, 1)->locale('fr')->translatedFormat('F Y') }})</span>
+            <h3 class="text-sm font-medium text-indigo-600 mb-1">
+                Total heures travaillées <span class="font-bold">({{ \Carbon\Carbon::create($year, $month, 1)->locale('fr')->translatedFormat('F Y') }})</span>
             </h3>
-            <p class="text-3xl font-bold text-indigo-700">
+            <p class="text-3xl font-bold text-indigo-600">
                 {{ number_format($totalHoursCurrentMonth, 2, ',', ' ') }} h
             </p>
         </div>
