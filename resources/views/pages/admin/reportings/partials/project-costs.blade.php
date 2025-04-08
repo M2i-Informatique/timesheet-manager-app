@@ -99,9 +99,9 @@
 <!-- KPI'S -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
     <!-- KPI Heures Salariés -->
-    <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full">
+    <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer">
         <div>
-            <p class="text-sm text-gray-800 tracking-wider font-semibold">Heures Salariés</p>
+            <p class="text-sm text-blue-800 tracking-wider font-semibold">Heures Salariés</p>
             <p class="text-2xl font-medium text-gray-900">
                 {{ number_format(
                     array_sum(
@@ -131,9 +131,9 @@
     </article>
 
     <!-- KPI Heures Totales -->
-    <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full">
+    <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer">
         <div>
-            <p class="text-sm text-gray-800 tracking-wider font-semibold">Heures Totales</p>
+            <p class="text-sm text-blue-800 tracking-wider font-semibold">Heures Totales</p>
             <p class="text-2xl font-medium text-gray-900">
                 {{ number_format(array_sum(array_column($reportData, 'total_hours')), 2, ',', ' ') }}
                 <span class="text-sm font-normal">h</span>
@@ -154,9 +154,9 @@
     </article>
 
     <!-- KPI Coût Total -->
-    <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full">
+    <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-green-500 hover:bg-green-50 transition-colors cursor-pointer">
         <div>
-            <p class="text-sm text-gray-800 tracking-wider font-semibold">Coût Total</p>
+            <p class="text-sm text-green-800 tracking-wider font-semibold">Coût Total</p>
             <p class="text-2xl font-medium text-gray-900">
                 {{ number_format(array_sum(array_column($reportData, 'total_cost')), 2, ',', ' ') }}
                 <span class="text-sm font-normal">€</span>

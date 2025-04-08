@@ -10,6 +10,35 @@
                 </li>
             </ul>
 
+            <ul class="flex flex-wrap justify-center gap-4 text-xs lg:justify-end">
+                <li>
+                    @php
+                    $guideLinks = [
+                    'driver' => 'https://app-eu1.hubspot.com/guide-creator/g/VoaAqRlcgt',
+                    'leader' => 'https://app-eu1.hubspot.com/guide-creator/g/J9185nhnRF',
+                    'admin' => '#',
+                    'super-admin' => '#',
+                    ];
+
+                    $guideLink = '#'; // Lien par défaut
+
+                    if (auth()->check()) {
+                    // Attribuer le lien en fonction du rôle
+                    foreach ($guideLinks as $role => $link) {
+                    if (auth()->user()->hasRole($role)) {
+                    $guideLink = $link;
+                    break; // Arrêter après avoir trouvé le premier rôle correspondant
+                    }
+                    }
+                    }
+                    @endphp
+
+                    <a href="{{ $guideLink }}" target="_blank" class="text-gray-500 transition hover:opacity-75">
+                        Guide d'utilisation
+                    </a>
+                </li>
+            </ul>
+
             <ul class="mt-8 flex justify-center gap-6 sm:mt-0 lg:justify-end">
                 <li>
                     <a href="mailto:lucas@informatique-m2i.fr" rel="noreferrer" target="_blank"
