@@ -57,41 +57,48 @@ class ReportingController extends Controller
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->format('Y-m-d'));
         $projectId = $request->input('project_id');
-        $workerId = $request->input('worker_id');
-        $category = $request->input('category');
+        $workerId  = $request->input('worker_id');
+        $category  = $request->input('category');
 
         $reportType = $request->input('report_type', 'project_hours');
 
         $reportData = [];
-        $chartData = [];
+        $chartData  = [];
 
         switch ($reportType) {
             case 'project_hours':
                 $reportData = $this->projectHoursService->getProjectHours($projectId, $category, $startDate, $endDate);
-                $chartData = $this->prepareProjectHoursChartData($reportData);
+                $chartData  = $this->prepareProjectHoursChartData($reportData);
                 break;
 
             case 'worker_hours':
                 $reportData = $this->workerHoursService->getWorkerHours($workerId, $category, $startDate, $endDate);
-                $chartData = $this->prepareWorkerHoursChartData($reportData);
+                $chartData  = $this->prepareWorkerHoursChartData($reportData);
                 break;
 
             case 'project_costs':
                 $reportData = $this->projectCostsService->getProjectCosts($projectId, $category, $startDate, $endDate);
-                $chartData = $this->prepareProjectCostsChartData($reportData);
+                $chartData  = $this->prepareProjectCostsChartData($reportData);
                 break;
 
             case 'worker_costs':
                 $reportData = $this->workerCostsService->getWorkerCosts($workerId, $category, $startDate, $endDate);
-                $chartData = $this->prepareWorkerCostsChartData($reportData);
+                $chartData  = $this->prepareWorkerCostsChartData($reportData);
                 break;
         }
 
+        // FILTRAGE POUR AFFICHER "Aucune donnée disponible" QUAND IL N'Y A PAS DE COÛT
+        if ($reportType === 'project_costs') {
+            $reportData = array_filter($reportData, function ($project) {
+                return isset($project['total_cost']) && $project['total_cost'] > 0;
+            });
+        }
+
         // Calcul des pourcentages de variation par rapport au mois précédent
-        $currentMonthStart = Carbon::parse($startDate)->startOfMonth();
-        $currentMonthEnd = Carbon::parse($endDate)->endOfMonth();
+        $currentMonthStart  = Carbon::parse($startDate)->startOfMonth();
+        $currentMonthEnd    = Carbon::parse($endDate)->endOfMonth();
         $previousMonthStart = Carbon::parse($startDate)->subMonth()->startOfMonth();
-        $previousMonthEnd = Carbon::parse($startDate)->subMonth()->endOfMonth();
+        $previousMonthEnd   = Carbon::parse($startDate)->subMonth()->endOfMonth();
 
         // Obtenir les classes pour les requêtes
         $workerClass = get_class(new Worker());
@@ -149,13 +156,13 @@ class ReportingController extends Controller
 
         for ($month = 1; $month <= 12; $month++) {
             $startOfMonth = Carbon::createFromDate($currentYear, $month, 1)->startOfMonth()->format('Y-m-d');
-            $endOfMonth = Carbon::createFromDate($currentYear, $month, 1)->endOfMonth()->format('Y-m-d');
-            $monthLabel = Carbon::createFromDate($currentYear, $month, 1)->locale('fr')->translatedFormat('F');
+            $endOfMonth   = Carbon::createFromDate($currentYear, $month, 1)->endOfMonth()->format('Y-m-d');
+            $monthLabel   = Carbon::createFromDate($currentYear, $month, 1)->locale('fr')->translatedFormat('F');
             $monthLabels[] = $monthLabel;
 
             // Utiliser le service pour obtenir les coûts du mois
             $monthCosts = $this->projectCostsService->getProjectCosts(
-                null,  // pas de filtre par ID
+                null,      // pas de filtre par ID
                 $category, // garder le filtre de catégorie actuel
                 $startOfMonth,
                 $endOfMonth
@@ -189,9 +196,6 @@ class ReportingController extends Controller
 
     /**
      * Récupère les coûts mensuels d'un projet spécifique pour l'année en cours
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getProjectMonthlyCosts(Request $request)
     {
@@ -201,9 +205,7 @@ class ReportingController extends Controller
             return response()->json(['error' => 'ID du projet requis'], 400);
         }
 
-        // Récupérer le projet avec tous ses détails
         $project = Project::findOrFail($projectId);
-
         $currentYear = Carbon::now()->year;
         $monthlyProjectCosts = [];
         $monthLabels = [];
@@ -214,15 +216,14 @@ class ReportingController extends Controller
             $monthLabel = Carbon::createFromDate($currentYear, $month, 1)->locale('fr')->translatedFormat('F');
             $monthLabels[] = $monthLabel;
 
-            // Utiliser le service pour obtenir les coûts du mois pour ce projet spécifique
+            // Utiliser le service pour obtenir les coûts du mois
             $monthCosts = $this->projectCostsService->getProjectCosts(
-                $projectId,  // Filtrer par ID du projet
-                null,        // Pas de filtre de catégorie
+                $projectId,  // filtre par ID du projet
+                null,        // pas de filtre de catégorie
                 $startOfMonth,
                 $endOfMonth
             );
 
-            // Calculer le total des coûts pour ce mois
             $totalCost = 0;
             foreach ($monthCosts as $projectData) {
                 if ($projectData['id'] == $projectId) {
@@ -239,12 +240,12 @@ class ReportingController extends Controller
             'costs' => $monthlyProjectCosts,
             'project_name' => $project->name,
             'project_code' => $project->code,
-            'project_address' => $project->address ?? 'Adresse non spécifiée' // Si l'adresse existe
+            'project_address' => $project->address ?? 'Adresse non spécifiée'
         ]);
     }
 
     /**
-     * Display the dashboard with key metrics
+     * Display the dashboard with various statistics
      */
     public function dashboard(Request $request)
     {
@@ -344,11 +345,11 @@ class ReportingController extends Controller
         // Répartition des coûts par catégorie de projet (workers uniquement)
         $costsByCategory = [];
         foreach ($currentMonthCosts as $project) {
-            $category = $project['attributes']['category'];
-            if (!isset($costsByCategory[$category])) {
-                $costsByCategory[$category] = 0;
+            $cat = $project['attributes']['category'];
+            if (!isset($costsByCategory[$cat])) {
+                $costsByCategory[$cat] = 0;
             }
-            $costsByCategory[$category] += $project['total_cost'];
+            $costsByCategory[$cat] += $project['total_cost'];
         }
 
         // Tendance heures sur 6 derniers mois (workers vs interims)

@@ -186,40 +186,40 @@
                 <th scope="col" class="px-6 py-3 text-left text-sm text-gray-800 tracking-wider">
                     Chantiers
                 </th>
-                <th scope="col" class="px-6 py-3 text-righ text-sm text-gray-800 tracking-wider">
+                <th scope="col" class="px-6 py-3 text-left text-sm text-gray-800 tracking-wider">
                     Catégorie
                 </th>
-                <th scope="col"
-                    class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
+                <th scope="col" class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
                     Heures Salariés
                 </th>
-                <th scope="col"
-                    class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
+                <th scope="col" class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
                     Heures Intérim
                 </th>
-                <th scope="col"
-                    class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
+                <th scope="col" class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
                     Total heures
                 </th>
-                <th scope="col"
-                    class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
+                <th scope="col" class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
                     Coût total
                 </th>
             </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white">
+            @php $displayedCount = 0; @endphp
             @forelse($reportData as $project)
             @if($project['total_cost'] > 0)
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center">
-                    <span class="mr-2">{{ $project['attributes']['code'] }} - {{ $project['attributes']['name'] }}</span>
-                    <button
-                        class="text-black hover:text-blue-800 cursor-pointer focus:outline-none transition-all duration-200 ml-2 flex-shrink-0"
-                        onclick="toggleDetails('project-{{ $project['id'] ?? $loop->index }}')">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 toggle-icon-{{ $project['id'] ?? $loop->index }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
+            @php $displayedCount++; @endphp
+            <tr class="border-b border-gray-200">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium align-middle">
+                    <div class="h-full flex items-center">
+                        {{ $project['attributes']['code'] }} - {{ $project['attributes']['name'] }}
+                        <button
+                            class="text-black hover:text-blue-800 cursor-pointer focus:outline-none transition-all duration-200 ml-2 flex-shrink-0"
+                            onclick="toggleDetails('project-{{ $project['id'] ?? $loop->index }}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 toggle-icon-{{ $project['id'] ?? $loop->index }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-500">
                     @if ($project['attributes']['category'] === 'mh')
@@ -231,12 +231,10 @@
                     @endif
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {{ number_format($project['total_worker_hours'] ?? array_sum(array_column($project['relationships']['workers'] ?? [], 'total_hours')), 2, ',', ' ') }}
-                    h
+                    {{ number_format($project['total_worker_hours'] ?? array_sum(array_column($project['relationships']['workers'] ?? [], 'total_hours')), 2, ',', ' ') }} h
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {{ number_format($project['total_interim_hours'] ?? array_sum(array_column($project['relationships']['interims'] ?? [], 'total_hours')), 2, ',', ' ') }}
-                    h
+                    {{ number_format($project['total_interim_hours'] ?? array_sum(array_column($project['relationships']['interims'] ?? [], 'total_hours')), 2, ',', ' ') }} h
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     {{ number_format($project['total_hours'], 2, ',', ' ') }} h
@@ -293,8 +291,7 @@
                         @if (isset($project['relationships']['interims']))
                         <div class="bg-green-50">
                             <div class="px-6 py-2 text-sm font-semibold text-green-800">
-                                Intérims ({{ count($project['relationships']['interims']) }}) - Heures comptabilisées,
-                                coûts exclus
+                                Intérims ({{ count($project['relationships']['interims']) }}) - Heures comptabilisées, coûts exclus
                             </div>
                         </div>
 
@@ -333,53 +330,6 @@
             </tr>
             @endforelse
         </tbody>
-        <!-- <tfoot class="bg-gray-50">
-            <tr>
-                <th scope="col" colspan="2"
-                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total
-                </th>
-                <th scope="col"
-                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{ number_format(
-                array_sum(
-                    array_map(function ($p) {
-                        return $p['total_worker_hours'] ??
-                            array_sum(array_column($p['relationships']['workers'] ?? [], 'total_hours'));
-                    }, $reportData),
-                ),
-                2,
-                ',',
-                ' '
-            ) }}
-                    h
-                </th>
-                <th scope="col"
-                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{ number_format(
-                array_sum(
-                    array_map(function ($p) {
-                        return $p['total_interim_hours'] ??
-                            array_sum(array_column($p['relationships']['interims'] ?? [], 'total_hours'));
-                    }, $reportData),
-                ),
-                2,
-                ',',
-                ' '
-            ) }}
-                    h
-                </th>
-                <th scope="col"
-                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{ number_format(array_sum(array_column($reportData, 'total_hours')), 2, ',', ' ') }} h
-                </th>
-                <th scope="col"
-                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{ number_format(array_sum(array_column($reportData, 'total_cost')), 2, ',', ' ') }} €
-                    <div class="text-xs text-gray-500 font-normal">(uniquement salariés)</div>
-                </th>
-            </tr>
-        </tfoot> -->
     </table>
 </div>
 

@@ -3,7 +3,7 @@
 @section('title', 'Tableau de bord - Reporting')
 
 @section('admin-content')
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto py-8">
     <div class="mb-6">
         <h1 class="text-2xl font-bold">Tableau de bord</h1>
     </div>

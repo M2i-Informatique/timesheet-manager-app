@@ -11,7 +11,7 @@
     @endif --}}
 
     <div class="mt-8">
-        <h2 class="text-xl font-semibold mb-4">Pointages récents</h2>
+        <h3 class="text-lg font-medium mb-4">Pointages récents</h3>
 
         <div class="overflow-x-auto rounded-lg">
             <table class="min-w-full divide-y divide-gray-200">
