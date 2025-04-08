@@ -41,7 +41,7 @@ class TrackingController extends Controller
         $category = $request->input('category', 'day'); // "day" ou "night"
         $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
 
-        // 1) Récup les Workers & Interims assignés au projet
+        // 1) Récupérer les Workers & Interims assignés au projet
         $workers  = $project->workers()->where('status', 'active')->get();
         $interims = $project->interims()->where('status', 'active')->get();
 
@@ -62,7 +62,7 @@ class TrackingController extends Controller
             ];
         }
 
-        // Charger time_sheetables => ce project, ce mois, ce year, category
+        // Charger time_sheetables pour ce projet, ce mois, cette année et catégorie
         $timeSheets = TimeSheetable::where('project_id', $project->id)
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
@@ -70,25 +70,21 @@ class TrackingController extends Controller
             ->whereIn('timesheetable_type', [Worker::class, Interim::class])
             ->get();
 
-        // Remplir days
+        // Remplir days pour chaque entrée
         foreach ($entriesData as &$entry) {
             $days = array_fill(1, $daysInMonth, null);
-
-            $className = ($entry['model_type'] === 'worker')
-                ? Worker::class
-                : Interim::class;
-
+            $className = ($entry['model_type'] === 'worker') ? Worker::class : Interim::class;
             $filtered = $timeSheets->where('timesheetable_id', $entry['id'])
                 ->where('timesheetable_type', $className);
             foreach ($filtered as $ts) {
                 $dayNum = (int)$ts->date->format('j');
                 $days[$dayNum] = floatval($ts->hours);
             }
-
             $entry['days'] = $days;
         }
+        unset($entry);
 
-        // 2) Récup liste Workers / Interims dispo (non assignés)
+        // 2) Récupérer la liste des Workers / Interims disponibles (non assignés)
         $availableWorkers = Worker::where('status', 'active')
             ->whereDoesntHave('projects', function ($q) use ($project) {
                 $q->where('projects.id', $project->id);
@@ -100,11 +96,11 @@ class TrackingController extends Controller
         $availableInterims = Interim::where('status', 'active')
             ->whereDoesntHave('projects', function ($q) use ($project) {
                 $q->where('projects.id', $project->id);
-            })->get();
+            })
+            ->get();
 
         // 3) Récap : total "day" et "night" pour ce mois
         $recap = [];
-
         // Workers
         foreach ($workers as $w) {
             $daySum = TimeSheetable::where('project_id', $project->id)
@@ -132,7 +128,6 @@ class TrackingController extends Controller
                 'total'       => $daySum + $nightSum,
             ];
         }
-
         // Interims
         foreach ($interims as $i) {
             $daySum = TimeSheetable::where('project_id', $project->id)
@@ -161,6 +156,31 @@ class TrackingController extends Controller
             ];
         }
 
+        // Calcul des KPI à partir du recap
+        $grandTotalDay = 0;
+        $grandTotalNight = 0;
+        foreach ($recap as $r) {
+            $grandTotalDay   += $r['day_hours'];
+            $grandTotalNight += $r['night_hours'];
+        }
+        $totalHoursCurrentMonth       = $grandTotalDay + $grandTotalNight;
+        $totalWorkerHoursCurrentMonth = $grandTotalDay;
+        $totalInterimHoursCurrentMonth = $grandTotalNight;
+
+        // Calcul du mois précédent et suivant
+        $prevMonth = $month - 1;
+        $prevYear  = $year;
+        if ($prevMonth < 1) {
+            $prevMonth = 12;
+            $prevYear--;
+        }
+        $nextMonth = $month + 1;
+        $nextYear  = $year;
+        if ($nextMonth > 12) {
+            $nextMonth = 1;
+            $nextYear++;
+        }
+
         return view('pages.tracking.show', [
             'project'           => $project,
             'month'             => $month,
@@ -171,6 +191,13 @@ class TrackingController extends Controller
             'availableWorkers'  => $availableWorkers,
             'availableInterims' => $availableInterims,
             'recap'             => $recap,
+            'totalHoursCurrentMonth'       => $totalHoursCurrentMonth,
+            'totalWorkerHoursCurrentMonth' => $totalWorkerHoursCurrentMonth,
+            'totalInterimHoursCurrentMonth' => $totalInterimHoursCurrentMonth,
+            'prevMonth'         => $prevMonth,
+            'prevYear'          => $prevYear,
+            'nextMonth'         => $nextMonth,
+            'nextYear'          => $nextYear,
         ]);
     }
 
