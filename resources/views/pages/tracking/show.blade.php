@@ -22,40 +22,78 @@
     </div>
     @endif
 
-    <!-- Titre global -->
-    <div class="flex items-center gap-2 mb-2 font-bold text-gray-700">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-        </svg>
-        Informations importantes :
+    <!-- Section d'informations avec légende côte à côte -->
+    <div class="flex flex-col md:flex-row gap-4 mb-6">
+        <!-- Colonne d'informations importantes (existante) -->
+        <div class="md:w-1/2">
+            <!-- Titre global -->
+            <div class="flex items-center gap-2 mb-2 font-bold text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                </svg>
+                Informations importantes :
+            </div>
+
+            <!-- Liste unifiée avec points colorés -->
+            <div class="p-2 text-sm">
+                <ul class="space-y-2">
+                    <!-- Point bleu -->
+                    <li class="flex items-start gap-2">
+                        <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-blue-500"></div>
+                        <span class="font-medium text-blue-800">Veuillez mettre « 0 » pour marquer un salarié absent.</span>
+                    </li>
+
+                    <!-- Points rouges -->
+                    <li class="flex items-start gap-2">
+                        <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
+                        <div class="flex flex-col space-y-1">
+                            <span class="font-medium text-red-800">Avant de détacher un salarié, assurez-vous d'avoir supprimé toutes ses heures.</span>
+                            <span class="font-medium text-red-800">Faites un clic droit sur la ligne de l'employé pour le détacher du chantier.</span>
+                            <span class="font-medium text-red-800">Attention, cette action est irréversible.</span>
+                        </div>
+                    </li>
+
+                    <!-- Point jaune -->
+                    <li class="flex items-start gap-2">
+                        <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-yellow-500"></div>
+                        <span class="font-medium text-yellow-800">Sauvegarder toutes vos modifications avant de quitter cette page.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Légende des jours non travaillés (nouvelle) -->
+        <div class="md:w-1/2">
+            <div class="flex items-center gap-2 mb-2 font-bold text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                </svg>
+
+                Légende des jours non travaillés :
+            </div>
+
+            <div class="p-2 text-sm">
+                <ul class="space-y-2">
+                    <li class="flex items-start gap-2">
+                        <div class="flex-shrink-0 px-2 py-0.5 rounded bg-orange-100 flex items-start justify-center font-bold text-xs italic">FER</div>
+                        <span class="font-medium text-gray-700">Jour férié</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <div class="flex-shrink-0 px-2 py-0.5 rounded bg-orange-100 flex items-start justify-center font-bold text-xs italic">RTT</div>
+                        <span class="font-medium text-gray-700">RTT Imposé</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <div class="flex-shrink-0 px-2 py-0.5 rounded bg-orange-100 flex items-start justify-center font-bold text-xs italic">FRM</div>
+                        <span class="font-medium text-gray-700">Fermeture entreprise</span>
+                    </li>
+                </ul>
+            </div>
+
+            <p class="text-xs text-gray-500 mt-2">Les jours non travaillés sont affichés en orange dans le tableau. La saisie d'heures pendant ces jours sera également affichée en orange.</p>
+        </div>
     </div>
 
-    <!-- Liste unifiée avec points colorés -->
-    <div class="p-2 text-sm mb-6">
-        <ul class="space-y-2">
-            <!-- Point bleu -->
-            <li class="flex items-start gap-2">
-                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-blue-500"></div>
-                <span class="font-medium text-blue-800">Veuillez mettre « 0 » pour marquer un salarié absent.</span>
-            </li>
-
-            <!-- Points rouges -->
-            <li class="flex items-start gap-2">
-                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
-                <div class="flex flex-col space-y-1">
-                    <span class="font-medium text-red-800">Avant de détacher un salarié, assurez-vous d'avoir supprimé toutes ses heures.</span>
-                    <span class="font-medium text-red-800">Faites un clic droit sur la ligne de l'employé pour le détacher du chantier.</span>
-                    <span class="font-medium text-red-800">Attention, cette action est irréversible.</span>
-                </div>
-            </li>
-
-            <!-- Point jaune -->
-            <li class="flex items-start gap-2">
-                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-yellow-500"></div>
-                <span class="font-medium text-yellow-800">Sauvegarder toutes vos modifications avant de quitter cette page.</span>
-            </li>
-        </ul>
-    </div>
+    {{-- Sélecteur de période --}}
 
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
         @php
@@ -545,7 +583,7 @@
                             } else {
                                 // Si c'est un jour non travaillé, on garde la couleur orange
                                 if (isNonWorkingDay) {
-                                    td.style.backgroundColor = '#FFE4B5'; // Orange pour jour non travaillé
+                                    td.style.backgroundColor = '#FFE0B2'; // Orange pour jour non travaillé
                                     // Ajouter éventuellement un indicateur visuel supplémentaire
                                     td.style.fontWeight = 'bold';
                                 } else {
