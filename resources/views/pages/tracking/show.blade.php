@@ -39,24 +39,20 @@
                 <span class="font-medium text-blue-800">Veuillez mettre « 0 » pour marquer un salarié absent.</span>
             </li>
 
+            <!-- Points rouges -->
+            <li class="flex items-start gap-2">
+                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
+                <div class="flex flex-col space-y-1">
+                    <span class="font-medium text-red-800">Avant de détacher un salarié, assurez-vous d'avoir supprimé toutes ses heures.</span>
+                    <span class="font-medium text-red-800">Faites un clic droit sur la ligne de l'employé pour le détacher du chantier.</span>
+                    <span class="font-medium text-red-800">Attention, cette action est irréversible.</span>
+                </div>
+            </li>
+
             <!-- Point jaune -->
             <li class="flex items-start gap-2">
                 <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-yellow-500"></div>
                 <span class="font-medium text-yellow-800">Sauvegarder toutes vos modifications avant de quitter cette page.</span>
-            </li>
-
-            <!-- Points rouges -->
-            <li class="flex items-start gap-2">
-                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
-                <span class="font-medium text-red-800">Avant de détacher un salarié, assurez-vous d'avoir supprimé toutes ses heures.</span>
-            </li>
-            <li class="flex items-start gap-2">
-                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
-                <span class="font-medium text-red-800">Faites un clic droit sur la ligne de l'employé pour le détacher du chantier.</span>
-            </li>
-            <li class="flex items-start gap-2">
-                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
-                <span class="font-medium text-red-800">Attention, cette action est irréversible.</span>
             </li>
         </ul>
     </div>
