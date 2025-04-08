@@ -22,6 +22,45 @@
     </div>
     @endif
 
+    <!-- Titre global -->
+    <div class="flex items-center gap-2 mb-2 font-bold text-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+        </svg>
+        Informations importantes :
+    </div>
+
+    <!-- Liste unifiée avec points colorés -->
+    <div class="p-2 text-sm mb-6">
+        <ul class="space-y-2">
+            <!-- Point bleu -->
+            <li class="flex items-start gap-2">
+                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-blue-500"></div>
+                <span class="font-medium text-blue-800">Veuillez mettre « 0 » pour marquer un salarié absent.</span>
+            </li>
+
+            <!-- Point jaune -->
+            <li class="flex items-start gap-2">
+                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-yellow-500"></div>
+                <span class="font-medium text-yellow-800">Sauvegarder toutes vos modifications avant de quitter cette page.</span>
+            </li>
+
+            <!-- Points rouges -->
+            <li class="flex items-start gap-2">
+                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
+                <span class="font-medium text-red-800">Avant de détacher un salarié, assurez-vous d'avoir supprimé toutes ses heures.</span>
+            </li>
+            <li class="flex items-start gap-2">
+                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
+                <span class="font-medium text-red-800">Faites un clic droit sur la ligne de l'employé pour le détacher du chantier.</span>
+            </li>
+            <li class="flex items-start gap-2">
+                <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
+                <span class="font-medium text-red-800">Attention, cette action est irréversible.</span>
+            </li>
+        </ul>
+    </div>
+
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
         @php
         $months = [
@@ -200,7 +239,6 @@
                             <th class="px-6 py-3">Heures Jour</th>
                             <th class="px-6 py-3">Heures Nuit</th>
                             <th class="px-6 py-3">Total</th>
-                            <th class="px-6 py-3">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -223,11 +261,6 @@
                                     <input type="hidden" name="month" value="{{ $month }}">
                                     <input type="hidden" name="year" value="{{ $year }}">
                                     <input type="hidden" name="category" value="{{ $category }}">
-                                    <button type="submit"
-                                        class="cursor-pointer text-red-500"
-                                        onclick="return confirm('Voulez-vous vraiment détacher cet employé ?')">
-                                        <x-icons.trash class="w-5 h-5" />
-                                    </button>
                                 </form>
                             </td>
                         </tr>
@@ -251,15 +284,6 @@
     {{-- Bloc KPI en dehors du tableau (en haut de la section récapitulatif) --}}
     @if(!empty($recap))
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <!-- KPI: Total heures travaillées -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-sm font-medium text-indigo-600 mb-1">
-                Total heures travaillées <span class="font-bold">({{ \Carbon\Carbon::create($year, $month, 1)->locale('fr')->translatedFormat('F Y') }})</span>
-            </h3>
-            <p class="text-3xl font-bold text-indigo-600">
-                {{ number_format($totalHoursCurrentMonth, 2, ',', ' ') }} h
-            </p>
-        </div>
         <!-- KPI: Salariés -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <h3 class="text-sm font-medium text-blue-600 mb-1">Salariés Dubocq</h3>
@@ -278,6 +302,15 @@
             </p>
             <p class="mt-2 text-sm text-gray-500">
                 {{ $totalHoursCurrentMonth > 0 ? number_format(($totalInterimHoursCurrentMonth / $totalHoursCurrentMonth) * 100, 1) : 0 }}%
+            </p>
+        </div>
+        <!-- KPI: Total heures travaillées -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-sm font-medium text-indigo-600 mb-1">
+                Total heures travaillées <span class="font-bold">({{ \Carbon\Carbon::create($year, $month, 1)->locale('fr')->translatedFormat('F Y') }})</span>
+            </h3>
+            <p class="text-3xl font-bold text-indigo-600">
+                {{ number_format($totalHoursCurrentMonth, 2, ',', ' ') }} h
             </p>
         </div>
     </div>
@@ -374,6 +407,68 @@
             });
         }
 
+        // Fonction pour détacher un employé via formulaire
+        function detachEmployee(employeeId, modelType) {
+            // Création d'un formulaire pour envoyer les données avec la méthode DELETE
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.style.display = 'none';
+
+            // Création des champs du formulaire
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+
+            const projectIdInput = document.createElement('input');
+            projectIdInput.type = 'hidden';
+            projectIdInput.name = 'project_id';
+            projectIdInput.value = projectId;
+            form.appendChild(projectIdInput);
+
+            const employeeTypeInput = document.createElement('input');
+            employeeTypeInput.type = 'hidden';
+            employeeTypeInput.name = 'employee_type';
+            employeeTypeInput.value = modelType;
+            form.appendChild(employeeTypeInput);
+
+            const employeeIdInput = document.createElement('input');
+            employeeIdInput.type = 'hidden';
+            employeeIdInput.name = 'employee_id';
+            employeeIdInput.value = employeeId;
+            form.appendChild(employeeIdInput);
+
+            const monthInput = document.createElement('input');
+            monthInput.type = 'hidden';
+            monthInput.name = 'month';
+            monthInput.value = month;
+            form.appendChild(monthInput);
+
+            const yearInput = document.createElement('input');
+            yearInput.type = 'hidden';
+            yearInput.name = 'year';
+            yearInput.value = year;
+            form.appendChild(yearInput);
+
+            const categoryInput = document.createElement('input');
+            categoryInput.type = 'hidden';
+            categoryInput.name = 'category';
+            categoryInput.value = category;
+            form.appendChild(categoryInput);
+
+            // Ajout du formulaire au document et soumission
+            document.body.appendChild(form);
+            form.action = "{{ route('tracking.detachEmployee') }}";
+            form.submit();
+        }
+
         let container = document.getElementById('handsontable');
         let hot = new Handsontable(container, {
             data: hotData,
@@ -387,6 +482,25 @@
             fixedColumnsStart: 3,
             height: 'auto',
             licenseKey: 'non-commercial-and-evaluation',
+
+            // Ajout du menu contextuel pour le clic droit
+            contextMenu: {
+                items: {
+                    detachEmployee: {
+                        name: 'Détacher cet employé',
+                        callback: function(key, selection) {
+                            const row = selection[0].start.row;
+                            const employeeId = hot.getDataAtCell(row, 0); // ID de l'employé (colonne cachée)
+                            const modelType = hot.getDataAtCell(row, 1); // Type de modèle (colonne cachée)
+                            const employeeName = hot.getDataAtCell(row, 2); // Nom de l'employé pour confirmation
+
+                            if (confirm(`Voulez-vous vraiment détacher ${employeeName} ?`)) {
+                                detachEmployee(employeeId, modelType);
+                            }
+                        }
+                    }
+                }
+            },
 
             cells: function(row, col) {
                 const cellProperties = {};
