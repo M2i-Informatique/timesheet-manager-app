@@ -101,14 +101,14 @@
     <!-- KPI Coût Total -->
     <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-green-500 hover:bg-green-50 transition-colors cursor-pointer">
         <div>
-            <p class="text-sm text-green-800 tracking-wider font-semibold">Coût Total</p>
+            <p class="text-md text-green-800 tracking-wider font-semibold">Coût Total</p>
             <p class="text-2xl font-medium text-gray-900">
                 {{ number_format(array_sum(array_column($reportData, 'total_cost')), 2, ',', ' ') }}
                 <span class="text-sm font-normal">€</span>
             </p>
         </div>
         @if(isset($costChangePercent) && $costChangePercent !== 0)
-        <div class="inline-flex gap-2 rounded-sm {{ $costChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-100 text-red-600 border border-red-600' }} p-1">
+        <div class="inline-flex gap-2 rounded-sm {{ $costChangePercent > 0 ? 'bg-green-50 text-green-600 border border-green-600' : 'bg-red-50 text-red-600 border border-red-600' }} p-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 @if($costChangePercent > 0)
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -124,7 +124,7 @@
     <!-- KPI Nombre de salariés -->
     <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer">
         <div>
-            <p class="text-sm text-blue-800 tracking-wider font-semibold">Nombre de salariés</p>
+            <p class="text-md text-blue-800 tracking-wider font-semibold">Nombre de salariés</p>
             <p class="text-2xl font-medium text-gray-900">
                 {{ count($reportData) }}
             </p>
@@ -134,7 +134,7 @@
     <!-- KPI Coût moyen par salarié -->
     <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer">
         <div>
-            <p class="text-sm text-blue-800 tracking-wider font-semibold">Coût moyen</p>
+            <p class="text-md text-blue-800 tracking-wider font-semibold">Coût moyen</p>
             <p class="text-2xl font-medium text-gray-900">
                 @if(count($reportData) > 0)
                 {{ number_format(array_sum(array_column($reportData, 'total_cost')) / count($reportData), 2, ',', ' ') }}
@@ -143,31 +143,31 @@
                 @endif
                 <span class="text-sm font-normal">€</span>
             </p>
-            <p class="text-xs text-gray-500 mt-1">Par salarié</p>
+            <p class="text-sm text-gray-500 mt-1">Par salarié</p>
         </div>
     </article>
 </div>
 
 <!-- Report Worker Costs -->
-<div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+<div class="overflow-x-auto rounded-lg">
+    <table class="min-w-full">
+        <thead class="bg-blue-50">
             <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" class="px-6 py-3 text-left text-md font-bold text-blue-600">
                     Salarié
                 </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" class="px-6 py-3 text-left text-md font-bold text-blue-600">
                     Catégorie
                 </th>
                 <th scope="col"
-                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    class="px-6 py-3 text-right text-md font-bold text-blue-600">
                     Coût total
                 </th>
             </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white">
             @forelse($reportData as $worker)
-            <tr>
+            <tr class="hover:bg-blue-50">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex items-center">
                         {{ $worker['last_name'] }} {{ $worker['first_name'] }}
@@ -180,7 +180,7 @@
                         </button>
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                     @if ($worker['category'] === 'worker')
                     Ouvrier
                     @elseif($worker['category'] === 'etam')
@@ -189,7 +189,7 @@
                     Autre
                     @endif
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-blue-600">
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-blue-600">
                     {{ number_format($worker['total_cost'], 2, ',', ' ') }} €
                 </td>
             </tr>
@@ -207,23 +207,23 @@
                         <thead>
                             <tr>
                                 <th scope="col"
-                                    class="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-2 py-1 text-left text-md font-medium text-gray-800">
                                     Date
                                 </th>
                                 <th scope="col"
-                                    class="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-2 py-1 text-left text-md font-medium text-gray-800">
                                     Catégorie
                                 </th>
                                 <th scope="col"
-                                    class="px-2 py-1 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-2 py-1 text-right text-md font-medium text-gray-800">
                                     Heures
                                 </th>
                                 <th scope="col"
-                                    class="px-2 py-1 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-2 py-1 text-right text-md font-medium text-gray-800">
                                     Coût horaire
                                 </th>
                                 <th scope="col"
-                                    class="px-2 py-1 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-2 py-1 text-right text-md font-medium text-gray-800">
                                     Coût
                                 </th>
                             </tr>
@@ -231,19 +231,19 @@
                         <tbody>
                             @foreach ($worker['timesheets'] as $timesheet)
                             <tr>
-                                <td class="px-2 py-1 whitespace-nowrap text-xs text-gray-700">
+                                <td class="px-2 py-1 whitespace-nowrap text-sm text-gray-800">
                                     {{ \Carbon\Carbon::parse($timesheet['date'])->format('d/m/Y') }}
                                 </td>
-                                <td class="px-2 py-1 whitespace-nowrap text-xs text-gray-700">
+                                <td class="px-2 py-1 whitespace-nowrap text-sm text-gray-800">
                                     {{ $timesheet['category'] === 'day' ? 'Jour' : 'Nuit' }}
                                 </td>
-                                <td class="px-2 py-1 whitespace-nowrap text-right text-xs text-gray-700">
+                                <td class="px-2 py-1 whitespace-nowrap text-right text-sm text-gray-800">
                                     {{ number_format($timesheet['hours'], 2, ',', ' ') }} h
                                 </td>
-                                <td class="px-2 py-1 whitespace-nowrap text-right text-xs text-gray-700">
+                                <td class="px-2 py-1 whitespace-nowrap text-right text-sm text-gray-800">
                                     {{ number_format($timesheet['hourly_cost'], 2, ',', ' ') }} €
                                 </td>
-                                <td class="px-2 py-1 whitespace-nowrap text-right text-xs text-gray-700">
+                                <td class="px-2 py-1 whitespace-nowrap text-right text-sm text-gray-800">
                                     {{ number_format($timesheet['cost'], 2, ',', ' ') }} €
                                 </td>
                             </tr>

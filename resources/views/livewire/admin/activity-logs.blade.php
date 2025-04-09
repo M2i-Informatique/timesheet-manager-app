@@ -14,26 +14,26 @@
         <h3 class="text-lg font-medium mb-4">Pointages récents</h3>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <table class="min-w-full">
+                <thead class="bg-blue-50">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" class="px-6 py-3 text-left text-md font-bold text-blue-600 rounded-tl-lg rounded-bl-lg">
                             Date
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" class="px-6 py-3 text-left text-md font-bold text-blue-600">
                             Utilisateur
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" class="px-6 py-3 text-left text-md font-bold text-blue-600">
                             Action
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" class="px-6 py-3 text-left text-md font-bold text-blue-600 rounded-tr-lg rounded-br-lg">
                             Détails
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white">
                     @forelse($activityLogs as $activity)
-                    <tr>
+                    <tr class="hover:bg-blue-50">
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             {{ $activity->created_at->setTimezone('Europe/Paris')->format('d/m/Y H:i') }}
                         </td>
@@ -141,7 +141,7 @@
             </table>
         </div>
 
-        <div class="mt-4">
+        <div class="mt-4 rounded-lg p-1 bg-gray-50">
             {{ $activityLogs->links('vendor.livewire.custom-pagination') }}
         </div>
     </div>

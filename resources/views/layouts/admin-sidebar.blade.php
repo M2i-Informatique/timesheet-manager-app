@@ -70,7 +70,7 @@
             <!-- Section Projets -->
             <div class="mt-5">
                 <h3 class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                    Chaniter
+                    Chantier
                 </h3>
                 <div class="space-y-1">
                     <a href="{{ route('admin.projects.index') }}"

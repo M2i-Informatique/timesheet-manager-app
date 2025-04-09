@@ -10,6 +10,7 @@ class DataTable extends Component
 {
     use WithPagination;
 
+    public $id;
     public $search = '';
     public $perPage = 10;
     public $sortField = 'id';
@@ -28,6 +29,8 @@ class DataTable extends Component
 
     public function __construct($modelClass = null)
     {
+        $this->id = uniqid('datatable-');
+
         if ($modelClass) {
             $this->modelClass = $modelClass;
         }
@@ -47,6 +50,11 @@ class DataTable extends Component
     public function updatingSearch()
     {
         $this->resetPage();
+    }
+
+    public function formatOutput($value, $column)
+    {
+        return $value;
     }
 
     public function render()

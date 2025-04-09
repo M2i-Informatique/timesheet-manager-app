@@ -101,15 +101,15 @@
     <!-- KPI Coût Total -->
     <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-green-500 hover:bg-green-50 transition-colors cursor-pointer">
         <div>
-            <p class="text-sm text-green-800 tracking-wider font-semibold">Coût Total</p>
+            <p class="text-md text-green-800 tracking-wider font-semibold">Coût Total</p>
             <p class="text-2xl font-medium text-gray-900">
                 {{ number_format(array_sum(array_column($reportData, 'total_cost')), 2, ',', ' ') }}
                 <span class="text-sm font-normal">€</span>
             </p>
-            <p class="text-xs text-gray-500 mt-1">(uniquement salariés Dubocq)</p>
+            <p class="text-sm text-gray-500 mt-1">(uniquement salariés Dubocq)</p>
         </div>
         @if(isset($costChangePercent) && $costChangePercent !== 0)
-        <div class="inline-flex gap-2 rounded-sm {{ $costChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-100 text-red-600 border border-red-600' }} p-1">
+        <div class="inline-flex gap-2 rounded-sm {{ $costChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-50 text-red-600 border border-red-600' }} p-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 @if($costChangePercent > 0)
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -117,7 +117,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
                 @endif
             </svg>
-            <span class="text-xs font-medium">{{ number_format(abs($costChangePercent), 2, ',', ' ') }}%</span>
+            <span class="text-sm font-medium">{{ number_format(abs($costChangePercent), 2, ',', ' ') }}%</span>
         </div>
         @endif
     </article>
@@ -125,7 +125,7 @@
     <!-- KPI Heures Salariés -->
     <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer">
         <div>
-            <p class="text-sm text-blue-800 tracking-wider font-semibold">Heures Salariés</p>
+            <p class="text-md text-blue-800 tracking-wider font-semibold">Heures Salariés</p>
             <p class="text-2xl font-medium text-gray-900">
                 {{ number_format(
                     array_sum(
@@ -141,7 +141,7 @@
             </p>
         </div>
         @if(isset($workerHoursChangePercent) && $workerHoursChangePercent !== 0)
-        <div class="inline-flex gap-2 rounded-sm {{ $workerHoursChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-100 text-red-600 border border-red-600' }} p-1">
+        <div class="inline-flex gap-2 rounded-sm {{ $workerHoursChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-50 text-red-600 border border-red-600' }} p-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 @if($workerHoursChangePercent > 0)
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -157,14 +157,14 @@
     <!-- KPI Heures Totales -->
     <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer">
         <div>
-            <p class="text-sm text-blue-800 tracking-wider font-semibold">Heures Totales</p>
+            <p class="text-md text-blue-800 tracking-wider font-semibold">Heures Totales</p>
             <p class="text-2xl font-medium text-gray-900">
                 {{ number_format(array_sum(array_column($reportData, 'total_hours')), 2, ',', ' ') }}
                 <span class="text-sm font-normal">h</span>
             </p>
         </div>
         @if(isset($hoursChangePercent) && $hoursChangePercent !== 0)
-        <div class="inline-flex gap-2 rounded-sm {{ $hoursChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-100 text-red-600 border border-red-600' }} p-1">
+        <div class="inline-flex gap-2 rounded-sm {{ $hoursChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-50 text-red-600 border border-red-600' }} p-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 @if($hoursChangePercent > 0)
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -179,35 +179,35 @@
 </div>
 
 <!-- Report Project Costs -->
-<div class="overflow-x-auto mb-8">
-    <table class="min-w-full divide-y divide-gray-200 bg-gray-50 p-4">
-        <thead class="bg-gray-100">
+<div class="overflow-x-auto mb-8 rounded-lg">
+    <table class="min-w-full p-4">
+        <thead class="bg-blue-50">
             <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" class="px-6 py-3 text-left text-md font-bold text-blue-600">
                     Chantier
                 </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" class="px-6 py-3 text-left text-md font-bold text-blue-600">
                     Catégorie
                 </th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    H Salariés
+                <th scope="col" class="px-6 py-3 text-right text-md font-bold text-blue-600">
+                    Heures Salarié
                 </th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    H Intérim
+                <th scope="col" class="px-6 py-3 text-right text-md font-bold text-blue-600">
+                    Heures Intérim
                 </th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total H
+                <th scope="col" class="px-6 py-3 text-right text-md font-bold text-blue-600">
+                    Total s'heures
                 </th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" class="px-6 py-3 text-right text-md font-bold text-blue-600">
                     Coût Total
                 </th>
             </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white">
             @forelse($reportData as $project)
             @if($project['total_cost'] > 0)
             <!-- Ligne principale du projet -->
-            <tr class="border-b border-gray-200">
+            <tr class="hover:bg-blue-50">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex items-center">
                         {{ $project['attributes']['code'] }} - {{ $project['attributes']['name'] }}
@@ -233,7 +233,7 @@
                     {{ number_format($project['total_worker_hours'] ?? array_sum(array_column($project['relationships']['workers'] ?? [], 'total_hours')), 2, ',', ' ') }} h
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {{ number_format($project['total_interim_hours'] ?? array_sum(array_column($project['relationships']['interims'] ?? [], 'total_hours')), 2, ',', ' ') }} h
+                    {{ ($project['total_interim_hours'] ?? array_sum(array_column($project['relationships']['interims'] ?? [], 'total_hours'))) > 0 ? number_format($project['total_interim_hours'] ?? array_sum(array_column($project['relationships']['interims'] ?? [], 'total_hours')), 2, ',', ' ') . ' h' : '-' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     {{ number_format($project['total_hours'], 2, ',', ' ') }} h
@@ -329,7 +329,7 @@
 
 <!-- Histogramme des coûts mensuels -->
 <div class="mt-12 mb-8">
-    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+    <div class="bg-white p-4 rounded-lg shadow-sm">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-800">Coûts mensuels pour l'année {{ now()->year }}</h3>
             <div class="flex items-center">

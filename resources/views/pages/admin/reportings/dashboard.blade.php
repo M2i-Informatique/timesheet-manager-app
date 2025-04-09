@@ -87,61 +87,7 @@
                 <span>vs mois précédent</span>
             </div>
         </div>
-
-        <!-- KPI: Projets actifs -->
-        <!-- <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-sm font-medium text-gray-500 mb-1">Projets actifs</h3>
-                <p class="text-3xl font-bold text-blue-600">{{ $activeProjectsCount }}</p>
-                <div class="mt-2 text-sm text-gray-500">
-                    {{ $projectsWithActivityCount }} projets avec activité ce mois
-                </div>
-            </div> -->
-
-        <!-- KPI: Travailleurs actifs -->
-        <!-- <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-sm font-medium text-gray-500 mb-1">Travailleurs actifs</h3>
-                <p class="text-3xl font-bold text-blue-600">{{ $activeWorkersCount }}</p>
-                <div class="mt-2 text-sm text-gray-500">
-                    {{ $workersWithActivityCount }} avec pointage ce mois
-                </div>
-            </div> -->
     </div>
-
-    <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"> -->
-    <!-- Top 5 projets par heures -->
-    <!-- <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-medium text-gray-800 mb-4">Top 5 projets (heures)</h3>
-                <div style="height: 300px;">
-                    <canvas id="topProjectsChart"></canvas>
-                </div>
-            </div> -->
-
-    <!-- Top 5 travailleurs par heures -->
-    <!-- <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-medium text-gray-800 mb-4">Top 5 travailleurs (heures)</h3>
-                <div style="height: 300px;">
-                    <canvas id="topWorkersChart"></canvas>
-                </div>
-            </div> -->
-    <!-- </div> -->
-
-    <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"> -->
-    <!-- Répartition des coûts par catégorie de projet -->
-    <!-- <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-medium text-gray-800 mb-4">Coûts par catégorie (salariés uniquement)</h3>
-                <div style="height: 300px;">
-                    <canvas id="costsByCategoryChart"></canvas>
-                </div>
-            </div> -->
-
-    <!-- Tendance heures sur 6 derniers mois -->
-    <!-- <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-medium text-gray-800 mb-4">Tendance heures (6 derniers mois)</h3>
-                <div style="height: 300px;">
-                    <canvas id="hoursHistoryChart"></canvas>
-                </div>
-            </div> -->
-    <!-- </div> -->
 
     <!-- Liens rapides vers les rapports -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
