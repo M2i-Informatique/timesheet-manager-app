@@ -16,26 +16,24 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="flex flex-col h-full">
+<body class="flex flex-col h-full min-h-screen">
     <!-- Navigation -->
     <livewire:components.navigation />
 
     <!-- En-tête de page -->
     @hasSection('header')
-        <header>
-            @yield('header')
-        </header>
+    <header>
+        @yield('header')
+    </header>
     @endif
 
     <!-- Contenu principal -->
-    <main class="flex-grow min-h-full">
+    <main class="flex-grow">
         @yield('content')
     </main>
 
     <!-- Pied de page -->
-    @if (!request()->routeIs('admin.*'))
-        @include('partials.footer')
-    @endif
+    @include('partials.footer')
 
     <!-- Messages flash -->
     {{-- <livewire:components.flash-messages /> --}}

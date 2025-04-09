@@ -68,44 +68,44 @@ class ReportingController extends Controller
         switch ($reportType) {
             case 'project_hours':
                 $reportData = $this->projectHoursService->getProjectHours($projectId, $category, $startDate, $endDate);
-                
+
                 // FILTRAGE POUR NE PAS AFFICHER LES PROJETS AVEC 0 HEURES
                 $reportData = array_filter($reportData, function ($project) {
                     return isset($project['total_hours']) && $project['total_hours'] > 0;
                 });
-                
+
                 // TRIAGE DES PROJETS PAR CODE
                 usort($reportData, function ($a, $b) {
                     return $a['code'] <=> $b['code'];
                 });
-                
+
                 $chartData = $this->prepareProjectHoursChartData($reportData);
                 break;
-        
+
             case 'worker_hours':
                 $reportData = $this->workerHoursService->getWorkerHours($workerId, $category, $startDate, $endDate);
-                
+
                 // TRIAGE DES TRAVAILLEURS PAR NOM DE FAMILLE
                 usort($reportData, function ($a, $b) {
                     return $a['last_name'] <=> $b['last_name'];
                 });
-                
+
                 $chartData = $this->prepareWorkerHoursChartData($reportData);
                 break;
-        
+
             case 'project_costs':
                 $reportData = $this->projectCostsService->getProjectCosts($projectId, $category, $startDate, $endDate);
                 $chartData = $this->prepareProjectCostsChartData($reportData);
                 break;
-        
+
             case 'worker_costs':
                 $reportData = $this->workerCostsService->getWorkerCosts($workerId, $category, $startDate, $endDate);
-                
+
                 // TRIAGE DES TRAVAILLEURS PAR NOM DE FAMILLE
                 usort($reportData, function ($a, $b) {
                     return $a['last_name'] <=> $b['last_name'];
                 });
-                
+
                 $chartData = $this->prepareWorkerCostsChartData($reportData);
                 break;
         }
@@ -196,6 +196,8 @@ class ReportingController extends Controller
             $monthlyTotalCosts[] = $totalCost;
         }
 
+        $showBackButton = true;
+
         return view('pages.admin.reportings.index', compact(
             'reportType',
             'projects',
@@ -213,7 +215,8 @@ class ReportingController extends Controller
             'costChangePercent',
             'monthlyTotalCosts',
             'monthLabels',
-            'currentYear'
+            'currentYear',
+            'showBackButton'
         ));
     }
 
@@ -411,8 +414,7 @@ class ReportingController extends Controller
             ->latest()
             ->paginate(10);
 
-        // Pour déboguer, vérifiez si des logs sont récupérés
-        Log::info('Nombre de logs d\'activité: ' . $activityLogs->count());
+        $showBackButton = false;
 
         return view('pages.admin.reportings.dashboard', compact(
             'totalHoursCurrentMonth',
@@ -432,7 +434,8 @@ class ReportingController extends Controller
             'monthlyHoursData',
             'monthlyWorkersData',
             'monthlyInterimsData',
-            'activityLogs'
+            'activityLogs',
+            'showBackButton',
         ));
     }
 

@@ -34,13 +34,13 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($activityLogs as $activity)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
                             {{ $activity->created_at->setTimezone('Europe/Paris')->format('d/m/Y H:i') }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             {{ optional($activity->causer)->first_name . ' ' . optional($activity->causer)->last_name ?? 'Système' }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
                             {{ $activity->description }}
                         </td>
                         <td class="px-6 py-4 text-sm">

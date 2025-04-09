@@ -3,10 +3,7 @@
 @section('title', 'Tableau de bord - Reporting')
 
 @section('admin-content')
-<div class="container mx-auto py-8">
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold">Tableau de bord</h1>
-    </div>
+<div class="container mx-auto">
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
         <!-- KPI: Coût total (uniquement workers) -->
