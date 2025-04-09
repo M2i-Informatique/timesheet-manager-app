@@ -285,18 +285,6 @@
                             <td class="px-6 py-4 text-sm text-gray-700">{{ $r['day_hours'] ?: 0 }} h</td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{ $r['night_hours'] ?: 0 }} h</td>
                             <td class="px-6 py-4 text-sm font-semibold text-gray-700">{{ $r['total'] }} h</td>
-                            <td class="px-6 py-4 text-sm">
-                                <form action="{{ route('tracking.detachEmployee') }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <input type="hidden" name="project_id" value="{{ $project->id }}">
-                                    <input type="hidden" name="employee_type" value="{{ $r['model_type'] }}">
-                                    <input type="hidden" name="employee_id" value="{{ $r['id'] }}">
-                                    <input type="hidden" name="month" value="{{ $month }}">
-                                    <input type="hidden" name="year" value="{{ $year }}">
-                                    <input type="hidden" name="category" value="{{ $category }}">
-                                </form>
-                            </td>
                         </tr>
                         @endif
                         @endforeach
