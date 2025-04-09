@@ -68,7 +68,18 @@ class ReportingController extends Controller
         switch ($reportType) {
             case 'project_hours':
                 $reportData = $this->projectHoursService->getProjectHours($projectId, $category, $startDate, $endDate);
-                $chartData  = $this->prepareProjectHoursChartData($reportData);
+
+                // FILTRAGE POUR NE PAS AFFICHER LES PROJETS AVEC 0 HEURES
+                $reportData = array_filter($reportData, function ($project) {
+                    return isset($project['total_hours']) && $project['total_hours'] > 0;
+                });
+
+                // TRIAGE DES PROJETS PAR CODE
+                usort($reportData, function ($a, $b) {
+                    return $a['code'] <=> $b['code'];
+                });
+
+                $chartData = $this->prepareProjectHoursChartData($reportData);
                 break;
 
             case 'worker_hours':

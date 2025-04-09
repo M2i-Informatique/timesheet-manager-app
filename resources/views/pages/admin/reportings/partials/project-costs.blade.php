@@ -98,6 +98,30 @@
 
 <!-- KPI'S -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    <!-- KPI Coût Total -->
+    <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-green-500 hover:bg-green-50 transition-colors cursor-pointer">
+        <div>
+            <p class="text-sm text-green-800 tracking-wider font-semibold">Coût Total</p>
+            <p class="text-2xl font-medium text-gray-900">
+                {{ number_format(array_sum(array_column($reportData, 'total_cost')), 2, ',', ' ') }}
+                <span class="text-sm font-normal">€</span>
+            </p>
+            <p class="text-xs text-gray-500 mt-1">(uniquement salariés Dubocq)</p>
+        </div>
+        @if(isset($costChangePercent) && $costChangePercent !== 0)
+        <div class="inline-flex gap-2 rounded-sm {{ $costChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-100 text-red-600 border border-red-600' }} p-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                @if($costChangePercent > 0)
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                @else
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                @endif
+            </svg>
+            <span class="text-xs font-medium">{{ number_format(abs($costChangePercent), 2, ',', ' ') }}%</span>
+        </div>
+        @endif
+    </article>
+
     <!-- KPI Heures Salariés -->
     <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer">
         <div>
@@ -152,76 +176,51 @@
         </div>
         @endif
     </article>
-
-    <!-- KPI Coût Total -->
-    <article class="flex items-end justify-between rounded-lg bg-gray-50 border border-gray-200 shadow-sm p-6 h-full hover:border-green-500 hover:bg-green-50 transition-colors cursor-pointer">
-        <div>
-            <p class="text-sm text-green-800 tracking-wider font-semibold">Coût Total</p>
-            <p class="text-2xl font-medium text-gray-900">
-                {{ number_format(array_sum(array_column($reportData, 'total_cost')), 2, ',', ' ') }}
-                <span class="text-sm font-normal">€</span>
-            </p>
-            <p class="text-xs text-gray-500 mt-1">(uniquement salariés Dubocq)</p>
-        </div>
-        @if(isset($costChangePercent) && $costChangePercent !== 0)
-        <div class="inline-flex gap-2 rounded-sm {{ $costChangePercent > 0 ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-red-100 text-red-600 border border-red-600' }} p-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                @if($costChangePercent > 0)
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                @else
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                @endif
-            </svg>
-            <span class="text-xs font-medium">{{ number_format(abs($costChangePercent), 2, ',', ' ') }}%</span>
-        </div>
-        @endif
-    </article>
 </div>
 
-<!-- Tableau des coûts par chantier -->
-<div class="overflow-x-auto rounded-lg mb-8">
+<!-- Report Project Costs -->
+<div class="overflow-x-auto mb-8">
     <table class="min-w-full divide-y divide-gray-200 bg-gray-50 p-4">
         <thead class="bg-gray-50">
             <tr>
-                <th scope="col" class="px-6 py-3 text-left text-sm text-gray-800 tracking-wider">
-                    Chantiers
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Chantier
                 </th>
-                <th scope="col" class="px-6 py-3 text-left text-sm text-gray-800 tracking-wider">
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Catégorie
                 </th>
-                <th scope="col" class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
-                    Heures Salariés
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    H Salariés
                 </th>
-                <th scope="col" class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
-                    Heures Intérim
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    H Intérim
                 </th>
-                <th scope="col" class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
-                    Total heures
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total H
                 </th>
-                <th scope="col" class="px-6 py-3 text-right text-sm text-gray-800 tracking-wider">
-                    Coût total
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Coût Total
                 </th>
             </tr>
         </thead>
-        <tbody class="bg-white">
-            @php $displayedCount = 0; @endphp
+        <tbody class="bg-white divide-y divide-gray-200">
             @forelse($reportData as $project)
             @if($project['total_cost'] > 0)
-            @php $displayedCount++; @endphp
+            <!-- Ligne principale du projet -->
             <tr class="border-b border-gray-200">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium align-middle">
-                    <div class="h-full flex items-center">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex items-center">
                         {{ $project['attributes']['code'] }} - {{ $project['attributes']['name'] }}
                         <button
                             class="text-black hover:text-blue-800 cursor-pointer focus:outline-none transition-all duration-200 ml-2 flex-shrink-0"
-                            onclick="toggleDetails('project-{{ $project['id'] ?? $loop->index }}')">
+                            onclick="toggleDetails('{{ $project['id'] ?? $loop->index }}')">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 toggle-icon-{{ $project['id'] ?? $loop->index }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     @if ($project['attributes']['category'] === 'mh')
                     MH
                     @elseif($project['attributes']['category'] === 'go')
@@ -239,88 +238,83 @@
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     {{ number_format($project['total_hours'], 2, ',', ' ') }} h
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-indigo-600 font-bold">
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-blue-600 font-bold">
                     {{ number_format($project['total_cost'], 2, ',', ' ') }} €
-                    <div class="text-xs text-gray-500 font-normal">(uniquement salariés)</div>
+                    <!-- <div class="text-xs text-gray-500 font-normal">(uniquement salariés)</div> -->
                 </td>
             </tr>
 
-            <!-- Wrapper pour le contenu pliable -->
-            <tr class="detail-row">
-                <td colspan="6" class="p-0">
-                    <div id="project-{{ $project['id'] ?? $loop->index }}" class="hidden">
-                        <!-- Worker details for this project -->
-                        @if (isset($project['relationships']['workers']))
-                        <div class="bg-blue-50">
-                            <div class="px-6 py-2 text-sm font-semibold text-blue-800">
-                                Salariés ({{ count($project['relationships']['workers']) }})
-                            </div>
-                        </div>
-
-                        @foreach ($project['relationships']['workers'] as $worker)
-                        <div class="bg-blue-50 grid grid-cols-8">
-                            <div class="px-6 py-2 whitespace-nowrap text-sm text-gray-700 pl-10">
-                                {{ $worker['attributes']['first_name'] }} {{ $worker['attributes']['last_name'] }}
-                            </div>
-                            <div></div>
-                            <div></div>
-                            <div class="px-6 py-2 whitespace-nowrap text-sm text-gray-700">
-                                @if ($worker['attributes']['category'] === 'worker')
-                                Ouvrier
-                                @elseif($worker['attributes']['category'] === 'etam')
-                                ETAM
-                                @else
-                                Autre
-                                @endif
-                            </div>
-                            <div class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
-                                {{ number_format($worker['total_hours'], 2, ',', ' ') }} h
-                            </div>
-                            <div class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
-                                <!-- Aucune heure d'intérim pour un worker -->
-                            </div>
-                            <div></div>
-                            <div class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
-                                {{ number_format($worker['total_cost'], 2, ',', ' ') }} €
-                            </div>
-                        </div>
-                        @endforeach
-                        @endif
-
-                        <!-- Interim details for this project -->
-                        @if (isset($project['relationships']['interims']))
-                        <div class="bg-green-50">
-                            <div class="px-6 py-2 text-sm font-semibold text-green-800">
-                                Intérims ({{ count($project['relationships']['interims']) }}) - Heures comptabilisées, coûts exclus
-                            </div>
-                        </div>
-
-                        @foreach ($project['relationships']['interims'] as $interim)
-                        <div class="bg-green-50 grid grid-cols-8">
-                            <div class="px-6 py-2 whitespace-nowrap text-sm text-gray-700 pl-10">
-                                {{ $interim['attributes']['agency'] }}
-                            </div>
-                            <div></div>
-                            <div></div>
-                            <div class="px-6 py-2 whitespace-nowrap text-sm text-gray-700">
-                                Intérim
-                            </div>
-                            <div class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
-                                <!-- Aucune heure de worker pour un interim -->
-                            </div>
-                            <div class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
-                                {{ number_format($interim['total_hours'], 2, ',', ' ') }} h
-                            </div>
-                            <div></div>
-                            <div class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
-                                <span class="text-gray-400 italic">Non comptabilisé</span>
-                            </div>
-                        </div>
-                        @endforeach
-                        @endif
-                    </div>
+            <!-- En-tête de la section des salariés -->
+            @if (isset($project['relationships']['workers']) && count($project['relationships']['workers']) > 0)
+            <tr class="bg-blue-50 hidden detail-{{ $project['id'] ?? $loop->index }}">
+                <td colspan="6" class="px-6 py-2 text-sm font-semibold text-blue-800">
+                    Salariés ({{ count($project['relationships']['workers']) }})
                 </td>
             </tr>
+
+            <!-- Détails des salariés -->
+            @foreach ($project['relationships']['workers'] as $worker)
+            <tr class="bg-blue-50 hidden detail-{{ $project['id'] ?? $loop->index }}">
+                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-700 pl-10">
+                    {{ $worker['attributes']['first_name'] }} {{ $worker['attributes']['last_name'] }}
+                </td>
+                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-700">
+                    @if ($worker['attributes']['category'] === 'worker')
+                    Ouvrier
+                    @elseif($worker['attributes']['category'] === 'etam')
+                    ETAM
+                    @else
+                    Autre
+                    @endif
+                </td>
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                    {{ number_format($worker['total_hours'], 2, ',', ' ') }} h
+                </td>
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                    <!-- Vide pour les heures d'intérim -->
+                </td>
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                    {{ number_format($worker['total_hours'], 2, ',', ' ') }} h
+                </td>
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                    {{ number_format($worker['total_cost'], 2, ',', ' ') }} €
+                </td>
+            </tr>
+            @endforeach
+            @endif
+
+            <!-- En-tête de la section des intérims -->
+            @if (isset($project['relationships']['interims']) && count($project['relationships']['interims']) > 0)
+            <tr class="bg-green-50 hidden detail-{{ $project['id'] ?? $loop->index }}">
+                <td colspan="6" class="px-6 py-2 text-sm font-semibold text-green-800">
+                    Intérims ({{ count($project['relationships']['interims']) }}) - Heures comptabilisées, coûts exclus
+                </td>
+            </tr>
+
+            <!-- Détails des intérims -->
+            @foreach ($project['relationships']['interims'] as $interim)
+            <tr class="bg-green-50 hidden detail-{{ $project['id'] ?? $loop->index }}">
+                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-700 pl-10">
+                    {{ $interim['attributes']['agency'] }}
+                </td>
+                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-700">
+                    Intérim
+                </td>
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                    <!-- Vide pour les heures de salariés -->
+                </td>
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                    {{ number_format($interim['total_hours'], 2, ',', ' ') }} h
+                </td>
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                    {{ number_format($interim['total_hours'], 2, ',', ' ') }} h
+                </td>
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
+                    <span class="text-gray-400 italic">Non comptabilisé</span>
+                </td>
+            </tr>
+            @endforeach
+            @endif
             @endif
             @empty
             <tr>
@@ -332,7 +326,6 @@
         </tbody>
     </table>
 </div>
-
 
 <!-- Histogramme des coûts mensuels -->
 <div class="mt-12 mb-8">
@@ -355,18 +348,26 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function toggleDetails(elementId) {
-        const element = document.getElementById(elementId);
-        const projectId = elementId.split('-')[1];
+    function toggleDetails(projectId) {
+        const detailElements = document.querySelectorAll('.detail-' + projectId);
         const icon = document.querySelector('.toggle-icon-' + projectId);
-
-        if (element.classList.contains('hidden')) {
-            element.classList.remove('hidden');
-            element.classList.add('block');
+        
+        // Vérifier si les éléments sont visibles ou cachés
+        const isHidden = detailElements[0].classList.contains('hidden');
+        
+        // Basculer la visibilité de tous les éléments de détail
+        detailElements.forEach(element => {
+            if (isHidden) {
+                element.classList.remove('hidden');
+            } else {
+                element.classList.add('hidden');
+            }
+        });
+        
+        // Changer l'icône
+        if (isHidden) {
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />';
         } else {
-            element.classList.remove('block');
-            element.classList.add('hidden');
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />';
         }
     }

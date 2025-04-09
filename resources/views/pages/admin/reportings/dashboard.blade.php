@@ -10,12 +10,12 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
         <!-- KPI: Coût total (uniquement workers) -->
-        <div class="bg-white rounded-lg shadow-md p-6 h-full flex flex-col justify-between">
+        <div class="bg-blue-50 border border-blue-500 rounded-lg p-6 h-full flex flex-col justify-between">
             <div>
-                <h3 class="text-sm font-medium text-gray-500 mb-1">
+                <h3 class="text-sm font-medium text-blue-600 mb-1">
                     Coût total des salariés <span class="font-bold">({{ now()->locale('fr')->translatedFormat('F Y') }})</span>
                 </h3>
-                <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalCostCurrentMonth, 2, ',', ' ') }} €</p>
+                <p class="text-3xl font-bold text-blue-600">{{ number_format($totalCostCurrentMonth, 2, ',', ' ') }} €</p>
                 <div class="mt-2 text-sm text-gray-500">
                     <div class="text-gray-500 mb-1 text-xs italic">Uniquement coûts des salariés</div>
                 </div>
@@ -40,18 +40,18 @@
         </div>
 
         <!-- KPI: Total heures travaillées -->
-        <div class="bg-white rounded-lg shadow-md p-6 h-full flex flex-col justify-between">
+        <div class="bg-blue-50 border border-blue-500 rounded-lg p-6 h-full flex flex-col justify-between">
             <div>
-                <h3 class="text-sm font-medium text-gray-500 mb-1">
+                <h3 class="text-sm font-medium text-blue-600 mb-1">
                     Heures travaillées <span class="font-bold">({{ now()->locale('fr')->translatedFormat('F Y') }})</span>
                 </h3>
-                <p class="text-3xl font-bold text-indigo-600">{{ number_format($totalHoursCurrentMonth, 2, ',', ' ') }} h</p>
+                <p class="text-3xl font-bold text-blue-600">{{ number_format($totalHoursCurrentMonth, 2, ',', ' ') }} h</p>
                 <div class="mt-2 text-sm space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="text-blue-600 font-medium">Salariés:</span>
-                        <span class="text-blue-600">
-                            {{ number_format($totalWorkerHoursCurrentMonth ?? 0, 2, ',', ' ') }} h
-                            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2 text-blue-700">
+                        <span class="rounded-full bg-blue-100 px-2 text-blue-700 border border-blue-300">
+                            {{ number_format($totalWorkerHoursCurrentMonth ?? 0, 2, ',', ' ') }} h /
+                            <span class="inline-flex items-center justify-center rounded-full px-2">
                                 <p class="text-sm whitespace-nowrap">
                                     {{ $totalHoursCurrentMonth > 0 ? number_format((($totalWorkerHoursCurrentMonth ?? 0) / $totalHoursCurrentMonth) * 100, 1) : 0 }}%
                                 </p>
@@ -60,10 +60,10 @@
                     </div>
 
                     <div class="flex justify-between items-center">
-                        <span class="text-green-600 font-medium">Intérims:</span>
-                        <span class="text-green-600">
-                            {{ number_format($totalInterimHoursCurrentMonth ?? 0, 2, ',', ' ') }} h
-                            <span class="inline-flex items-center justify-center rounded-full bg-green-100 px-2 text-green-700">
+                        <span class="text-green-600 font-medium ">Intérims:</span>
+                        <span class="rounded-full bg-green-100 px-2 text-green-700 border border-green-300">
+                            {{ number_format($totalInterimHoursCurrentMonth ?? 0, 2, ',', ' ') }} h /
+                            <span class="inline-flex items-center justify-center rounded-full px-2">
                                 <p class="text-sm whitespace-nowrap">
                                     {{ $totalHoursCurrentMonth > 0 ? number_format((($totalInterimHoursCurrentMonth ?? 0) / $totalHoursCurrentMonth) * 100, 1) : 0 }}%
                                 </p>
@@ -94,7 +94,7 @@
         <!-- KPI: Projets actifs -->
         <!-- <div class="bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-sm font-medium text-gray-500 mb-1">Projets actifs</h3>
-                <p class="text-3xl font-bold text-indigo-600">{{ $activeProjectsCount }}</p>
+                <p class="text-3xl font-bold text-blue-600">{{ $activeProjectsCount }}</p>
                 <div class="mt-2 text-sm text-gray-500">
                     {{ $projectsWithActivityCount }} projets avec activité ce mois
                 </div>
@@ -103,7 +103,7 @@
         <!-- KPI: Travailleurs actifs -->
         <!-- <div class="bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-sm font-medium text-gray-500 mb-1">Travailleurs actifs</h3>
-                <p class="text-3xl font-bold text-indigo-600">{{ $activeWorkersCount }}</p>
+                <p class="text-3xl font-bold text-blue-600">{{ $activeWorkersCount }}</p>
                 <div class="mt-2 text-sm text-gray-500">
                     {{ $workersWithActivityCount }} avec pointage ce mois
                 </div>
@@ -151,23 +151,23 @@
         <h3 class="text-lg font-medium text-gray-800 mb-4">Rapports détaillés</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <a href="{{ route('admin.reporting.index', ['report_type' => 'project_costs']) }}"
-                class="block p-4 border border-gray-200 rounded-md hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
-                <h4 class="font-medium text-indigo-600 mb-2">Coûts par chantier</h4>
+                class="block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                <h4 class="font-medium text-blue-600 mb-2">Coûts par chantier</h4>
                 <p class="text-sm text-gray-600">Analyse des coûts des chantiers avec répartition détaillée</p>
             </a>
             <a href="{{ route('admin.reporting.index', ['report_type' => 'project_hours']) }}"
-                class="block p-4 border border-gray-200 rounded-md hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
-                <h4 class="font-medium text-indigo-600 mb-2">Heures par chantier</h4>
+                class="block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                <h4 class="font-medium text-blue-600 mb-2">Heures par chantier</h4>
                 <p class="text-sm text-gray-600">Analyse détaillée des heures par chantier et par salarié</p>
             </a>
             <a href="{{ route('admin.reporting.index', ['report_type' => 'worker_costs']) }}"
-                class="block p-4 border border-gray-200 rounded-md hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
-                <h4 class="font-medium text-indigo-600 mb-2">Coûts par salarié</h4>
+                class="block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                <h4 class="font-medium text-blue-600 mb-2">Coûts par salarié</h4>
                 <p class="text-sm text-gray-600">Coûts générés par salarié avec détail par pointage</p>
             </a>
             <a href="{{ route('admin.reporting.index', ['report_type' => 'worker_hours']) }}"
-                class="block p-4 border border-gray-200 rounded-md hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
-                <h4 class="font-medium text-indigo-600 mb-2">Heures par salarié</h4>
+                class="block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                <h4 class="font-medium text-blue-600 mb-2">Heures par salarié</h4>
                 <p class="text-sm text-gray-600">Heures travaillées par personne avec détail des pointages</p>
             </a>
         </div>

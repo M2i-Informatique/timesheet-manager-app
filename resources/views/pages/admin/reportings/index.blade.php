@@ -108,7 +108,7 @@
         </div> -->
 
         <!-- Résultats -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="bg-white rounded-lg">
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- Tableaux de données -->
                 <div class="w-full overflow-auto">

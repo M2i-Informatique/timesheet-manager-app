@@ -10,23 +10,23 @@
         </div>
     @endif --}}
 
-    <div class="mt-8">
+    <div>
         <h3 class="text-lg font-medium mb-4">Pointages récents</h3>
 
-        <div class="overflow-x-auto rounded-lg">
+        <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-sm text-gray-800 tracking-wider">
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Date
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm text-gray-800 tracking-wider">
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Utilisateur
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm text-gray-800 tracking-wider">
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Action
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm text-gray-800 tracking-wider">
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Détails
                         </th>
                     </tr>
@@ -34,20 +34,20 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($activityLogs as $activity)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             {{ $activity->created_at->setTimezone('Europe/Paris')->format('d/m/Y H:i') }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             {{ optional($activity->causer)->first_name . ' ' . optional($activity->causer)->last_name ?? 'Système' }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             {{ $activity->description }}
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-500">
+                        <td class="px-6 py-4 text-sm">
                             @if ($activity->subject)
                             <details>
-                                <summary class="cursor-pointer text-indigo-600 hover:text-indigo-800">Voir les détails</summary>
-                                <div class="mt-2 pl-4 border-l-2 border-indigo-200">
+                                <summary class="cursor-pointer text-blue-600 hover:text-blue-800">Voir les détails</summary>
+                                <div class="mt-2 pl-4 border-l-2 border-blue-200">
                                     @if ($activity->properties->has('attributes'))
                                     <p class="font-semibold">Nouvelles valeurs:</p>
                                     <ul class="list-disc pl-5">
