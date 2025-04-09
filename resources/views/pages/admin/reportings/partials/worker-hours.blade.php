@@ -170,7 +170,7 @@
             <tr>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex items-center">
-                        {{ $worker['first_name'] }} {{ $worker['last_name'] }}
+                    {{ $worker['last_name'] }} {{ $worker['first_name'] }}
                         <button
                             class="text-black hover:text-blue-800 cursor-pointer focus:outline-none transition-all duration-200 ml-2 flex-shrink-0"
                             onclick="toggleWorkerTimesheet('{{ $worker['id'] ?? $loop->index }}')">

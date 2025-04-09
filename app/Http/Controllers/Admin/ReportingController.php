@@ -68,33 +68,45 @@ class ReportingController extends Controller
         switch ($reportType) {
             case 'project_hours':
                 $reportData = $this->projectHoursService->getProjectHours($projectId, $category, $startDate, $endDate);
-
+                
                 // FILTRAGE POUR NE PAS AFFICHER LES PROJETS AVEC 0 HEURES
                 $reportData = array_filter($reportData, function ($project) {
                     return isset($project['total_hours']) && $project['total_hours'] > 0;
                 });
-
+                
                 // TRIAGE DES PROJETS PAR CODE
                 usort($reportData, function ($a, $b) {
                     return $a['code'] <=> $b['code'];
                 });
-
+                
                 $chartData = $this->prepareProjectHoursChartData($reportData);
                 break;
-
+        
             case 'worker_hours':
                 $reportData = $this->workerHoursService->getWorkerHours($workerId, $category, $startDate, $endDate);
-                $chartData  = $this->prepareWorkerHoursChartData($reportData);
+                
+                // TRIAGE DES TRAVAILLEURS PAR NOM DE FAMILLE
+                usort($reportData, function ($a, $b) {
+                    return $a['last_name'] <=> $b['last_name'];
+                });
+                
+                $chartData = $this->prepareWorkerHoursChartData($reportData);
                 break;
-
+        
             case 'project_costs':
                 $reportData = $this->projectCostsService->getProjectCosts($projectId, $category, $startDate, $endDate);
-                $chartData  = $this->prepareProjectCostsChartData($reportData);
+                $chartData = $this->prepareProjectCostsChartData($reportData);
                 break;
-
+        
             case 'worker_costs':
                 $reportData = $this->workerCostsService->getWorkerCosts($workerId, $category, $startDate, $endDate);
-                $chartData  = $this->prepareWorkerCostsChartData($reportData);
+                
+                // TRIAGE DES TRAVAILLEURS PAR NOM DE FAMILLE
+                usort($reportData, function ($a, $b) {
+                    return $a['last_name'] <=> $b['last_name'];
+                });
+                
+                $chartData = $this->prepareWorkerCostsChartData($reportData);
                 break;
         }
 

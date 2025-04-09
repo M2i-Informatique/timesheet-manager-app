@@ -256,7 +256,7 @@
             @foreach ($project['relationships']['workers'] as $worker)
             <tr class="bg-blue-50 hidden detail-{{ $project['id'] ?? $loop->index }}">
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-700 pl-10">
-                    {{ $worker['attributes']['first_name'] }} {{ $worker['attributes']['last_name'] }}
+                    {{ $worker['attributes']['last_name'] }} {{ $worker['attributes']['first_name'] }}
                 </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-700">
                     @if ($worker['attributes']['category'] === 'worker')
