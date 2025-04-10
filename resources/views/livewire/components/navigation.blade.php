@@ -1,5 +1,5 @@
 <nav class="bg-gray-50 border border-gray-100 hidden md:block">
-    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4">
         <div class="items-center" id="navbar-cta">
             @if (!request()->routeIs('admin.*'))
             <ul class="flex gap-4">
