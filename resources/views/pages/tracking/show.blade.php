@@ -7,9 +7,14 @@
 @section('header')
 <div class="max-w-7xl mx-auto flex justify-between items-center mb-6 px-4">
     <div class="relative pt-8 lg:pt-24">
-        <h1 class="text-2xl">
-            <a class="hover:text-blue-600 hover:underline font-bold" href="{{ route('tracking.index') }}">Pointage</a>
-            <span class="font-bold"> > {{ $project->code }} - {{ $project->name }} - {{ $project->city }}</span>
+        <h1 class="text-2xl flex items-center flex-wrap">
+            <a class="hover:text-blue-600 hover:underline font-bold transition-colors duration-200" href="{{ route('tracking.index') }}">Pointage</a>
+            <span class="mx-2 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </span>
+            <span class="font-bold text-customColor">{{ $project->code }} - {{ $project->name }} - {{ $project->city }}</span>
         </h1>
     </div>
 </div>
@@ -19,51 +24,60 @@
 <div class="max-w-7xl mx-auto pb-24 px-4 lg:px-0">
     {{-- Message de succès --}}
     @if (session('success'))
-    <div class="mb-4 p-2 bg-green-200 text-green-800 border border-green-300 rounded">
-        {{ session('success') }}
+    <div class="mb-6 p-4 bg-green-50 text-green-800 border-l-4 border-green-500 rounded-lg shadow-md flex items-start">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 flex-shrink-0 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ session('success') }}</span>
     </div>
     @endif
 
     <!-- Section d'informations avec légende -->
-    <div class="flex flex-col md:flex-row gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <!-- Colonne d'informations importantes -->
-        <div class="md:w-1/2">
-            <div class="flex items-center gap-2 mb-2 font-bold text-gray-700">
+        <div class="bg-white rounded-xl shadow-lg p-5 border border-gray-100 transition-all duration-300 hover:shadow-xl">
+            <div class="flex items-center gap-2 mb-4 font-bold text-gray-800">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-5 h-5">
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    class="w-5 h-5 text-blue-600">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                 </svg>
-                Informations importantes :
+                <span>Informations importantes</span>
             </div>
-            <div class="p-2 text-sm">
-                <ul class="space-y-2">
-                    <li class="flex items-start gap-2">
-                        <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-blue-500"></div>
-                        <span class="font-medium text-blue-800">
+            <div class="p-4 rounded-lg bg-blue-50">
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 w-6 h-6 mt-0.5 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                            <span class="text-xs font-bold">1</span>
+                        </div>
+                        <span class="font-medium text-blue-800 leading-snug">
                             Veuillez mettre « 0 » pour marquer un salarié absent.
                         </span>
                     </li>
 
-                    <li class="flex items-start gap-2">
-                        <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
-                        <div class="flex flex-col space-y-1">
-                            <span class="font-medium text-red-800">
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 w-6 h-6 mt-0.5 rounded-full bg-red-500 flex items-center justify-center text-white">
+                            <span class="text-xs font-bold">2</span>
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <span class="font-medium text-red-800 leading-snug">
                                 Avant de détacher un salarié, assurez-vous d'avoir supprimé toutes ses heures.
                             </span>
-                            <span class="font-medium text-red-800">
+                            <span class="font-medium text-red-800 leading-snug">
                                 Faites un clic droit sur la ligne de l'employé pour le détacher du chantier.
                             </span>
-                            <span class="font-medium text-red-800">
+                            <span class="font-medium text-red-800 leading-snug">
                                 Attention, cette action est irréversible.
                             </span>
                         </div>
                     </li>
 
-                    <li class="flex items-start gap-2">
-                        <div class="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-yellow-500"></div>
-                        <span class="font-medium text-yellow-800">
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 w-6 h-6 mt-0.5 rounded-full bg-yellow-500 flex items-center justify-center text-white">
+                            <span class="text-xs font-bold">3</span>
+                        </div>
+                        <span class="font-medium text-yellow-800 leading-snug">
                             Sauvegarder toutes vos modifications avant de quitter cette page.
                         </span>
                     </li>
@@ -72,298 +86,373 @@
         </div>
 
         <!-- Légende des jours non travaillés -->
-        <div class="md:w-1/2">
-            <div class="flex items-center gap-2 mb-2 font-bold text-gray-700">
+        <div class="bg-white rounded-xl shadow-lg p-5 border border-gray-100 transition-all duration-300 hover:shadow-xl">
+            <div class="flex items-center gap-2 mb-4 font-bold text-gray-800">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-5 h-5">
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    class="w-5 h-5 text-orange-600">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227
                              1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1
                              .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394
                              48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
                 </svg>
-                Légende des jours non travaillés :
+                <span>Légende des jours non travaillés</span>
             </div>
-            <div class="p-2 text-sm">
-                <ul class="space-y-2">
-                    <li class="flex items-start gap-2">
-                        <div class="flex-shrink-0 px-2 py-0.5 rounded bg-orange-100 flex items-start justify-center font-bold text-xs italic">
+            <div class="p-4 rounded-lg bg-orange-50">
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-3 py-1 rounded-lg bg-orange-100 flex items-center justify-center font-bold text-orange-800 text-xs uppercase">
                             FER
                         </div>
-                        <span class="font-medium text-gray-700">Jour férié</span>
+                        <span class="font-medium text-gray-800">Jour férié</span>
                     </li>
-                    <li class="flex items-start gap-2">
-                        <div class="flex-shrink-0 px-2 py-0.5 rounded bg-orange-100 flex items-start justify-center font-bold text-xs italic">
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-3 py-1 rounded-lg bg-orange-100 flex items-center justify-center font-bold text-orange-800 text-xs uppercase">
                             RTT
                         </div>
-                        <span class="font-medium text-gray-700">RTT Imposé</span>
+                        <span class="font-medium text-gray-800">RTT Imposé</span>
                     </li>
-                    <li class="flex items-start gap-2">
-                        <div class="flex-shrink-0 px-2 py-0.5 rounded bg-orange-100 flex items-start justify-center font-bold text-xs italic">
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-3 py-1 rounded-lg bg-orange-100 flex items-center justify-center font-bold text-orange-800 text-xs uppercase">
                             FRM
                         </div>
-                        <span class="font-medium text-gray-700">Fermeture entreprise</span>
+                        <span class="font-medium text-gray-800">Fermeture entreprise</span>
                     </li>
                 </ul>
+                <div class="mt-4 p-3 bg-white rounded-lg border border-orange-100 text-sm text-gray-600">
+                    <div class="flex items-center">
+                        <span>
+                            Les jours non travaillés sont affichés en orange dans le tableau. La saisie d'heures pendant ces jours sera également affichée en orange.
+                        </span>
+                    </div>
+                </div>
             </div>
-            <p class="text-xs text-gray-500 mt-2">
-                Les jours non travaillés sont affichés en orange dans le tableau. La saisie d'heures pendant ces jours sera également affichée en orange.
-            </p>
         </div>
     </div>
 
-    {{-- Sélecteur de période --}}
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
-        @php
-        $months = [
-        1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
-        5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
-        9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre',
-        ];
-        // Mois précédent / suivant
-        $prevMonth = $month - 1;
-        $prevYear = $year;
-        if ($prevMonth < 1) {
-            $prevMonth=12;
-            $prevYear--;
-            }
-            $nextMonth=$month + 1;
-            $nextYear=$year;
-            if ($nextMonth> 12) {
-            $nextMonth = 1;
-            $nextYear++;
-            }
-            @endphp
+    {{-- Sélecteur de période responsive --}}
+    {{-- Sélecteur de période responsive --}}
+    <div class="bg-white p-4 md:p-5 rounded-xl shadow-lg mb-6 border border-gray-100">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <!-- Titre et navigation par mois -->
+            <div class="flex flex-col items-start">
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Période de pointage</h2>
+                
+                <!-- Navigation mois précédent/suivant -->
+                <div class="flex w-full rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                    <!-- Bouton Mois précédent -->
+                    <a href="{{ route('tracking.show', [
+                        'project_id' => $project->id,
+                        'month' => $prevMonth,
+                        'year' => $prevYear,
+                        'category' => $category,
+                    ]) }}"
+                    class="flex-1 md:flex-none flex items-center justify-center py-2.5 px-4 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span>Précédent</span>
+                    </a>
 
-            <span class="inline-flex divide-x divide-gray-300 overflow-hidden rounded border border-gray-200 bg-white shadow-sm">
-                <!-- Bouton Mois précédent -->
-                <a href="{{ route('tracking.show', [
-            'project_id' => $project->id,
-            'month' => $prevMonth,
-            'year' => $prevYear,
-            'category' => $category,
-        ]) }}"
-                    class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-1.5 text-sm font-medium transition-colors text-gray-700 hover:bg-blue-50 hover:text-gray-900">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Précédent
-                </a>
+                    <!-- Affichage du mois courant -->
+                    <button class="flex-1 md:flex-none flex items-center justify-center py-2.5 px-5 text-sm font-bold bg-blue-50 text-blue-700 whitespace-nowrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="inline-flex flex-nowrap">{{ \Carbon\Carbon::create($year, $month, 1)->locale('fr')->translatedFormat('F Y') }}</span>
+                    </button>
 
-                <!-- Affichage du mois courant -->
-                <span class="flex-1 md:flex-none flex items-center justify-center px-3 py-1.5 text-sm font-bold bg-blue-50 text-blue-700">
-                    {{ \Carbon\Carbon::create($year, $month, 1)->locale('fr')->translatedFormat('F Y') }}
-                </span>
-
-                <!-- Bouton Mois suivant -->
-                <a href="{{ route('tracking.show', [
-            'project_id' => $project->id,
-            'month' => $nextMonth,
-            'year' => $nextYear,
-            'category' => $category,
-        ]) }}"
-                    class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-1.5 text-sm font-medium transition-colors text-gray-700 hover:bg-blue-50 hover:text-gray-900">
-                    Suivant
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-            </span>
-
-            {{-- Boutons Jour / Nuit --}}
-            <div class="flex gap-4">
-                <x-button-dynamic
-                    tag="a"
-                    route="tracking.show"
-                    :routeParams="[
-            'project_id' => $project->id,
-            'month' => $month,
-            'year' => $year,
-            'category' => 'day',
-        ]"
-                    color="{{ $category === 'day' ? 'green' : 'gray' }}"
-                    class="flex-1 text-center {{ $category === 'day' ? 'text-green-500 bg-green-50 border-green-500' : 'text-gray-700' }}">
-                    Jour
-                </x-button-dynamic>
-
-                <x-button-dynamic
-                    tag="a"
-                    route="tracking.show"
-                    :routeParams="[
-            'project_id' => $project->id,
-            'month' => $month,
-            'year' => $year,
-            'category' => 'night',
-        ]"
-                    color="{{ $category === 'night' ? 'purple' : 'gray' }}"
-                    class="flex-1 text-center {{ $category === 'night' ? 'text-purple-500 bg-purple-50 border-purple-500' : 'text-gray-700' }}">
-                    Nuit
-                </x-button-dynamic>
+                    <!-- Bouton Mois suivant -->
+                    <a href="{{ route('tracking.show', [
+                        'project_id' => $project->id,
+                        'month' => $nextMonth,
+                        'year' => $nextYear,
+                        'category' => $category,
+                    ]) }}"
+                    class="flex-1 md:flex-none flex items-center justify-center py-2.5 px-4 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700">
+                        <span>Suivant</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
             </div>
 
+            <!-- Sélecteur Jour/Nuit -->
+            <div class="grid grid-cols-2 md:flex md:flex-nowrap gap-2 rounded-lg overflow-hidden">
+                <a href="{{ route('tracking.show', [
+                    'project_id' => $project->id,
+                    'month' => $month,
+                    'year' => $year,
+                    'category' => 'day',
+                ]) }}"
+                class="flex items-center justify-center gap-2 py-3 md:py-2.5 px-4 rounded-lg md:rounded-l-lg md:rounded-r-none text-sm font-medium {{ $category === 'day' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors md:hover:bg-gray-50' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span>Heures de jour</span>
+                </a>
+
+                <a href="{{ route('tracking.show', [
+                    'project_id' => $project->id,
+                    'month' => $month,
+                    'year' => $year,
+                    'category' => 'night',
+                ]) }}"
+                class="flex items-center justify-center gap-2 py-3 md:py-2.5 px-4 rounded-lg md:rounded-l-none md:rounded-r-lg text-sm font-medium {{ $category === 'night' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors md:hover:bg-gray-50' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <span>Heures de nuit</span>
+                </a>
+            </div>
+        </div>
     </div>
 
-    {{-- Handsontable container --}}
-    <div id="handsontable" class="w-full min-h-1/2 mb-4 z-10"></div>
+    {{-- Handsontable container avec titre --}}
+    <div class="bg-white p-5 rounded-xl shadow-lg mb-8 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <span>Tableau de saisie des heures</span>
+                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $category === 'day' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800' }}">
+                    {{ $category === 'day' ? 'Jour' : 'Nuit' }}
+                </span>
+            </h2>
+        </div>
+        <div id="handsontable-wrapper" class="border border-gray-200 overflow-hidden">
+            <div id="handsontable" class="w-full min-h-1/2 bg-white"></div>
+        </div>
+    </div>
 
     {{-- Bouton Enregistrer + formulaires "Ajouter un salarié" --}}
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
-        <!-- Bouton "Enregistrer" : en mobile, affiché en premier -->
-        <x-button-dynamic id="saveBtn" class="order-first md:order-last">
-            Enregistrer
-        </x-button-dynamic>
+    <div class="mb-6">
+        <!-- Bouton "Enregistrer" en haut -->
+        <div class="flex justify-center mb-6">
+            <button id="saveBtn" class="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Enregistrer les modifications</span>
+            </button>
+        </div>
 
-        <!-- Formulaires : en mobile, affichés en deuxième -->
-        <div class="flex flex-col md:flex-row gap-6 order-last md:order-first">
-            <!-- + Worker -->
-            <form action="{{ route('tracking.assignEmployee') }}" method="POST" class="flex items-center gap-2">
-                @csrf
-                <input type="hidden" name="project_id" value="{{ $project->id }}">
-                <input type="hidden" name="month" value="{{ $month }}">
-                <input type="hidden" name="year" value="{{ $year }}">
-                <input type="hidden" name="category" value="{{ $category }}">
-                <input type="hidden" name="employee_type" value="worker">
+        <!-- Formulaires d'ajout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Formulaire Salariés -->
+            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                <h3 class="text-sm font-medium text-gray-700 mb-3">Ajouter un salarié Dubocq</h3>
+                <form action="{{ route('tracking.assignEmployee') }}" method="POST" class="flex flex-col gap-3">
+                    @csrf
+                    <input type="hidden" name="project_id" value="{{ $project->id }}">
+                    <input type="hidden" name="month" value="{{ $month }}">
+                    <input type="hidden" name="year" value="{{ $year }}">
+                    <input type="hidden" name="category" value="{{ $category }}">
+                    <input type="hidden" name="employee_type" value="worker">
 
-                <select name="employee_id" class="w-full md:w-auto border-gray-300 rounded py-1">
-                    <option value="">-- Salariés --</option>
-                    @foreach ($availableWorkers as $w)
-                    <option value="{{ $w->id }}">
-                        {{ $w->last_name }} {{ $w->first_name }}
-                    </option>
-                    @endforeach
-                </select>
-                <x-button-dynamic type="submit">
-                    Ajouter
-                </x-button-dynamic>
-            </form>
+                    <select name="employee_id" class="w-full border-gray-300 rounded-lg py-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="">-- Sélectionner un salarié --</option>
+                        @foreach ($availableWorkers as $w)
+                        <option value="{{ $w->id }}">
+                            {{ $w->last_name }} {{ $w->first_name }}
+                        </option>
+                        @endforeach
+                    </select>
 
-            <!-- + Interim -->
-            <form action="{{ route('tracking.assignEmployee') }}" method="POST" class="flex items-center gap-2">
-                @csrf
-                <input type="hidden" name="project_id" value="{{ $project->id }}">
-                <input type="hidden" name="month" value="{{ $month }}">
-                <input type="hidden" name="year" value="{{ $year }}">
-                <input type="hidden" name="category" value="{{ $category }}">
-                <input type="hidden" name="employee_type" value="interim">
+                    <button type="submit" class="flex items-center justify-center gap-2 w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>Ajouter salarié</span>
+                    </button>
+                </form>
+            </div>
 
-                <select name="employee_id" class="w-full md:w-auto border-gray-300 rounded py-1">
-                    <option value="">-- Intérim --</option>
-                    @foreach ($availableInterims as $i)
-                    <option value="{{ $i->id }}">
-                        {{ $i->agency }} (Intérim)
-                    </option>
-                    @endforeach
-                </select>
-                <x-button-dynamic type="submit">
-                    Ajouter
-                </x-button-dynamic>
-            </form>
+            <!-- Formulaire Intérim -->
+            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                <h3 class="text-sm font-medium text-gray-700 mb-3">Ajouter un intérimaire</h3>
+                <form action="{{ route('tracking.assignEmployee') }}" method="POST" class="flex flex-col gap-3">
+                    @csrf
+                    <input type="hidden" name="project_id" value="{{ $project->id }}">
+                    <input type="hidden" name="month" value="{{ $month }}">
+                    <input type="hidden" name="year" value="{{ $year }}">
+                    <input type="hidden" name="category" value="{{ $category }}">
+                    <input type="hidden" name="employee_type" value="interim">
+
+                    <select name="employee_id" class="w-full border-gray-300 rounded-lg py-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="">-- Sélectionner une agence --</option>
+                        @foreach ($availableInterims as $i)
+                        <option value="{{ $i->id }}">
+                            {{ $i->agency }} (Intérim)
+                        </option>
+                        @endforeach
+                    </select>
+
+                    <button type="submit" class="flex items-center justify-center gap-2 w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>Ajouter intérimaire</span>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     {{-- Tableau récapitulatif --}}
     @if (!empty($recap))
-    <div class="bg-white shadow rounded mb-6">
-        <div>
-            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 p-5 text-lg text-left rtl:text-right text-blue-600 bg-white">
-                <div class="flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                    </svg>
-                    <p class="text-sm font-normal">Récapitulatif des heures</p>
-                </div>
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 border border-gray-100">
+        <div class="flex flex-col sm:flex-row sm:justify-between gap-1 p-5 text-left rtl:text-right bg-blue-50">
+            <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                </svg>
+                <h2 class="text-lg font-semibold text-gray-800">Récapitulatif des heures</h2>
             </div>
+        </div>
 
-            <div class="relative overflow-x-auto">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 whitespace-nowrap">Salarié</th>
-                            <th class="px-6 py-3 whitespace-nowrap">Heures Jour</th>
-                            <th class="px-6 py-3 whitespace-nowrap">Heures Nuit</th>
-                            <th class="px-6 py-3 whitespace-nowrap">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php $hasData = false; @endphp
-                        @foreach ($recap as $r)
-                        @if ($r['total'] > 0)
-                        @php $hasData = true; @endphp
-                        <tr class="bg-white hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
-                                {{ $r['full_name'] }}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+        <div class="relative overflow-x-auto">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-blue-50">
+                    <tr>
+                        <th class="px-6 py-3 whitespace-nowrap">Salarié</th>
+                        <th class="px-6 py-3 whitespace-nowrap">Heures Jour</th>
+                        <th class="px-6 py-3 whitespace-nowrap">Heures Nuit</th>
+                        <th class="px-6 py-3 whitespace-nowrap">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $hasData = false; @endphp
+                    @foreach ($recap as $r)
+                    @if ($r['total'] > 0)
+                    @php $hasData = true; @endphp
+                    <tr class="bg-white hover:bg-blue-50 transition-colors">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                            {{ $r['full_name'] }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 {{ $r['day_hours'] ?: 0 }} h
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                 {{ $r['night_hours'] ?: 0 }} h
-                            </td>
-                            <td class="px-6 py-4 text-sm font-semibold text-gray-700 whitespace-nowrap">
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm font-bold text-gray-700 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                 {{ $r['total'] }} h
-                            </td>
-                        </tr>
-                        @endif
-                        @endforeach
+                            </span>
+                        </td>
+                    </tr>
+                    @endif
+                    @endforeach
 
-                        @if (!$hasData)
-                        <tr>
-                            <td colspan="5" class="px-6 py-4 text-center text-gray-500 whitespace-nowrap">
-                                Aucune donnée disponible pour la période sélectionnée.
-                            </td>
-                        </tr>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
+                    @if (!$hasData)
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500 whitespace-nowrap">
+                            Aucune donnée disponible pour la période sélectionnée.
+                        </td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
         </div>
     </div>
     @endif
 
     {{-- Bloc KPI (récap global) --}}
     @if(!empty($recap))
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
         <!-- KPI: Salariés -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-sm font-medium text-blue-600 mb-1">Salariés Dubocq</h3>
-            <p class="text-3xl font-bold text-blue-600">
-                {{ number_format($totalWorkerHoursCurrentMonth, 2, ',', ' ') }} h
-            </p>
-            <p class="mt-2 text-sm text-gray-500">
-                {{ $totalHoursCurrentMonth > 0
-                        ? number_format(($totalWorkerHoursCurrentMonth / $totalHoursCurrentMonth) * 100, 1)
-                        : 0 }}%
-            </p>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-blue-100 transition-all duration-300 hover:shadow-xl hover:border-blue-300">
+            <div class="p-4 border-b border-blue-200">
+                <h3 class="text-sm font-semibold text-blue-700">Salariés Dubocq</h3>
+            </div>
+            <div class="p-6">
+                <div class="flex items-end justify-between">
+                    <p class="text-3xl font-bold text-blue-600">
+                        {{ number_format($totalWorkerHoursCurrentMonth, 2, ',', ' ') }} h
+                    </p>
+                    <div class="text-right">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {{ $totalHoursCurrentMonth > 0
+                                ? number_format(($totalWorkerHoursCurrentMonth / $totalHoursCurrentMonth) * 100, 1)
+                                : 0 }}%
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-blue-100">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span>Heures par les employés</span>
+                    </div>
+                </div>
+            </div>
         </div>
+
         <!-- KPI: Intérims -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-sm font-medium text-green-600 mb-1">Intérims</h3>
-            <p class="text-3xl font-bold text-green-600">
-                {{ number_format($totalInterimHoursCurrentMonth, 2, ',', ' ') }} h
-            </p>
-            <p class="mt-2 text-sm text-gray-500">
-                {{ $totalHoursCurrentMonth > 0
-                        ? number_format(($totalInterimHoursCurrentMonth / $totalHoursCurrentMonth) * 100, 1)
-                        : 0 }}%
-            </p>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-green-100 transition-all duration-300 hover:shadow-xl hover:border-green-300">
+            <div class="p-4 bg-gradient-to-r from-green-50 to-green-100 border-b border-green-200">
+                <h3 class="text-sm font-semibold text-green-700">Intérims</h3>
+            </div>
+            <div class="p-6">
+                <div class="flex items-end justify-between">
+                    <p class="text-3xl font-bold text-green-600">
+                        {{ number_format($totalInterimHoursCurrentMonth, 2, ',', ' ') }} h
+                    </p>
+                    <div class="text-right">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {{ $totalHoursCurrentMonth > 0
+                                ? number_format(($totalInterimHoursCurrentMonth / $totalHoursCurrentMonth) * 100, 1)
+                                : 0 }}%
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-green-100">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span>Heures par les intérimaires</span>
+                    </div>
+                </div>
+            </div>
         </div>
+
         <!-- KPI: Total heures travaillées -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-sm font-medium text-indigo-600 mb-1">
-                Total heures travaillées
-                <span class="font-bold">
-                    ({{ \Carbon\Carbon::create($year, $month, 1)->locale('fr')->translatedFormat('F Y') }})
-                </span>
-            </h3>
-            <p class="text-3xl font-bold text-indigo-600">
-                {{ number_format($totalHoursCurrentMonth, 2, ',', ' ') }} h
-            </p>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-indigo-100 transition-all duration-300 hover:shadow-xl hover:border-indigo-300">
+            <div class="p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 border-b border-indigo-200">
+                <h3 class="text-sm font-semibold text-indigo-700">
+                    Total des heures
+                </h3>
+            </div>
+            <div class="p-6">
+                <div class="flex items-end justify-between">
+                    <p class="text-3xl font-bold text-indigo-600">
+                        {{ number_format($totalHoursCurrentMonth, 2, ',', ' ') }} h
+                    </p>
+                    <div class="text-right">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                            100%
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-indigo-100">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>{{ \Carbon\Carbon::create($year, $month, 1)->locale('fr')->translatedFormat('F Y') }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     @endif
@@ -371,6 +460,91 @@
 @endsection
 
 @push('scripts')
+<style>
+    /* Styles personnalisés pour Handsontable */
+    #handsontable-wrapper {
+        position: relative;
+    }
+
+    #handsontable {
+        max-height: 600px;
+        overflow: auto;
+    }
+
+    .handsontable .htDimmed {
+        color: #333 !important;
+        font-weight: 600;
+    }
+
+    .handsontable .current {
+        background-color: rgba(58, 134, 255, 0.1) !important;
+    }
+
+    .handsontable td.weekend {
+        background-color: #f0f0f0;
+    }
+
+    .handsontable td.absent {
+        background-color: #FFCCCC !important;
+        font-weight: bold;
+    }
+
+    .handsontable td.day-hours {
+        background-color: #CCFFCC !important;
+    }
+
+    .handsontable td.night-hours {
+        background-color: #E9D5FF !important;
+    }
+
+    .handsontable td.non-working {
+        background-color: #FFE0B2 !important;
+        font-weight: bold;
+    }
+
+    .handsontable td.non-working-empty {
+        background-color: #FFE4B5 !important;
+        font-style: italic;
+        font-weight: bold;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* Styles pour le menu contextuel */
+    .handsontable .htContextMenu {
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .handsontable .htContextMenu .ht_master .wtHolder {
+        background-color: white;
+    }
+
+    .handsontable .htContextMenu table tbody tr td.htItemWrapper {
+        padding: 6px 12px;
+    }
+
+    .handsontable .htContextMenu table tbody tr td.htItemWrapper:hover {
+        background-color: #F1F5FF;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let projectId = @json($project->id);
@@ -410,7 +584,7 @@
             const date = new Date(year, month - 1, d);
             const dayOfWeek = date.getDay();
             const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-            colHeaders.push(isWeekend ? `${d}` : d.toString());
+            colHeaders.push(isWeekend ? `<span style="color:#999;">${d}</span>` : d.toString());
         }
 
         // columns
@@ -521,6 +695,9 @@
             fixedColumnsStart: isMobile ? 0 : 3,
             height: 'auto',
             licenseKey: 'non-commercial-and-evaluation',
+            stretchH: 'all',
+            manualColumnResize: true,
+            rowHeights: 25,
 
             contextMenu: {
                 items: {
@@ -531,6 +708,7 @@
                             const employeeId = hot.getDataAtCell(row, 0);
                             const modelType = hot.getDataAtCell(row, 1);
                             const employeeName = hot.getDataAtCell(row, 2);
+
                             if (confirm(`Voulez-vous vraiment détacher ${employeeName} ?`)) {
                                 detachEmployee(employeeId, modelType);
                             }
@@ -547,9 +725,10 @@
                         const dayNum = col - 2;
                         const date = new Date(year, month - 1, dayNum);
                         const dayOfWeek = date.getDay();
+
                         // Weekend => gris
                         if (dayOfWeek === 0 || dayOfWeek === 6) {
-                            td.style.backgroundColor = '#f0f0f0';
+                            td.classList.add('weekend');
                         }
 
                         // Jour non travaillé ?
@@ -559,27 +738,24 @@
                         if (value !== null && value !== '') {
                             if (parseFloat(value) === 0) {
                                 td.textContent = 'abs';
-                                td.style.backgroundColor = '#FFCCCC'; // rouge clair
+                                td.classList.add('absent');
                             } else {
                                 // Si jour non travaillé => orange
                                 if (isNonWorkingDay) {
-                                    td.style.backgroundColor = '#FFE0B2'; // orange
-                                    td.style.fontWeight = 'bold';
+                                    td.classList.add('non-working');
                                 } else {
                                     // Sinon colorer selon la catégorie
                                     if (category === 'night') {
-                                        td.style.backgroundColor = '#E9D5FF'; // violet clair
+                                        td.classList.add('night-hours');
                                     } else {
-                                        td.style.backgroundColor = '#CCFFCC'; // vert clair
+                                        td.classList.add('day-hours');
                                     }
                                 }
                             }
                         } else if (isNonWorkingDay) {
                             // Cellule vide jour non-travaillé
                             td.textContent = getTypeAbbreviation(nonWorkingType);
-                            td.style.backgroundColor = '#FFE4B5'; // orange clair
-                            td.style.fontStyle = 'italic';
-                            td.style.fontWeight = 'bold';
+                            td.classList.add('non-working-empty');
                         }
                     };
                 }
@@ -590,6 +766,10 @@
         // Bouton "Enregistrer"
         let saveBtn = document.getElementById('saveBtn');
         saveBtn.addEventListener('click', function() {
+            // Ajouter un effet visuel pour montrer l'action
+            saveBtn.classList.add('animate-pulse');
+            saveBtn.querySelector('span').textContent = 'Enregistrement en cours...';
+
             let updated = hot.getData(); // => [ [id,model_type,full_name,d1,d2,...], ... ]
             let payload = updated.map(row => {
                 let empId = row[0];
@@ -627,16 +807,92 @@
                 })
                 .then(resp => resp.json())
                 .then(json => {
+                    saveBtn.classList.remove('animate-pulse');
+                    saveBtn.querySelector('span').textContent = 'Enregistrer les modifications';
+
                     if (json.success) {
-                        alert(json.message);
-                        location.reload(); // rafraîchir si souhaité
+                        // Notification de succès avec animation
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md fade-in';
+                        notification.innerHTML = `
+                            <div class="flex items-center">
+                                <svg class="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <p>${json.message}</p>
+                            </div>
+                        `;
+                        document.body.appendChild(notification);
+
+                        // Supprimer la notification après 3 secondes
+                        setTimeout(() => {
+                            notification.style.opacity = '0';
+                            notification.style.transform = 'translateY(-10px)';
+                            notification.style.transition = 'opacity 0.5s, transform 0.5s';
+
+                            setTimeout(() => {
+                                notification.remove();
+                            }, 500);
+                        }, 3000);
+
+                        // Rafraîchir après un court délai
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
                     } else {
-                        alert("Erreur : " + json.message);
+                        // Notification d'erreur
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md fade-in';
+                        notification.innerHTML = `
+                            <div class="flex items-center">
+                                <svg class="h-6 w-6 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <p>Erreur : ${json.message}</p>
+                            </div>
+                        `;
+                        document.body.appendChild(notification);
+
+                        // Supprimer la notification après 4 secondes
+                        setTimeout(() => {
+                            notification.style.opacity = '0';
+                            notification.style.transform = 'translateY(-10px)';
+                            notification.style.transition = 'opacity 0.5s, transform 0.5s';
+
+                            setTimeout(() => {
+                                notification.remove();
+                            }, 500);
+                        }, 4000);
                     }
                 })
                 .catch(err => {
                     console.error(err);
-                    alert('Erreur requête');
+                    saveBtn.classList.remove('animate-pulse');
+                    saveBtn.querySelector('span').textContent = 'Enregistrer les modifications';
+
+                    // Notification d'erreur réseau
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md fade-in';
+                    notification.innerHTML = `
+                        <div class="flex items-center">
+                            <svg class="h-6 w-6 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <p>Erreur de connexion. Veuillez réessayer.</p>
+                        </div>
+                    `;
+                    document.body.appendChild(notification);
+
+                    // Supprimer la notification après 4 secondes
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        notification.style.transform = 'translateY(-10px)';
+                        notification.style.transition = 'opacity 0.5s, transform 0.5s';
+
+                        setTimeout(() => {
+                            notification.remove();
+                        }, 500);
+                    }, 4000);
                 });
         });
     });

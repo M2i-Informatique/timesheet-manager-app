@@ -13,9 +13,15 @@
 
     <!-- Scripts and Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
+    <style>
+        .font-montserrat {
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
 </head>
 
-<body class="h-full bg-gray-50">
+<body class="h-full bg-gray-50 font-montserrat">
     <!-- Sidebar fixe à gauche -->
     <x-admin-sidebar />
 

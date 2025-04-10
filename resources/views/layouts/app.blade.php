@@ -12,15 +12,18 @@
 
     <!-- Scripts and Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
+    <style>
+        .font-montserrat {
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
 </head>
 
-<body class="flex flex-col h-full min-h-screen">
+<body class="font-montserrat flex flex-col h-full min-h-screen">
     <!-- Navigation Desktop -->
     <livewire:components.navigation />
     
-    <!-- Navigation Mobile -->
-    <livewire:components.navigation-mobile />
-
     <!-- En-tête de page -->
     @hasSection('header')
     <header>
