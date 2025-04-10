@@ -207,7 +207,7 @@
     </div>
 
     {{-- Handsontable container --}}
-    <div id="handsontable" class="w-full min-h-1/2 mb-4"></div>
+    <div id="handsontable" class="w-full min-h-1/2 mb-4 z-10"></div>
 
     {{-- Bouton Enregistrer + formulaires "Ajouter un salarié" --}}
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
