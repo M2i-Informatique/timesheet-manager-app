@@ -73,7 +73,7 @@
                             <circle cx="24.5" cy="46.5" r="2.5" fill="#049ce3" />
                             <circle cx="24.5" cy="68.5" r="2.5" fill="#049ce3" />
                             <circle cx="24.5" cy="90.5" r="2.5" fill="#049ce3" />
-                            <circle cx="46.5" cy="2.5" r="2.5" fill="#049ce3" />
+                            <circle cx="46.5" cy="2.5" r="2.5" fill="#04P9ce3" />
                             <circle cx="46.5" cy="24.5" r="2.5" fill="#049ce3" />
                             <circle cx="46.5" cy="46.5" r="2.5" fill="#049ce3" />
                             <circle cx="46.5" cy="68.5" r="2.5" fill="#049ce3" />
