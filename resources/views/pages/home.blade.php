@@ -54,7 +54,7 @@
                 <div class="relative image-wrapper">
                     <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-b-3xl rounded-tr-3xl -z-10 blur-xl transform -translate-y-4 translate-x-4 scale-95 opacity-70"></div>
                     <img src="/images/constructors.jpg" alt="Gestion des équipes sur chantier" class="max-w-full rounded-b-3xl rounded-tr-3xl shadow-xl img-hover" />
-                    <div class="absolute -top-5 -right-5 bg-white rounded-full p-3 shadow-lg animate-bounce-slow">
+                    <div class="absolute -top-5 -right-2 bg-white rounded-full p-3 shadow-lg animate-bounce-slow">
                         <div class="text-customColor p-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -97,18 +97,6 @@
         <!-- Indicateurs clés -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-16">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 stats-container cursor-pointer">
-                <!-- <div class="stat-item">
-                    <div class="stat-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value">30%</div>
-                        <div class="stat-label">d'économies réalisées</div>
-                        <p class="stat-desc">Sur les coûts de gestion administrative</p>
-                    </div>
-                </div> -->
                 <div class="stat-item">
                     <div class="stat-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
