@@ -63,7 +63,8 @@
 
             <tbody>
                 @forelse ($data as $item)
-                <tr class="bg-white hover:bg-blue-50">
+                <!-- Utiliser wire:click directement pour appeler la méthode viewProject -->
+                <tr class="bg-white hover:bg-blue-50 cursor-pointer" wire:click.stop="viewProject({{ $item->id }})">
                     @foreach ($columns as $key => $column)
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                         @if ($key === 'status' || $key === 'category')
@@ -75,7 +76,7 @@
                     @endforeach
 
                     @if (count($actions) > 0)
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4" onclick="event.stopPropagation()">
                         <div class="flex gap-2">
                             @foreach ($actions as $action)
                             @if ($action['method'] === 'downloadProject')
@@ -88,7 +89,7 @@
                             @else
                             <!-- Bouton wire:click normal pour les autres actions -->
                             <button
-                                wire:click="callAction('{{ $action['method'] }}', {{ $item->id }})"
+                                wire:click.stop="callAction('{{ $action['method'] }}', {{ $item->id }})"
                                 class="font-medium text-blue-600 hover:text-blue-800 cursor-pointer"
                                 title="{{ $action['title'] ?? '' }}">
                                 {!! $action['icon'] !!}

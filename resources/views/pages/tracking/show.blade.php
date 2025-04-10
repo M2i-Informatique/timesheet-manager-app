@@ -6,7 +6,7 @@
 
 @section('header')
 <div class="max-w-7xl mx-auto flex justify-between items-center mb-6 px-4">
-    <div class="relative pt-16 lg:pt-24">
+    <div class="relative pt-8 lg:pt-24">
         <h1 class="text-2xl">
             <a class="hover:text-blue-600 hover:underline font-bold" href="{{ route('tracking.index') }}">Pointage</a>
             <span class="font-bold"> > {{ $project->code }} - {{ $project->name }} - {{ $project->city }}</span>

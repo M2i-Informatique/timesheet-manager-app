@@ -23,7 +23,7 @@ $downloadIcon = '<svg class="w-4 h-4 inline-block align-center" xmlns="http://ww
 
 @section('content')
 <div class="max-w-screen-xl mx-auto h-full">
-    <div class="relative py-16 lg:py-24 flex flex-col lg:flex-row gap-8 lg:gap-16">
+    <div class="relative pt-8 pb-24 lg:py-24 flex flex-col lg:flex-row gap-8 lg:gap-16">
         <!-- Contenu principal -->
         <div class="flex-1 order-2 lg:order-1 px-4 lg:px-0">
             <div id="tracking" class="max-w-screen-xl mx-auto mb-16 lg:mb-24">

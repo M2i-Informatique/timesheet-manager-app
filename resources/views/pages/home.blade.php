@@ -9,7 +9,7 @@
     </h1>
     </div> -->
 <div class="flex justify-center items-center min-h-full">
-    <div class="relative pt-16 pb-24 lg:py-24">
+    <div class="relative pt-8 pb-24 lg:py-24">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Texte à gauche -->
             <div class="flex items-center">
