@@ -27,13 +27,13 @@
 
                 <!-- Message de statut (succès) -->
                 @if (session('status'))
-                    <x-alert-error title="Notification" type="success" :messages="[session('status')]">
-                    </x-alert-error>
+                    <x-message-flash title="Notification" type="success" :messages="[session('status')]">
+                    </x-message-flash>
                 @endif
 
                 <!-- Message d'erreur -->
                 @if ($errors->any())
-                    <x-alert-error :messages="$errors" />
+                    <x-message-flash :messages="$errors" />
                 @endif
 
                 <div class="flex flex-col items-center justify-center mt-6 w-full">
@@ -46,15 +46,15 @@
 
                             <div class="flex flex-col gap-4 items-center justify-center mt-6 w-full">
                                 <div class="w-64">
-                                    <x-buttons.dynamic tag="button" type="submit" class="w-full">
+                                    <x-button-dynamic tag="button" type="submit" class="w-full">
                                         Envoyer le lien de réinitialisation
-                                    </x-buttons.dynamic>
+                                    </x-button-dynamic>
                                 </div>
                                 <div class="w-64">
-                                    <x-buttons.dynamic tag="a" route="login"
+                                    <x-button-dynamic tag="a" route="login"
                                         class="w-full text-center">
                                         Retour à la connexion
-                                    </x-buttons.dynamic>
+                                    </x-button-dynamic>
                                 </div>
                             </div>
                         </form>

@@ -15,7 +15,7 @@
 
             <!-- Message d'erreur (initialement caché) -->
             @if ($errors->any())
-                <x-alert-error :messages="$errors" />
+                <x-message-flash :messages="$errors" />
             @endif
 
             <form class="max-w-sm mx-auto space-y-5" action="{{ route('login') }}" method="post">
@@ -34,9 +34,9 @@
                     </div>
                 </div>
 
-                <x-buttons.dynamic tag="button" type="submit" color="blue" class="w-full bg-blue-500 text-white">
+                <x-button-dynamic tag="button" type="submit" color="blue" class="w-full bg-blue-500 text-white">
                     Se connecter
-                </x-buttons.dynamic>
+                </x-button-dynamic>
             </form>
         </div>
     </div>

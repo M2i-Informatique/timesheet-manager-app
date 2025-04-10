@@ -17,7 +17,7 @@
 
 <body class="h-full bg-gray-50">
     <!-- Sidebar fixe à gauche -->
-    @include('layouts.admin-sidebar')
+    <x-admin-sidebar />
 
     <!-- Conteneur principal avec marge égale à la largeur du sidebar -->
     <div class="ml-64">
@@ -27,13 +27,13 @@
             <div class="flex justify-between mb-6 container mx-auto">
                 <h1 class="text-2xl font-bold text-gray-900">@yield('page-title')</h1>
                 @if(isset($showBackButton) && $showBackButton)
-                <x-buttons.dynamic tag="a"
+                <x-button-dynamic tag="a"
                     route="admin.reporting.index"
                     routeParams="['view' => 'dashboard']"
                     color="blue"
                     class="rounded-lg shadow-sm hover:shadow transition-all duration-200">
                     Retour
-                </x-buttons.dynamic>
+                </x-button-dynamic>
                 @endif
             </div>
             @endif

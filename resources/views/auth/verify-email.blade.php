@@ -4,8 +4,8 @@
 
 @section('content')
     @if (session('status') == 'verification-link-sent')
-        <x-alert-error title="Lien de vérification envoyé" type="success" :messages="['Un nouveau lien de vérification a été envoyé à votre adresse email.']">
-        </x-alert-error>
+        <x-message-flash title="Lien de vérification envoyé" type="success" :messages="['Un nouveau lien de vérification a été envoyé à votre adresse email.']">
+        </x-message-flash>
     @endif
     <div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-12">
         <div class="relative px-6 pt-10 pb-9 mx-auto w-full max-w-lg">
@@ -36,16 +36,16 @@
                         <form action="{{ route('verification.send') }}" method="post" class="text-center mb-3">
                             @csrf
                             <p class="text-sm text-gray-600 mb-3">Vous n'avez pas reçu le mail?</p>
-                            <x-buttons.dynamic tag="button" type="submit" class="w-full">
+                            <x-button-dynamic tag="button" type="submit" class="w-full">
                                 Renvoyer le lien de vérification
-                            </x-buttons.dynamic>
+                            </x-button-dynamic>
                         </form>
 
                         <form method="POST" action="{{ route('logout') }}" class="text-center">
                             @csrf
-                            <x-buttons.dynamic tag="button" type="submit" color="red" class="w-full">
+                            <x-button-dynamic tag="button" type="submit" color="red" class="w-full">
                                 Se déconnecter
-                            </x-buttons.dynamic>
+                            </x-button-dynamic>
                         </form>
                     </div>
                 </div>

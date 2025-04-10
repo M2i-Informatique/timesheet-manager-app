@@ -163,7 +163,7 @@
 
             {{-- Boutons Jour / Nuit --}}
             <div class="flex gap-4">
-                <x-buttons.dynamic
+                <x-button-dynamic
                     tag="a"
                     route="tracking.show"
                     :routeParams="[
@@ -175,9 +175,9 @@
                     color="{{ $category === 'day' ? 'green' : 'gray' }}"
                     class="{{ $category === 'day' ? 'text-green-500 bg-green-50 border-green-500' : 'text-gray-700' }}">
                     Jour
-                </x-buttons.dynamic>
+                </x-button-dynamic>
 
-                <x-buttons.dynamic
+                <x-button-dynamic
                     tag="a"
                     route="tracking.show"
                     :routeParams="[
@@ -189,7 +189,7 @@
                     color="{{ $category === 'night' ? 'purple' : 'gray' }}"
                     class="{{ $category === 'night' ? 'text-purple-500 bg-purple-50 border-purple-500' : 'text-gray-700' }}">
                     Nuit
-                </x-buttons.dynamic>
+                </x-button-dynamic>
             </div>
     </div>
 
@@ -217,9 +217,9 @@
                     </option>
                     @endforeach
                 </select>
-                <x-buttons.dynamic type="submit">
+                <x-button-dynamic type="submit">
                     Ajouter
-                </x-buttons.dynamic>
+                </x-button-dynamic>
             </form>
 
             {{-- + Interim --}}
@@ -239,14 +239,14 @@
                     </option>
                     @endforeach
                 </select>
-                <x-buttons.dynamic type="submit">
+                <x-button-dynamic type="submit">
                     Ajouter
-                </x-buttons.dynamic>
+                </x-button-dynamic>
             </form>
         </div>
-        <x-buttons.dynamic id="saveBtn">
+        <x-button-dynamic id="saveBtn">
             Enregistrer
-        </x-buttons.dynamic>
+        </x-button-dynamic>
     </div>
 
     {{-- Tableau récapitulatif --}}

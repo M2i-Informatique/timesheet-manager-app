@@ -132,15 +132,15 @@
         <!-- Boutons de navigation et déconnexion -->
         <div class="p-4 border-t border-gray-200 mt-auto">
             <div class="space-y-3">
-                <x-buttons.dynamic tag="a" route="home" color="blue" class="w-full text-center">
+                <x-button-dynamic tag="a" route="home" color="blue" class="w-full text-center">
                     Retour à l'accueil
-                </x-buttons.dynamic>
+                </x-button-dynamic>
 
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <x-buttons.dynamic tag="button" type="submit" color="red" class="w-full">
+                    <x-button-dynamic tag="button" type="submit" color="red" class="w-full">
                         Se déconnecter
-                    </x-buttons.dynamic>
+                    </x-button-dynamic>
                 </form>
             </div>
         </div>

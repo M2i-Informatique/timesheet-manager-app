@@ -91,9 +91,9 @@ $downloadIcon = '<svg class="w-4 h-4 inline-block align-center" xmlns="http://ww
 
                     <div class="flex gap-2 mt-4 md:mt-0">
                         <!-- Bouton pour afficher le chantier -->
-                        <x-buttons.dynamic tag="button" type="submit" color="blue">
+                        <x-button-dynamic tag="button" type="submit" color="blue">
                             Afficher le pointage
-                        </x-buttons.dynamic>
+                        </x-button-dynamic>
 
                         <!-- Champ caché pour la catégorie -->
                         <input type="hidden" name="category" value="day">
@@ -127,11 +127,11 @@ $downloadIcon = '<svg class="w-4 h-4 inline-block align-center" xmlns="http://ww
         </div>
     </div>
     <!-- Fin contenu principal -->
-    <x-sidebars.nav :links="$links" title="Sur cette page" showInfo="true" infoTitle="Informations">
+    <x-info-nav :links="$links" title="Sur cette page" showInfo="true" infoTitle="Informations">
         <x-slot:info>
             <p>Cliquez sur "{!! $trackingIcon !!}" pour aller vers la page de pointage.</p>
             <p>Cliquez sur "{!! $downloadIcon !!}" pour télécharger une feuille de pointage vierge.</p>
         </x-slot:info>
-    </x-sidebars.nav>
+    </x-info-nav>
 </div>
 @endsection
