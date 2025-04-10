@@ -3,7 +3,7 @@
     <div class="h-full flex flex-col overflow-y-auto">
         <!-- Logo et nom de l'application -->
         <div class="p-6 border-b border-gray-200">
-            <a href="{{ route('admin.reporting.index') }}" class="flex items-center">
+            <a href="{{ route('home') }}" class="flex items-center">
                 <div class="h-8 w-full bg-blue-600 rounded flex items-center justify-center text-white font-bold mr-3">
                     Dubocq Pointage
                 </div>
@@ -131,18 +131,12 @@
 
         <!-- Boutons de navigation et déconnexion -->
         <div class="p-4 border-t border-gray-200 mt-auto">
-            <div class="space-y-3">
-                <x-button-dynamic tag="a" route="home" color="blue" class="w-full text-center">
-                    Retour à l'accueil
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <x-button-dynamic tag="button" type="submit" color="red" class="w-full">
+                    Se déconnecter
                 </x-button-dynamic>
-
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <x-button-dynamic tag="button" type="submit" color="red" class="w-full">
-                        Se déconnecter
-                    </x-button-dynamic>
-                </form>
-            </div>
+            </form>
         </div>
     </div>
 </aside>
