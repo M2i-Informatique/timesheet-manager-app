@@ -2,7 +2,7 @@
 <div>
     <div class="p-5 text-lg text-left rtl:text-right text-blue-600 bg-white flex flex-col space-y-2 md:flex-row md:justify-between md:gap-1">
         @if ($title || $description)
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -16,7 +16,7 @@
         @endif
 
         @if ($hasSearch)
-        <div class="w-64 relative">
+        <div class="w-full md:w-64 relative">
             <x-forms.floating-input type="search" label="Rechercher" inputClass="py-1.5"
                 labelClass="bg-white pointer-events-auto" id="search-input-{{ $this->id }}"
                 wire:model.live.debounce.300ms="search" wire:ignore.self>

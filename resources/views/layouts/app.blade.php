@@ -15,8 +15,11 @@
 </head>
 
 <body class="flex flex-col h-full min-h-screen">
-    <!-- Navigation -->
+    <!-- Navigation Desktop -->
     <livewire:components.navigation />
+    
+    <!-- Navigation Mobile -->
+    <livewire:components.navigation-mobile />
 
     <!-- En-tête de page -->
     @hasSection('header')
