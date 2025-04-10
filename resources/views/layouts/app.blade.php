@@ -10,8 +10,6 @@
 
     @livewireStyles
 
-    <!-- Fonts -->
-
     <!-- Scripts and Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -33,7 +31,9 @@
     </main>
 
     <!-- Pied de page -->
-    @include('partials.footer')
+    <div class="hidden sm:block">
+        @include('partials.footer')
+    </div>
 
     <!-- Messages flash -->
     {{-- <livewire:components.flash-messages /> --}}

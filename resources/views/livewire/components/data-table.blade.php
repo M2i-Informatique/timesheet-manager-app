@@ -1,6 +1,6 @@
 <!-- resources/views/livewire/components/data-table.blade.php -->
 <div>
-    <div class="flex justify-between gap-1 p-5 text-lg text-left rtl:text-right text-blue-600 bg-white">
+    <div class="p-5 text-lg text-left rtl:text-right text-blue-600 bg-white flex flex-col space-y-2 md:flex-row md:justify-between md:gap-1">
         @if ($title || $description)
         <div class="flex items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -40,7 +40,7 @@
             <thead class="text-md text-blue-700 bg-blue-50">
                 <tr>
                     @foreach ($columns as $key => $column)
-                    <th scope="col" class="px-6 py-3 cursor-pointer" wire:click="sortBy('{{ $key }}')">
+                    <th scope="col" class="px-6 py-3 cursor-pointer {{ $sortField === $key ? 'flex items-center' : '' }}" wire:click="sortBy('{{ $key }}')">
                         {{ $column }}
                         @if ($sortField === $key)
                         <span class="ml-1">
