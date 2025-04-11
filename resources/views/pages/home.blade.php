@@ -56,7 +56,7 @@
                     <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-b-3xl rounded-tr-3xl -z-10 blur-xl transform -translate-y-4 translate-x-4 scale-95 opacity-70"></div>
                     
                     <!-- Image principale -->
-                    <img src="/images/dubocq.png" alt="Gestion des équipes sur chantier" class="w-full h-auto rounded-b-3xl rounded-tr-3xl shadow-xl img-hover" />
+                    <img src="{{ asset('/images/dubocq.png') }}" alt="Gestion des équipes sur chantier" class="w-full h-auto rounded-b-3xl rounded-tr-3xl shadow-xl img-hover" />
                     
                     <!-- Icône d'horloge animée -->
                     <div class="absolute -top-5 -right-2 bg-white rounded-full p-2 sm:p-3 shadow-lg animate-bounce-slow">
