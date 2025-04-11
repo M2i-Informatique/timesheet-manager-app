@@ -31,7 +31,7 @@
                     'driver' => 'pdf/DubocqPointage-Conducteurs.pdf',
                     'leader' => 'pdf/DubocqPointage-Dirigeants.pdf',
                     'admin' => 'pdf/DubocqPointage-Comptables.pdf',
-                    'super-admin' => '#',
+                    'super-admin' => 'pdf/DubocqPointage-SuperAdmin.pdf',
                 ];
 
                 // Récupération des rôles de l'utilisateur pour déterminer s'il a plusieurs rôles
