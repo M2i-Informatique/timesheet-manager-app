@@ -72,7 +72,7 @@
             </div>
 
             <div class="mt-8">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Travailleurs assignés</h2>
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Salariés assignés</h2>
 
                 @if ($project->workers->count() > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

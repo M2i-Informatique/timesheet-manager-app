@@ -63,7 +63,7 @@
 
             @if ($user->hasRole('driver'))
                 <div class="mt-6">
-                    <h2 class="text-lg font-medium text-gray-900">Projets assignés</h2>
+                    <h2 class="text-lg font-medium text-gray-900">Chantiers assignés</h2>
                     <div class="mt-2">
                         @if ($user->projects->count() > 0)
                             <ul class="list-disc pl-5">
