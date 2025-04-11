@@ -53,9 +53,9 @@
             <div class="flex items-center justify-center">
                 <div class="relative image-wrapper">
                     <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-b-3xl rounded-tr-3xl -z-10 blur-xl transform -translate-y-4 translate-x-4 scale-95 opacity-70"></div>
-                    <img src="/images/constructors.jpg" alt="Gestion des équipes sur chantier" class="max-w-full rounded-b-3xl rounded-tr-3xl shadow-xl img-hover" />
+                    <img src="/images/dubocq.png" alt="Gestion des équipes sur chantier" class="max-w-full rounded-b-3xl rounded-tr-3xl shadow-xl img-hover" />
                     <div class="absolute -top-5 -right-2 bg-white rounded-full p-3 shadow-lg animate-bounce-slow">
-                        <div class="text-customColor p-1">
+                        <div class="text-[#049ce3] p-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -63,31 +63,29 @@
                     </div>
                     <span class="absolute -left-8 -top-8 z-[-1]">
                         <svg width="93" height="93" viewBox="0 0 93 93" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="2.5" cy="2.5" r="2.5" fill="#049ce3" />
-                            <circle cx="2.5" cy="24.5" r="2.5" fill="#049ce3" />
-                            <circle cx="2.5" cy="46.5" r="2.5" fill="#049ce3" />
-                            <circle cx="2.5" cy="68.5" r="2.5" fill="#049ce3" />
-                            <circle cx="2.5" cy="90.5" r="2.5" fill="#049ce3" />
-                            <circle cx="24.5" cy="2.5" r="2.5" fill="#049ce3" />
-                            <circle cx="24.5" cy="24.5" r="2.5" fill="#049ce3" />
-                            <circle cx="24.5" cy="46.5" r="2.5" fill="#049ce3" />
-                            <circle cx="24.5" cy="68.5" r="2.5" fill="#049ce3" />
-                            <circle cx="24.5" cy="90.5" r="2.5" fill="#049ce3" />
-                            <circle cx="46.5" cy="2.5" r="2.5" fill="#04P9ce3" />
-                            <circle cx="46.5" cy="24.5" r="2.5" fill="#049ce3" />
-                            <circle cx="46.5" cy="46.5" r="2.5" fill="#049ce3" />
-                            <circle cx="46.5" cy="68.5" r="2.5" fill="#049ce3" />
-                            <circle cx="46.5" cy="90.5" r="2.5" fill="#049ce3" />
-                            <circle cx="68.5" cy="2.5" r="2.5" fill="#049ce3" />
-                            <circle cx="68.5" cy="24.5" r="2.5" fill="#049ce3" />
-                            <circle cx="68.5" cy="46.5" r="2.5" fill="#049ce3" />
-                            <circle cx="68.5" cy="68.5" r="2.5" fill="#049ce3" />
-                            <circle cx="68.5" cy="90.5" r="2.5" fill="#049ce3" />
-                            <circle cx="90.5" cy="2.5" r="2.5" fill="#049ce3" />
-                            <circle cx="90.5" cy="24.5" r="2.5" fill="#049ce3" />
-                            <circle cx="90.5" cy="46.5" r="2.5" fill="#049ce3" />
-                            <circle cx="90.5" cy="68.5" r="2.5" fill="#049ce3" />
-                            <circle cx="90.5" cy="90.5" r="2.5" fill="#049ce3" />
+                            @for ($x = 2.5; $x <= 90.5; $x += 22)
+                                @for ($y = 2.5; $y <= 90.5; $y += 22)
+                                    <circle cx="{{ $x }}" cy="{{ $y }}" r="2.5" fill="#049ce3" />
+                                @endfor
+                            @endfor
+                        </svg>
+                    </span>
+                    <span class="absolute -left-8 -bottom-8 z-[-1]">
+                        <svg width="93" height="93" viewBox="0 0 93 93" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            @for ($x = 2.5; $x <= 90.5; $x += 22)
+                                @for ($y = 2.5; $y <= 90.5; $y += 22)
+                                    <circle cx="{{ $x }}" cy="{{ $y }}" r="2.5" fill="#049ce3" />
+                                @endfor
+                            @endfor
+                        </svg>
+                    </span>
+                    <span class="absolute -right-8 -bottom-8 z-[-1]">
+                        <svg width="93" height="93" viewBox="0 0 93 93" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            @for ($x = 2.5; $x <= 90.5; $x += 22)
+                                @for ($y = 2.5; $y <= 90.5; $y += 22)
+                                    <circle cx="{{ $x }}" cy="{{ $y }}" r="2.5" fill="#049ce3" />
+                                @endfor
+                            @endfor
                         </svg>
                     </span>
                 </div>
