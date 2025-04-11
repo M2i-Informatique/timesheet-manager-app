@@ -15,7 +15,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
             <!-- Texte à gauche -->
             <div class="flex items-center">
-                <div class="hero-content">
+                <div class="hero-content mb-12">
                     <div class="badge bg-blue-100 text-blue-800 mb-4 inline-flex items-center px-3 py-1 rounded-full animate-pulse">
                         <span class="w-2 h-2 rounded-full bg-blue-700 mr-2"></span>
                         <span class="text-sm font-medium">Solution innovante</span>
@@ -49,45 +49,56 @@
                 </div>
             </div>
 
-            <!-- Image à droite -->
+            <!-- Image à droite avec motifs de points responsifs -->
             <div class="flex items-center justify-center">
-                <div class="relative image-wrapper">
+                <div class="relative image-wrapper w-full max-w-full">
+                    <!-- Flou gradient derrière l'image -->
                     <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-b-3xl rounded-tr-3xl -z-10 blur-xl transform -translate-y-4 translate-x-4 scale-95 opacity-70"></div>
-                    <img src="/images/dubocq.png" alt="Gestion des équipes sur chantier" class="max-w-full rounded-b-3xl rounded-tr-3xl shadow-xl img-hover" />
-                    <div class="absolute -top-5 -right-2 bg-white rounded-full p-3 shadow-lg animate-bounce-slow">
+                    
+                    <!-- Image principale -->
+                    <img src="/images/dubocq.png" alt="Gestion des équipes sur chantier" class="w-full h-auto rounded-b-3xl rounded-tr-3xl shadow-xl img-hover" />
+                    
+                    <!-- Icône d'horloge animée -->
+                    <div class="absolute -top-5 -right-2 bg-white rounded-full p-2 sm:p-3 shadow-lg animate-bounce-slow">
                         <div class="text-[#049ce3] p-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 sm:h-10 sm:w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                     </div>
-                    <span class="absolute -left-8 -top-8 z-[-1]">
-                        <svg width="93" height="93" viewBox="0 0 93 93" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            @for ($x = 2.5; $x <= 90.5; $x += 22)
-                                @for ($y = 2.5; $y <= 90.5; $y += 22)
-                                    <circle cx="{{ $x }}" cy="{{ $y }}" r="2.5" fill="#049ce3" />
+                    
+                    <!-- Motif de points SVG - Coin supérieur gauche -->
+                    <div class="absolute -left-2 sm:-left-4 md:-left-6 lg:-left-8 -top-2 sm:-top-4 md:-top-6 lg:-top-8 z-[-1] w-1/4 max-w-[100px] aspect-square">
+                        <svg viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                            @for ($x = 0; $x < 16; $x++)
+                                @for ($y = 0; $y < 16; $y++)
+                                    <circle cx="{{ 2.5 + $x * 24 }}" cy="{{ 2.5 + $y * 24 }}" r="2.5" fill="#049ce3" />
                                 @endfor
                             @endfor
                         </svg>
-                    </span>
-                    <span class="absolute -left-8 -bottom-8 z-[-1]">
-                        <svg width="93" height="93" viewBox="0 0 93 93" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            @for ($x = 2.5; $x <= 90.5; $x += 22)
-                                @for ($y = 2.5; $y <= 90.5; $y += 22)
-                                    <circle cx="{{ $x }}" cy="{{ $y }}" r="2.5" fill="#049ce3" />
+                    </div>
+                    
+                    <!-- Motif de points SVG - Coin inférieur gauche -->
+                    <div class="absolute -left-2 sm:-left-4 md:-left-6 lg:-left-8 -bottom-2 sm:-bottom-4 md:-bottom-6 lg:-bottom-8 z-[-1] w-1/4 max-w-[100px] aspect-square">
+                        <svg viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                            @for ($x = 0; $x < 16; $x++)
+                                @for ($y = 0; $y < 16; $y++)
+                                    <circle cx="{{ 2.5 + $x * 24 }}" cy="{{ 2.5 + $y * 24 }}" r="2.5" fill="#049ce3" />
                                 @endfor
                             @endfor
                         </svg>
-                    </span>
-                    <span class="absolute -right-8 -bottom-8 z-[-1]">
-                        <svg width="93" height="93" viewBox="0 0 93 93" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            @for ($x = 2.5; $x <= 90.5; $x += 22)
-                                @for ($y = 2.5; $y <= 90.5; $y += 22)
-                                    <circle cx="{{ $x }}" cy="{{ $y }}" r="2.5" fill="#049ce3" />
+                    </div>
+                    
+                    <!-- Motif de points SVG - Coin inférieur droit -->
+                    <div class="absolute -right-2 sm:-right-4 md:-right-6 lg:-right-8 -bottom-2 sm:-bottom-4 md:-bottom-6 lg:-bottom-8 z-[-1] w-1/4 max-w-[100px] aspect-square">
+                        <svg viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                            @for ($x = 0; $x < 16; $x++)
+                                @for ($y = 0; $y < 16; $y++)
+                                    <circle cx="{{ 2.5 + $x * 24 }}" cy="{{ 2.5 + $y * 24 }}" r="2.5" fill="#049ce3" />
                                 @endfor
                             @endfor
                         </svg>
-                    </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -196,7 +207,6 @@
     }
 
     @keyframes float {
-
         0%,
         100% {
             transform: translateY(0) translateX(0);
@@ -208,7 +218,6 @@
     }
 
     @keyframes pulse {
-
         0%,
         100% {
             transform: scale(1);
@@ -226,7 +235,6 @@
     }
 
     @keyframes bounce-slow {
-
         0%,
         100% {
             transform: translateY(-10%);
