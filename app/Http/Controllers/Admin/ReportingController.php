@@ -83,7 +83,15 @@ class ReportingController extends Controller
                 break;
 
             case 'worker_hours':
-                $reportData = $this->workerHoursService->getWorkerHours($workerId, $category, $startDate, $endDate);
+                // Passer null comme catégorie pour ne pas filtrer par catégorie de timesheet
+                $reportData = $this->workerHoursService->getWorkerHours($workerId, null, $startDate, $endDate);
+
+                // FILTRAGE POUR CORRESPONDRE À LA CATÉGORIE DE TRAVAILLEUR SÉLECTIONNÉE
+                if ($category) {
+                    $reportData = array_filter($reportData, function ($worker) use ($category) {
+                        return isset($worker['category']) && $worker['category'] === $category;
+                    });
+                }
 
                 // TRIAGE DES TRAVAILLEURS PAR NOM DE FAMILLE
                 usort($reportData, function ($a, $b) {
@@ -99,7 +107,15 @@ class ReportingController extends Controller
                 break;
 
             case 'worker_costs':
-                $reportData = $this->workerCostsService->getWorkerCosts($workerId, $category, $startDate, $endDate);
+                // Passer null comme catégorie pour ne pas filtrer par catégorie de timesheet
+                $reportData = $this->workerCostsService->getWorkerCosts($workerId, null, $startDate, $endDate);
+
+                // FILTRAGE POUR CORRESPONDRE À LA CATÉGORIE DE TRAVAILLEUR SÉLECTIONNÉE
+                if ($category) {
+                    $reportData = array_filter($reportData, function ($worker) use ($category) {
+                        return isset($worker['category']) && $worker['category'] === $category;
+                    });
+                }
 
                 // TRIAGE DES TRAVAILLEURS PAR NOM DE FAMILLE
                 usort($reportData, function ($a, $b) {
