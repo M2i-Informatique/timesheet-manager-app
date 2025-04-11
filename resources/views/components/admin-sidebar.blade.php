@@ -131,6 +131,18 @@
 
         <!-- Boutons de navigation et déconnexion -->
         <div class="p-4 border-t border-gray-200 mt-auto">
+            <!-- Affichage du nom (première lettre) et prénom -->
+            <div class="mb-3 px-2 py-2 rounded-md text-sm font-medium text-gray-700">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium mr-2">
+                        {{ substr(auth()->user()->first_name, 0, 1) }}{{ substr(auth()->user()->last_name, 0, 1) }}
+                    </div>
+                    <div>
+                        <span>{{ auth()->user()->first_name }}</span>
+                        <div class="text-xs text-gray-500">{{ '@' . Str::after(auth()->user()->email, '@') }}</div>
+                    </div>
+                </div>
+            </div>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <x-button-dynamic tag="button" type="submit" color="red" class="w-full">
