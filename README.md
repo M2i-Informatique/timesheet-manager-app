@@ -277,4 +277,4 @@ Licence propriétaire (closed-source)
 
 >Contrat propriétaire
 >
-> « La société M2i concède au Client un droit non exclusif, non transférable et > non sublicenciable d’utiliser le logiciel en interne. »
+> « La société M2i concède au personne extérieure un droit non exclusif, non transférable et non sublicenciable d’utiliser le logiciel en interne. »
