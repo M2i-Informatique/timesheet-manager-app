@@ -1,4 +1,4 @@
-# Dubocq – Application de pointage & reporting
+# Application de pointage & reporting
 
 ## Table des matières
 
@@ -29,7 +29,7 @@
 
 ## Introduction
 
-Cette application permet à un client de l’entreprise Dubocq de :
+Cette application permet à un client de l’entreprise de :
 
 - **Pointer** ses ouvriers et intérimaires sur chantiers via une interface de type “tableur” (Handsontable non commercial).  
 - **Suivre** en temps réel les heures et coûts (KPI) par salarié et par chantier.  
@@ -202,7 +202,7 @@ Toutes les règles de calcul (heures et coûts) sont centralisées dans **`app/S
 
 ## Installation & configuration
 
-1. `git clone <url>.git && cd dubocq-pointage`  
+1. `git clone <url>.git && cd <nom-du-projet>`  
 2. `cp .env.example .env` → remplir DB_* et `SENDGRID_API_KEY`  
 3. `composer install && npm install && npm run dev`  
 4. `php artisan migrate --seed`  
@@ -243,7 +243,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
-      - dubocq_network
+      - app_network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -256,10 +256,10 @@ services:
     depends_on:
       - db
     networks:
-      - dubocq_network
+      - app_network
 
 networks:
-  dubocq_network:
+  app_network:
 volumes:
   pgdata:
 ```
@@ -277,4 +277,4 @@ Licence propriétaire (closed-source)
 
 >Contrat propriétaire
 >
-> « La société Dubocq concède au Client un droit non exclusif, non transférable et > non sublicenciable d’utiliser le logiciel en interne. »
+> « La société M2i concède au Client un droit non exclusif, non transférable et > non sublicenciable d’utiliser le logiciel en interne. »
