@@ -72,7 +72,7 @@
             </div>
 
             <div class="mt-8">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Travailleurs assignés</h2>
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Salariés assignés</h2>
 
                 @if ($project->workers->count() > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -127,7 +127,7 @@
             </div>
 
             <div class="mt-8">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Drivers assignés</h2>
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Conducteurs assignés</h2>
 
                 @if ($project->drivers->count() > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -139,7 +139,7 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="text-gray-500">Aucun driver assigné à ce chantier.</p>
+                    <p class="text-gray-500">Aucun conducteur assigné à ce chantier.</p>
                 @endif
             </div>
 

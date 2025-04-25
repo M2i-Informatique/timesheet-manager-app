@@ -10,16 +10,20 @@
 
     @livewireStyles
 
-    <!-- Fonts -->
-
     <!-- Scripts and Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
+    <style>
+        .font-montserrat {
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
 </head>
 
-<body class="flex flex-col h-full min-h-screen">
-    <!-- Navigation -->
+<body class="font-montserrat flex flex-col h-full min-h-screen">
+    <!-- Navigation Desktop -->
     <livewire:components.navigation />
-
+    
     <!-- En-tête de page -->
     @hasSection('header')
     <header>
@@ -33,7 +37,9 @@
     </main>
 
     <!-- Pied de page -->
-    @include('partials.footer')
+    <div class="hidden sm:block">
+        @include('partials.footer')
+    </div>
 
     <!-- Messages flash -->
     {{-- <livewire:components.flash-messages /> --}}

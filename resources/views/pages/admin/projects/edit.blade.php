@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="mt-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Travailleurs assignés</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Salariés assignés</h3>
 
                     @if ($workers->count() > 0)
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 max-h-60 overflow-y-auto p-2">
@@ -137,7 +137,7 @@
                 </div>
 
                 <div class="mt-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Drivers assignés</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Conducteurs assignés</h3>
 
                     @if ($drivers->count() > 0)
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 max-h-60 overflow-y-auto p-2">

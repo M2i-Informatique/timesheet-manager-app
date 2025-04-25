@@ -80,16 +80,16 @@
                 </div>
                 <div class="p-6">
                     <p class="text-gray-700 mb-4">
-                        Générer une feuille de pointage vierge pour un projet et un mois spécifique.
+                        Générer une feuille de pointage vierge pour un chantier et un mois spécifique.
                     </p>
 
                     <form action="{{ route('admin.exports.blank-monthly') }}" method="post">
                         @csrf
                         <div class="mb-4">
-                            <label for="project_id" class="block text-sm font-medium text-gray-700 mb-1">Projet</label>
+                            <label for="project_id" class="block text-sm font-medium text-gray-700 mb-1">Chantier</label>
                             <select name="project_id" id="project_id"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
-                                <option value="">-- Sélectionner un projet --</option>
+                                <option value="">-- Sélectionner un chantier --</option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}">
                                         {{ $project->code }} - {{ $project->name }} ({{ $project->city }})

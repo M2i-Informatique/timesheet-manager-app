@@ -94,237 +94,70 @@
         <h3 class="text-lg font-medium text-gray-800 mb-4">Rapports détaillés</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <a href="{{ route('admin.reporting.index', ['report_type' => 'project_costs']) }}"
-                class="block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                class="report-link block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
                 <h4 class="font-medium text-blue-600 mb-2">Coûts par chantier</h4>
                 <p class="text-sm text-gray-600">Analyse des coûts des chantiers avec répartition détaillée</p>
             </a>
             <a href="{{ route('admin.reporting.index', ['report_type' => 'project_hours']) }}"
-                class="block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                class="report-link block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
                 <h4 class="font-medium text-blue-600 mb-2">Heures par chantier</h4>
                 <p class="text-sm text-gray-600">Analyse détaillée des heures par chantier et par salarié</p>
             </a>
             <a href="{{ route('admin.reporting.index', ['report_type' => 'worker_costs']) }}"
-                class="block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                class="report-link block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
                 <h4 class="font-medium text-blue-600 mb-2">Coûts par salarié</h4>
                 <p class="text-sm text-gray-600">Coûts générés par salarié avec détail par pointage</p>
             </a>
             <a href="{{ route('admin.reporting.index', ['report_type' => 'worker_hours']) }}"
-                class="block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                class="report-link block p-4 border border-gray-200 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors">
                 <h4 class="font-medium text-blue-600 mb-2">Heures par salarié</h4>
                 <p class="text-sm text-gray-600">Heures travaillées par personne avec détail des pointages</p>
             </a>
         </div>
     </div>
+    
     <!-- Logs d'activité -->
     <div class="bg-white rounded-lg shadow-md p-6">
         @livewire('admin.activity-logs')
     </div>
 </div>
+
+<!-- Overlay de chargement qui sera visible après le clic sur un lien -->
+<div id="loadingOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-70 z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-lg p-8 max-w-sm text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500 mb-4"></div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Chargement en cours</h3>
+        <p class="text-gray-600">Veuillez patienter pendant la récupération des données...</p>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
-<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Top 5 projets avec détail workers/interims
-            const topProjectsCtx = document.getElementById('topProjectsChart').getContext('2d');
-            new Chart(topProjectsCtx, {
-                type: 'bar',
-                data: {
-                    labels: @json($topProjects->pluck('name')),
-                    datasets: [{
-                            label: 'Salariés',
-                            data: @json($topProjects->pluck('worker_hours')),
-                            backgroundColor: '#3B82F6', // Bleu
-                            borderWidth: 0,
-                            borderRadius: 4,
-                            barPercentage: 0.7,
-                            categoryPercentage: 0.7
-                        },
-                        {
-                            label: 'Intérims',
-                            data: @json($topProjects->pluck('interim_hours')),
-                            backgroundColor: '#10B981', // Vert
-                            borderWidth: 0,
-                            borderRadius: 4,
-                            barPercentage: 0.7,
-                            categoryPercentage: 0.7
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                afterTitle: function(context) {
-                                    const idx = context[0].dataIndex;
-                                    const total = @json($topProjects->pluck('total_hours'))[idx];
-                                    return `Total: ${total} h`;
-                                }
-                            }
-                        },
-                        legend: {
-                            position: 'top',
-                        }
-                    },
-                    scales: {
-                        x: {
-                            stacked: true
-                        },
-                        y: {
-                            stacked: true,
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + ' h';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Top 5 travailleurs
-            const topWorkersCtx = document.getElementById('topWorkersChart').getContext('2d');
-            new Chart(topWorkersCtx, {
-                type: 'bar',
-                data: {
-                    labels: @json(
-                        $topWorkers->map(function ($worker) {
-                            return $worker->first_name . ' ' . $worker->last_name;
-                        })),
-                    datasets: [{
-                        label: 'Heures travaillées',
-                        data: @json($topWorkers->pluck('total_hours')),
-                        backgroundColor: [
-                            '#4F46E5', '#7C3AED', '#8B5CF6', '#A78BFA', '#C4B5FD'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + ' h';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Coûts par catégorie
-            const costsByCategoryCtx = document.getElementById('costsByCategoryChart').getContext('2d');
-            new Chart(costsByCategoryCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['MH', 'GO', 'Autre'],
-                    datasets: [{
-                        data: [
-                            @json($costsByCategory['mh'] ?? 0),
-                            @json($costsByCategory['go'] ?? 0),
-                            @json($costsByCategory['other'] ?? 0)
-                        ],
-                        backgroundColor: [
-                            '#4F46E5', '#7C3AED', '#8B5CF6'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-
-                                    const value = context.parsed;
-                                    label += new Intl.NumberFormat('fr-FR', {
-                                        style: 'currency',
-                                        currency: 'EUR'
-                                    }).format(value);
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Préparer les données pour le graphique d'historique des heures
-            @php
-                $workersData = $monthlyWorkersData ?? [];
-                $interimsData = $monthlyInterimsData ?? [];
-
-                // Si les tableaux sont vides, utiliser des valeurs par défaut
-                if (empty($workersData) && !empty($monthlyHoursData)) {
-                    $workersData = $monthlyHoursData;
-                }
-
-                if (empty($interimsData)) {
-                    $interimsData = array_fill(0, 6, 0);
-                }
-            @endphp
-
-            // Tendance heures 6 derniers mois
-            const hoursHistoryCtx = document.getElementById('hoursHistoryChart').getContext('2d');
-            new Chart(hoursHistoryCtx, {
-                type: 'line',
-                data: {
-                    labels: @json($monthlyHoursLabels),
-                    datasets: [{
-                            label: 'Heures totales',
-                            data: @json($monthlyHoursData),
-                            borderColor: '#4F46E5',
-                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                            tension: 0.1,
-                            fill: true
-                        },
-                        {
-                            label: 'Salariés',
-                            data: @json($workersData),
-                            borderColor: '#3B82F6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            tension: 0.1,
-                            fill: false
-                        },
-                        {
-                            label: 'Intérims',
-                            data: @json($interimsData),
-                            borderColor: '#10B981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            tension: 0.1,
-                            fill: false
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + ' h';
-                                }
-                            }
-                        }
-                    }
-                }
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sélectionne tous les liens de rapports
+        const reportLinks = document.querySelectorAll('.report-link');
+        
+        // Ajoute un écouteur d'événement sur chaque lien
+        reportLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Empêche le comportement par défaut du lien
+                e.preventDefault();
+                
+                // Récupère l'URL du lien
+                const url = this.getAttribute('href');
+                
+                // Affiche l'overlay de chargement
+                document.getElementById('loadingOverlay').classList.remove('hidden');
+                document.getElementById('loadingOverlay').classList.add('flex');
+                
+                // Stocke l'état du chargement dans sessionStorage
+                sessionStorage.setItem('isLoadingReport', 'true');
+                
+                // Redirige immédiatement vers la page
+                window.location.href = url;
             });
         });
-    </script> -->
+    });
+</script>
 @endpush

@@ -3,7 +3,7 @@
     <div class="h-full flex flex-col overflow-y-auto">
         <!-- Logo et nom de l'application -->
         <div class="p-6 border-b border-gray-200">
-            <a href="{{ route('admin.reporting.index') }}" class="flex items-center">
+            <a href="{{ route('home') }}" class="flex items-center">
                 <div class="h-8 w-full bg-blue-600 rounded flex items-center justify-center text-white font-bold mr-3">
                     Dubocq Pointage
                 </div>
@@ -131,18 +131,24 @@
 
         <!-- Boutons de navigation et déconnexion -->
         <div class="p-4 border-t border-gray-200 mt-auto">
-            <div class="space-y-3">
-                <x-button-dynamic tag="a" route="home" color="blue" class="w-full text-center">
-                    Retour à l'accueil
-                </x-button-dynamic>
-
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <x-button-dynamic tag="button" type="submit" color="red" class="w-full">
-                        Se déconnecter
-                    </x-button-dynamic>
-                </form>
+            <!-- Affichage du nom (première lettre) et prénom -->
+            <div class="mb-3 px-2 py-2 rounded-md text-sm font-medium text-gray-700">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium mr-2">
+                        {{ substr(auth()->user()->first_name, 0, 1) }}{{ substr(auth()->user()->last_name, 0, 1) }}
+                    </div>
+                    <div>
+                        <span>{{ auth()->user()->first_name }}</span>
+                        <div class="text-xs text-gray-500">{{ '@' . Str::after(auth()->user()->email, '@') }}</div>
+                    </div>
+                </div>
             </div>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <x-button-dynamic tag="button" type="submit" color="red" class="w-full">
+                    Se déconnecter
+                </x-button-dynamic>
+            </form>
         </div>
     </div>
 </aside>

@@ -1,7 +1,7 @@
 @if ($paginator->hasPages())
-    <div class="flex justify-between items-center p-4 bg-gray-50">
+    <div class="flex flex-col sm:flex-row justify-between items-center p-4 bg-gray-50">
         {{-- Information sur le nombre d'éléments --}}
-        <div class="text-sm text-gray-500">
+        <div class="text-sm text-gray-500 mb-2 sm:mb-0">
             @if ($paginator->total() > 0)
                 <p>
                     Affichage de
@@ -16,7 +16,7 @@
                 <p>Aucun élément trouvé</p>
             @endif
         </div>
-        
+
         {{-- Pagination --}}
         <nav aria-label="Pagination">
             <ul class="inline-flex -space-x-px text-sm">
@@ -24,12 +24,14 @@
                 @if ($paginator->onFirstPage())
                     <li>
                         <span
-                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-400 bg-white border border-e-0 border-gray-300 rounded-s-lg cursor-not-allowed">Précédent</span>
+                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-400 bg-white border border-e-0 border-gray-300 rounded-s-lg cursor-not-allowed">
+                            Précédent
+                        </span>
                     </li>
                 @else
                     <li>
                         <button wire:click="previousPage('{{ $paginator->getPageName() }}')" wire:loading.attr="disabled"
-                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 cursor-pointer">
+                                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 cursor-pointer">
                             Précédent
                         </button>
                     </li>
@@ -41,7 +43,9 @@
                     @if (is_string($element))
                         <li>
                             <span
-                                class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300">{{ $element }}</span>
+                                class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300">
+                                {{ $element }}
+                            </span>
                         </li>
                     @endif
 
@@ -51,7 +55,9 @@
                             @if ($page == $paginator->currentPage())
                                 <li>
                                     <span
-                                        class="flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 cursor-pointer">{{ $page }}</span>
+                                        class="flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 cursor-pointer">
+                                        {{ $page }}
+                                    </span>
                                 </li>
                             @else
                                 <li>
@@ -70,14 +76,16 @@
                 @if ($paginator->hasMorePages())
                     <li>
                         <button wire:click="nextPage('{{ $paginator->getPageName() }}')" wire:loading.attr="disabled"
-                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 cursor-pointer">
+                                class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 cursor-pointer">
                             Suivant
                         </button>
                     </li>
                 @else
                     <li>
                         <span
-                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-400 bg-white border border-gray-300 rounded-e-lg cursor-not-allowed">Suivant</span>
+                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-400 bg-white border border-gray-300 rounded-e-lg cursor-not-allowed">
+                            Suivant
+                        </span>
                     </li>
                 @endif
             </ul>
