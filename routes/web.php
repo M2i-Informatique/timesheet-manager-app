@@ -65,4 +65,5 @@ Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin
 Route::middleware(['verified', 'auth', 'role:super-admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('settings', SettingController::class);
+    Route::resource('zones', ZoneController::class);
 });

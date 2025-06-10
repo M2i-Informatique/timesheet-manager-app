@@ -68,7 +68,7 @@ class ZoneController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'min_km' => 'required|numeric|min:0',
-            'max_km' => 'nullable|numeric|gt:min_km',
+            'max_km' => 'nullable|numeric|min:0',
             'rate' => 'required|numeric|min:0',
         ]);
 
