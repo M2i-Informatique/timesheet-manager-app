@@ -9,6 +9,7 @@ use App\Models\TimeSheetable;
 use App\Models\NonWorkingDay;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Services\Costs\CostsCalculator;
 
 class TrackingController extends Controller
 {
@@ -171,6 +172,18 @@ class TrackingController extends Controller
 
         $totalHoursCurrentMonth = $totalWorkerHours + $totalInterimHours;
         $totalWorkerHoursCurrentMonth = $totalWorkerHours;
+
+        // Définir les bornes de la période
+        $startDate = \Carbon\Carbon::create($year, $month, 1)->startOfMonth()->format('Y-m-d');
+        $endDate = \Carbon\Carbon::create($year, $month, 1)->endOfMonth()->format('Y-m-d');
+
+        // Instancier le service
+        $calculator = new CostsCalculator();
+
+        // Utiliser le service pour calculer le coût des workers uniquement
+        $costData = $calculator->calculateTotalCostForProject($project, $startDate, $endDate);
+        $costWorkerTotal = $costData['cost'];
+
         $totalInterimHoursCurrentMonth = $totalInterimHours;
 
         // Calcul du mois précédent et suivant
@@ -225,6 +238,8 @@ class TrackingController extends Controller
             'nextYear'          => $nextYear,
             'nonWorkingDays'    => $formattedDays,
             'nonWorkingDayTypes' => $nonWorkingDayTypes,
+            'costWorkerTotal'   => $costWorkerTotal,
+
         ]);
     }
 

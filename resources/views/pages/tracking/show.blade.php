@@ -133,86 +133,86 @@
 
     {{-- Sélecteur mobile avec Tailwind uniquement --}}
     {{-- Sélecteur de période responsive optimisé --}}
-<div class="bg-white p-5 rounded-xl shadow-sm mb-6">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <!-- Titre et navigation par mois -->
-        <div class="flex flex-col items-start">
-            <h2 class="text-lg font-semibold text-gray-800 mb-2">Période de pointage</h2>
-            
-            <!-- Navigation mois -->
-            <div class="flex w-full rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-                <!-- Bouton Précédent -->
-                <a href="{{ route('tracking.show', [
+    <div class="bg-white p-5 rounded-xl shadow-sm mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <!-- Titre et navigation par mois -->
+            <div class="flex flex-col items-start">
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Période de pointage</h2>
+
+                <!-- Navigation mois -->
+                <div class="flex w-full rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                    <!-- Bouton Précédent -->
+                    <a href="{{ route('tracking.show', [
                     'project_id' => $project->id,
                     'month' => $prevMonth,
                     'year' => $prevYear,
                     'category' => $category,
                 ]) }}"
-                class="flex-1 md:flex-none flex items-center justify-center py-3 md:py-2.5 px-2 md:px-4 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:text-blue-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-4 md:w-4 md:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <span class="hidden md:inline">Précédent</span>
-                </a>
+                        class="flex-1 md:flex-none flex items-center justify-center py-3 md:py-2.5 px-2 md:px-4 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:text-blue-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-4 md:w-4 md:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span class="hidden md:inline">Précédent</span>
+                    </a>
 
-                <!-- Mois courant -->
-                <div class="flex-1 md:flex-none flex items-center justify-center py-3 md:py-2.5 px-4 md:px-5 text-sm font-medium text-blue-700 bg-blue-50 whitespace-nowrap">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span>{{ \Carbon\Carbon::create($year, $month, 1)->locale('fr')->translatedFormat('F Y') }}</span>
-                </div>
+                    <!-- Mois courant -->
+                    <div class="flex-1 md:flex-none flex items-center justify-center py-3 md:py-2.5 px-4 md:px-5 text-sm font-medium text-blue-700 bg-blue-50 whitespace-nowrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>{{ \Carbon\Carbon::create($year, $month, 1)->locale('fr')->translatedFormat('F Y') }}</span>
+                    </div>
 
-                <!-- Bouton Suivant -->
-                <a href="{{ route('tracking.show', [
+                    <!-- Bouton Suivant -->
+                    <a href="{{ route('tracking.show', [
                     'project_id' => $project->id,
                     'month' => $nextMonth,
                     'year' => $nextYear,
                     'category' => $category,
                 ]) }}"
-                class="flex-1 md:flex-none flex items-center justify-center py-3 md:py-2.5 px-2 md:px-4 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:text-blue-700">
-                    <span class="hidden md:inline">Suivant</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-4 md:w-4 md:ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
+                        class="flex-1 md:flex-none flex items-center justify-center py-3 md:py-2.5 px-2 md:px-4 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:text-blue-700">
+                        <span class="hidden md:inline">Suivant</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-4 md:w-4 md:ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
             </div>
-        </div>
 
-        <!-- Sélecteur Jour/Nuit -->
-        <div class="grid grid-cols-2 gap-3 md:flex md:gap-0">
-            <!-- Bouton Jour -->
-            <a href="{{ route('tracking.show', [
+            <!-- Sélecteur Jour/Nuit -->
+            <div class="grid grid-cols-2 gap-3 md:flex md:gap-0">
+                <!-- Bouton Jour -->
+                <a href="{{ route('tracking.show', [
                 'project_id' => $project->id,
                 'month' => $month,
                 'year' => $year,
                 'category' => 'day',
             ]) }}"
-            class="flex items-center justify-center gap-2 py-3 md:py-2.5 px-4 md:px-5 rounded-lg md:rounded-l-lg md:rounded-r-none text-sm font-medium {{ $category === 'day' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                <span class="md:hidden">Jour</span>
-                <span class="hidden md:inline">Heures de jour</span>
-            </a>
+                    class="flex items-center justify-center gap-2 py-3 md:py-2.5 px-4 md:px-5 rounded-lg md:rounded-l-lg md:rounded-r-none text-sm font-medium {{ $category === 'day' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span class="md:hidden">Jour</span>
+                    <span class="hidden md:inline">Heures de jour</span>
+                </a>
 
-            <!-- Bouton Nuit -->
-            <a href="{{ route('tracking.show', [
+                <!-- Bouton Nuit -->
+                <a href="{{ route('tracking.show', [
                 'project_id' => $project->id,
                 'month' => $month,
                 'year' => $year,
                 'category' => 'night',
             ]) }}"
-            class="flex items-center justify-center gap-2 py-3 md:py-2.5 px-4 md:px-5 rounded-lg md:rounded-l-none md:rounded-r-lg text-sm font-medium {{ $category === 'night' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-                <span class="md:hidden">Nuit</span>
-                <span class="hidden md:inline">Heures de nuit</span>
-            </a>
+                    class="flex items-center justify-center gap-2 py-3 md:py-2.5 px-4 md:px-5 rounded-lg md:rounded-l-none md:rounded-r-lg text-sm font-medium {{ $category === 'night' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <span class="md:hidden">Nuit</span>
+                    <span class="hidden md:inline">Heures de nuit</span>
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
     {{-- Handsontable container avec titre --}}
     <div class="bg-white p-5 rounded-xl shadow-lg mb-8 border border-gray-100">
@@ -458,6 +458,34 @@
                 </div>
             </div>
         </div>
+
+        <!-- KPI: Coût chantier (Workers uniquement) -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-green-100 transition-all duration-300 hover:shadow-xl hover:border-green-300">
+            <div class="p-4 bg-gradient-to-r from-green-50 to-green-100 border-b border-green-200">
+                <h3 class="text-sm font-semibold text-green-700">Coût du chantier (salariés)</h3>
+            </div>
+            <div class="p-6">
+                <div class="flex items-end justify-between">
+                    <p class="text-3xl font-bold text-green-600">
+                        {{ number_format($costWorkerTotal, 2, ',', ' ') }} €
+                    </p>
+                    <!-- <div class="text-right">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {{ $totalWorkerHoursCurrentMonth > 0 ? number_format($costWorkerTotal / $totalWorkerHoursCurrentMonth, 2, ',', ' ') : '0,00' }} €/h
+                        </span>
+                    </div> -->
+                </div>
+                <div class="mt-4 pt-4 border-t border-green-100">
+                    <div class="flex items-center gap-2 text-sm text-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4 text-green-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 7.756a4.5 4.5 0 1 0 0 8.488M7.5 10.5h5.25m-5.25 3h5.25M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        <span>Coût total du chantier pour les salariés Dubocq</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
     @endif
 </div>
