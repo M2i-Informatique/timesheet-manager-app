@@ -21,7 +21,7 @@
 @endsection
 
 @section('content')
-<div class="max-w-7xl mx-auto pb-24 px-4 lg:px-0">
+<div class="pb-32 px-4 lg:px-0">
     {{-- Message de succès --}}
     @if (session('success'))
     <div class="mb-6 p-4 bg-green-50 text-green-800 border-l-4 border-green-500 rounded-lg shadow-md flex items-start">
