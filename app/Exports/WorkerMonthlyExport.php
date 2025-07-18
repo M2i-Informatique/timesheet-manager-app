@@ -5,6 +5,7 @@ namespace App\Exports;
 use App\Models\Worker;
 use App\Models\TimeSheetable;
 use App\Models\Project;
+use App\Services\Export\ExcelStyleService;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -20,15 +21,26 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
     protected $month;
     protected $year;
     protected $holidays;
+    protected $styleService;
 
     // Propriété pour stocker les numéros de ligne des salariés
     protected $workerRows = [];
+    
+    // Propriété pour stocker les numéros de ligne des totaux de workers
+    protected $workerTotalRows = [];
+    
+    // Propriété pour stocker les groupes de workers (début et fin de chaque groupe)
+    protected $workerGroups = [];
+    
+    // Propriété pour stocker les catégories des lignes de projet (day/night)
+    protected $projectCategories = [];
 
-    public function __construct($month, $year, $holidays = [])
+    public function __construct($month, $year, $holidays = [], ExcelStyleService $styleService = null)
     {
         $this->month = $month;
         $this->year = $year;
         $this->holidays = $holidays;
+        $this->styleService = $styleService ?? app(ExcelStyleService::class);
     }
 
     /**
@@ -55,11 +67,11 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
         $data = [];
 
         // *** Ligne d'en-têtes directement ***
-        $headerRow = ["DUBOCQ OUVRIER {$dateFormatted}", '']; // Colonne B vide
+        $headerRow = ["DUBOCQ OUVRIER {$dateFormatted}", 'DEPLACEMENT']; // Colonne B pour déplacement
         for ($day = 1; $day <= $daysInMonth; $day++) {
             $headerRow[] = $day;
         }
-        $headerRow[] = 'TOTAL HEURES TRAVAILLEES';
+        $headerRow[] = "TOTAL\nHEURES\nTRAVAILLEES";
         $data[] = $headerRow;
 
         // Parcourir chaque worker
@@ -91,7 +103,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                 }
             }
 
-            // *** Ajouter une ligne pour le nom du worker ***
+            // *** Ajouter une ligne pour le nom du worker (TOUJOURS) ***
             $workerNameRow = [$worker->last_name . ' ' . $worker->first_name, ''];
 
             // Remplir les colonnes des jours avec les statuts
@@ -99,12 +111,15 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                 $workerNameRow[] = $workerDayStatus[$day];
             }
 
-            // Ajouter le total des heures pour le worker
-            $workerNameRow[] = $totalWorkerHours > 0 ? $totalWorkerHours : null;
+            // Ne pas afficher le total sur la ligne du nom
+            $workerNameRow[] = null;
 
             // Avant d'ajouter la ligne du salarié, enregistrer le numéro de ligne
             $currentRow = count($data) + 1; // Numéro de ligne actuel
             $this->workerRows[] = $currentRow;
+            
+            // Début du groupe worker
+            $workerGroupStart = $currentRow;
 
             $data[] = $workerNameRow;
 
@@ -112,8 +127,8 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
             // Regrouper les pointages par projet
             $projectGroups = $timeSheets->groupBy('project_id');
 
-            foreach ($projectGroups as $projectId => $projectTimeSheets) {
-                $project = Project::find($projectId);
+                foreach ($projectGroups as $projectId => $projectTimeSheets) {
+                $project = Project::with('zone')->find($projectId);
 
                 if (!$project) continue;
 
@@ -154,33 +169,86 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                     }
                 }
 
+                // Récupérer le tarif de zone du projet
+                $zoneRate = $project->zone ? $project->zone->rate : null;
+                $zoneRateDisplay = $zoneRate ? rtrim(rtrim(number_format($zoneRate, 2, '.', ''), '0'), '.') : '';
+
                 // *** Ligne des heures de jour ***
                 if ($totalProjectDayHours > 0) {
-                    $dayRow = ['    ' . $projectDetails, '']; // Indentation pour différencier
+                    $dayRow = ['    ' . $projectDetails, $zoneRateDisplay]; // Tarif zone dans colonne B
                     for ($day = 1; $day <= $daysInMonth; $day++) {
-                        $dayRow[] = isset($projectDayHours[$day]) ? $projectDayHours[$day] : null;
+                        $dayRow[] = isset($projectDayHours[$day]) ? $this->formatHours($projectDayHours[$day]) : null;
                     }
-                    $dayRow[] = $totalProjectDayHours > 0 ? $totalProjectDayHours : null;
+                    $dayRow[] = $totalProjectDayHours > 0 ? $this->formatHours($totalProjectDayHours) : null;
                     $data[] = $dayRow;
+                    
+                    // Enregistrer la catégorie pour cette ligne
+                    $currentRowIndex = count($data);
+                    $this->projectCategories[$currentRowIndex] = 'day';
                 }
 
                 // *** Ligne des heures de nuit (si présentes) ***
                 if ($totalProjectNightHours > 0) {
-                    $nightRow = ['    ' . $projectDetails . ' (Nuit)', ''];
+                    $nightRow = ['    ' . $projectDetails . ' (Nuit)', $zoneRateDisplay]; // Tarif zone dans colonne B
                     for ($day = 1; $day <= $daysInMonth; $day++) {
-                        $nightRow[] = isset($projectNightHours[$day]) ? $projectNightHours[$day] : null;
+                        $nightRow[] = isset($projectNightHours[$day]) ? $this->formatHours($projectNightHours[$day]) : null;
                     }
-                    $nightRow[] = $totalProjectNightHours > 0 ? $totalProjectNightHours : null;
+                    $nightRow[] = $totalProjectNightHours > 0 ? $this->formatHours($totalProjectNightHours) : null;
                     $data[] = $nightRow;
+                    
+                    // Enregistrer la catégorie pour cette ligne
+                    $currentRowIndex = count($data);
+                    $this->projectCategories[$currentRowIndex] = 'night';
                 }
-            }
+                }
 
+            // *** Ajouter une ligne de total pour le worker SEULEMENT s'il a des heures ***
+            if ($totalWorkerHours > 0) {
+                $workerTotalRow = ['TOTAL', ''];
+                
+                // Calculer les totaux par jour pour ce worker
+                $dailyTotals = [];
+                for ($day = 1; $day <= $daysInMonth; $day++) {
+                    $date = Carbon::create($this->year, $this->month, $day)->format('Y-m-d');
+                    $dayTotal = $timeSheets->where('date', $date)->sum('hours');
+                    $dailyTotals[] = $dayTotal > 0 ? $this->formatHours($dayTotal) : null;
+                }
+                
+                // Ajouter les totaux journaliers
+                $workerTotalRow = array_merge($workerTotalRow, $dailyTotals);
+                
+                // Ajouter le total général du worker
+                $workerTotalRow[] = $this->formatHours($totalWorkerHours);
+                
+                $data[] = $workerTotalRow;
+                
+                // Enregistrer le numéro de ligne du total worker (après l'ajout)
+                $currentTotalRow = count($data);
+                $this->workerTotalRows[] = $currentTotalRow;
+                
+                // DEBUG: Vérifier l'ajout de la ligne
+                error_log('DEBUG: Ajout ligne de total pour worker ' . $worker->last_name . ' à la ligne: ' . $currentTotalRow);
+                error_log('DEBUG: Total worker hours: ' . $totalWorkerHours);
+                error_log('DEBUG: Contenu workerTotalRows: ' . print_r($this->workerTotalRows, true));
+                
+                // Fin du groupe worker (ligne de total)
+                $workerGroupEnd = $currentTotalRow;
+                
+                // Enregistrer le groupe complet
+                $this->workerGroups[] = [
+                    'start' => $workerGroupStart,
+                    'end' => $workerGroupEnd
+                ];
+            } else {
+                error_log('DEBUG: Pas de ligne de total pour worker ' . $worker->last_name . ' (0 heures)');
+            }
+            
             // *** Ajouter une ligne vide après chaque worker pour une meilleure lisibilité ***
             $data[] = array_fill(0, $daysInMonth + 3, '');
         }
 
         // *** Ajouter une ligne totale pour tout le mois ***
-        $totalRow = ['TOTAL', ''];
+        $totalRow = ['TOTAL GENERAL', ''];
         $monthlyTotal = 0;
 
         for ($day = 1; $day <= $daysInMonth; $day++) {
@@ -191,10 +259,10 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                 ->sum('hours');
 
             $monthlyTotal += $dayTotal;
-            $totalRow[] = $dayTotal > 0 ? $dayTotal : null;
+            $totalRow[] = $dayTotal > 0 ? $this->formatHours($dayTotal) : null;
         }
 
-        $totalRow[] = $monthlyTotal > 0 ? $monthlyTotal : null;
+        $totalRow[] = $monthlyTotal > 0 ? $this->formatHours($monthlyTotal) : null;
         $data[] = $totalRow;
 
         return $data;
@@ -230,35 +298,19 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
 
-                // *** Définir la largeur des colonnes ***
-                $sheet->getColumnDimension('A')->setAutoSize(true); // SALARIES / Chantiers
-                $sheet->getColumnDimension('B')->setWidth(5);      // Colonne B vide ou minimale
-
-                // Auto-ajuster les colonnes restantes (jours et total)
                 $highestRow = $sheet->getHighestRow();
                 $daysInMonth = Carbon::create($this->year, $this->month, 1)->daysInMonth;
                 $totalColumns = 2 + $daysInMonth + 1; // 2 colonnes (A et B) + jours + total
-
-                for ($i = 3; $i <= $totalColumns; $i++) { // Colonnes C à ... (jours + Total)
-                    $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
-                    $sheet->getColumnDimension($column)->setAutoSize(true);
-                }
-
-                // *** Alignement des premières lignes (Titre et En-têtes) au centre ***
                 $highestColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns);
-                $sheet->getStyle("A1:{$highestColumn}1")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                // *** Alignement des autres cellules à gauche ***
-                $sheet->getStyle("A2:{$highestColumn}{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                // *** Appliquer la largeur de colonnes spécifique à WorkerMonthly ***
+                $this->setWorkerColumnWidths($sheet, $totalColumns);
 
-                // *** Format personnalisé pour les heures avec le suffixe " H" ***
-                for ($i = 3; $i <= $totalColumns; $i++) { // Colonnes C à ... (jours + Total)
-                    $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
-                    // Définir le format personnalisé : nombre avec deux décimales suivi de " H"
-                    $sheet->getStyle("{$column}2:{$column}{$highestRow}")
-                        ->getNumberFormat()
-                        ->setFormatCode('0.00" H"');
-                }
+                // *** Appliquer l'alignement spécifique à WorkerMonthly ***
+                $this->setWorkerAlignment($sheet, $highestColumn, $highestRow);
+
+                // *** Format personnalisé pour les heures avec le suffixe " H" (sauf colonne B) ***
+                $this->applyWorkerNumberFormat($sheet, $daysInMonth, $highestRow);
 
                 // *** Ajouter des bordures à toute la plage de données ***
                 $sheet->getStyle("A1:{$highestColumn}{$highestRow}")
@@ -266,167 +318,182 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                     ->getAllBorders()
                     ->setBorderStyle(Border::BORDER_THIN);
 
-                // *** Griser les jours de weekend ***
-                $this->greyOutWeekends($sheet, $highestColumn, $highestRow);
-
-                // *** Colorer les jours fériés ***
+                // *** Appliquer la coloration des weekends et fériés ***
+                $this->styleService->applyWeekendColoring($sheet, $this->month, $this->year, $highestRow, 2);
+                
                 if (!empty($this->holidays)) {
-                    $this->colorOutHolidays($sheet, $this->holidays);
+                    $this->styleService->applyHolidayColoring($sheet, $this->holidays, $highestRow, 2);
                 }
 
-                // *** Appliquer le style gras aux lignes des workers ***
-                // Appliquer le gras uniquement aux numéros de ligne des workers stockés
-                foreach ($this->workerRows as $row) {
-                    // Mettre en gras toute la ligne du salarié
+                // *** Appliquer les styles spécifiques aux workers ***
+                $this->styleService->applyWorkerRowStyles($sheet, $this->workerRows, $highestColumn);
+                $this->styleService->applyAbsenceColoring($sheet, $this->workerRows, $totalColumns);
+                $this->styleService->applyProjectHoursColoring($sheet, 2, $highestRow, $totalColumns);
+
+                // *** Appliquer le background orange à toute la colonne B ***
+                $this->styleService->applyColumnColoring($sheet, 'B', 1, $highestRow, 'F4A471');
+
+                // *** Appliquer le texte vertical centré au header "DEPLACEMENT" ***
+                $this->styleService->applyVerticalText($sheet, 'B1');
+
+                // *** Appliquer le texte multi-lignes centré au header "TOTAL HEURES TRAVAILLEES" ***
+                $totalColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns);
+                $this->styleService->applyMultiLineText($sheet, "{$totalColumn}1");
+
+                // *** Appliquer la coloration conditionnelle des tarifs selon jour/nuit (par-dessus l'orange) ***
+                $this->styleService->applyRateColoring($sheet, 2, $highestRow, $this->projectCategories);
+                
+                // *** Augmenter la hauteur du header ***
+                $this->styleService->setRowHeights($sheet, 1, 1, 84);
+
+                // *** Centrer tous les headers ***
+                $this->styleService->applyCenteredAlignment($sheet, "A1:{$highestColumn}1");
+
+                // *** Figer la première ligne (header) pour qu'elle reste visible au scroll ***
+                $sheet->freezePane('A2');
+                
+                // *** DEBUG et appliquer les styles aux lignes de total manuellement (en dernier) ***
+                error_log('DEBUG: Nombre de lignes de total workers: ' . count($this->workerTotalRows));
+                error_log('DEBUG: Lignes de total workers: ' . print_r($this->workerTotalRows, true));
+                error_log('DEBUG: Highest column: ' . $highestColumn);
+                error_log('DEBUG: Highest row: ' . $highestRow);
+                
+                // *** Styles pour les lignes de total des workers ***
+                
+                foreach ($this->workerTotalRows as $row) {
+                    error_log('DEBUG: Appliquant style à la ligne: ' . $row);
+                    
+                    // Gras sur toute la ligne
                     $sheet->getStyle("A{$row}:{$highestColumn}{$row}")->getFont()->setBold(true);
-
-                    // Appliquer un fond jaune uniquement à la cellule du nom du salarié (colonne A)
-                    $sheet->getStyle("A{$row}")
+                    
+                    // Background gris sur toute la ligne
+                    $sheet->getStyle("A{$row}:{$highestColumn}{$row}")
                         ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
-                        ->setRGB('FFF3C7'); // Jaune
+                        ->setRGB('E8E8E8'); // Gris clair
+                    
+                    // Background bleu ciel UNIQUEMENT sur la cellule de total (par-dessus le gris)
+                    $sheet->getStyle("{$highestColumn}{$row}")
+                        ->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setRGB('87CEEB'); // Bleu ciel
+                    
+                    // Bordure normale UNIQUEMENT sur la cellule bleu ciel
+                    $sheet->getStyle("{$highestColumn}{$row}")
+                        ->getBorders()
+                        ->getAllBorders()
+                        ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                        ->getColor()
+                        ->setRGB('000000'); // Noir
+                    
+                    // Bordure fine en bas de toute la ligne
+                    $sheet->getStyle("A{$row}:{$highestColumn}{$row}")
+                        ->getBorders()
+                        ->getBottom()
+                        ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                        ->getColor()
+                        ->setRGB('000000'); // Noir
+                        
+                    error_log('DEBUG: Style complet appliqué à la ligne: ' . $row);
                 }
-
-                // *** Appliquer les couleurs de fond aux cellules spécifiques ***
-                for ($row = 2; $row <= $highestRow; $row++) {
-                    $cellAValue = $sheet->getCell("A{$row}")->getValue();
-                    if (!$cellAValue) continue;
-
-                    $trimmedCellAValue = trim($cellAValue);
-
-                    // Vérifier si c'est une ligne de salarié
-                    if (in_array($row, $this->workerRows)) {
-                        // Vérifier les cellules contenant "abs" et appliquer un fond rouge
-                        for ($col = 3; $col <= $totalColumns - 1; $col++) { // Exclure la colonne Total
-                            $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
-                            $cellValue = $sheet->getCell("{$columnLetter}{$row}")->getValue();
-                            if ($cellValue === 'abs') {
-                                // Appliquer un fond rouge
-                                $sheet->getStyle("{$columnLetter}{$row}")
-                                    ->getFill()
-                                    ->setFillType(Fill::FILL_SOLID)
-                                    ->getStartColor()
-                                    ->setRGB('FFCCCC'); // Rouge
-                            }
-                        }
-                    } elseif (strpos($cellAValue, '    ') === 0) { // Ligne de projet (indentée)
-                        if (strpos($trimmedCellAValue, '(Nuit)') !== false) {
-                            // Ligne des heures de nuit
-                            // Appliquer un fond violet aux cellules avec des valeurs numériques
-                            for ($col = 3; $col <= $totalColumns - 1; $col++) { // Exclure la colonne Total
-                                $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
-                                $cellValue = $sheet->getCell("{$columnLetter}{$row}")->getValue();
-                                if (is_numeric($cellValue)) {
-                                    // Appliquer un fond violet
-                                    $sheet->getStyle("{$columnLetter}{$row}")
-                                        ->getFill()
-                                        ->setFillType(Fill::FILL_SOLID)
-                                        ->getStartColor()
-                                        ->setRGB('E6CCFF'); // Violet
-                                }
-                            }
-                        } else {
-                            // Ligne des heures de jour
-                            // Appliquer un fond vert aux cellules avec des valeurs numériques
-                            for ($col = 3; $col <= $totalColumns - 1; $col++) { // Exclure la colonne Total
-                                $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
-                                $cellValue = $sheet->getCell("{$columnLetter}{$row}")->getValue();
-                                if (is_numeric($cellValue)) {
-                                    // Appliquer un fond vert
-                                    $sheet->getStyle("{$columnLetter}{$row}")
-                                        ->getFill()
-                                        ->setFillType(Fill::FILL_SOLID)
-                                        ->getStartColor()
-                                        ->setRGB('CCFFCC'); // Vert
-                                }
-                            }
-                        }
-                    }
-                }
+                
+                // *** Appliquer le style gris à la ligne TOTAL finale ***
+                $sheet->getStyle("A{$highestRow}:{$highestColumn}{$highestRow}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setRGB('E8E8E8'); // Gris clair
+                    
+                error_log('DEBUG: Style gris appliqué à la ligne TOTAL finale: ' . $highestRow);
 
                 // *** Supprimer les bordures et le fond des lignes vides ***
-                for ($row = 1; $row <= $highestRow; $row++) {
-                    $cellA = trim($sheet->getCell("A{$row}")->getValue() ?? '');
-                    $cellB = trim($sheet->getCell("B{$row}")->getValue() ?? '');
-
-                    // Si les colonnes A et B sont vides, considérer la ligne comme vide
-                    if ($cellA === '' && $cellB === '') {
-                        // Définir la plage de la ligne
-                        $range = "A{$row}:{$highestColumn}{$row}";
-
-                        // Supprimer toutes les bordures
-                        $sheet->getStyle($range)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_NONE);
-
-                        // Supprimer le fond gris (fill)
-                        $sheet->getStyle($range)->getFill()->setFillType(Fill::FILL_NONE);
-                    }
-                }
+                $this->styleService->removeEmptyRowsStyling($sheet, $highestRow, $highestColumn);
 
                 // *** Mettre en gras la dernière ligne (Total) ***
-                $sheet->getStyle("A{$highestRow}:{$highestColumn}{$highestRow}")->getFont()->setBold(true);
+                $this->styleService->applyBoldToRow($sheet, $highestRow, $highestColumn);
             },
         ];
     }
 
+
     /**
-     * Fonction pour griser les colonnes correspondant aux weekends.
-     *
-     * @param Worksheet $sheet
-     * @param string $highestColumn
-     * @param int $highestRow
-     * @return void
+     * Définit la largeur des colonnes spécifique à WorkerMonthlyExport
      */
-    protected function greyOutWeekends(Worksheet $sheet, string $highestColumn, int $highestRow): void
+    private function setWorkerColumnWidths(Worksheet $sheet, int $totalColumns): void
     {
-        // Déterminer le premier jour du mois
-        $firstDayOfMonth = Carbon::create($this->year, $this->month, 1);
+        $sheet->getColumnDimension('A')->setAutoSize(true); // SALARIES / Chantiers
+        $sheet->getColumnDimension('B')->setWidth(8);      // Colonne B pour tarifs zone
 
-        // Parcourir tous les jours du mois
-        $daysInMonth = $firstDayOfMonth->daysInMonth;
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $currentDate = Carbon::create($this->year, $this->month, $day);
-            $dayOfWeek = $currentDate->dayOfWeek; // 0 (dimanche) à 6 (samedi)
+        // Auto-ajuster les colonnes des jours (pas la colonne Total)
+        for ($i = 3; $i < $totalColumns; $i++) { // Colonnes C à avant-dernière (jours seulement)
+            $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+        
+        // Largeur ajustée pour la colonne TOTAL
+        $totalColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns);
+        $sheet->getColumnDimension($totalColumn)->setWidth(18); // Largeur suffisante pour "TRAVAILLEES"
+    }
 
-            if ($dayOfWeek == Carbon::SATURDAY || $dayOfWeek == Carbon::SUNDAY) {
-                // Calculer l'index de la colonne correspondant au jour
-                $columnIndex = 2 + $day; // 2 colonnes avant les jours
-                $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex);
+    /**
+     * Définit l'alignement spécifique à WorkerMonthlyExport
+     */
+    private function setWorkerAlignment(Worksheet $sheet, string $highestColumn, int $highestRow): void
+    {
+        // Alignement des premières lignes (Titre et En-têtes) au centre
+        $sheet->getStyle("A1:{$highestColumn}1")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                // Appliquer un fond gris à la colonne entière (à partir de la ligne 1 pour inclure l'en-tête)
-                $range = "{$columnLetter}1:{$columnLetter}{$highestRow}";
-                $sheet->getStyle($range)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('D3D3D3'); // Gris clair
-            }
+        // Alignement de la colonne A (noms) à gauche
+        $sheet->getStyle("A2:A{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        
+        // Alignement de la colonne B (déplacements) au centre
+        $sheet->getStyle("B2:B{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        
+        // Alignement des colonnes des heures et totaux (C à fin) au centre
+        $daysInMonth = Carbon::create($this->year, $this->month, 1)->daysInMonth;
+        $totalColumns = 2 + $daysInMonth + 1; // A + B + jours + total
+        for ($i = 3; $i <= $totalColumns; $i++) {
+            $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+            $sheet->getStyle("{$column}2:{$column}{$highestRow}")
+                ->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+                ->setVertical(Alignment::VERTICAL_CENTER);
         }
     }
 
     /**
-     * Colorie les colonnes correspondant aux jours fériés
-     * 
-     * @param Worksheet $sheet
-     * @param array $holidays
-     * @return void
+     * Applique le format numérique spécifique à WorkerMonthlyExport
+     * Colonne B: pas de format (tarifs zone)
+     * Colonnes C+: format avec " H" (heures)
      */
-    public function colorOutHolidays(Worksheet $sheet, $holidays): void
+    private function applyWorkerNumberFormat(Worksheet $sheet, int $daysInMonth, int $highestRow): void
     {
-        foreach ($holidays as $holiday) {
-            // Obtenez la colonne correspondant au jour férié
-            $day = $holiday->date->day;
-            $columnIndex = 2 + $day; // Les colonnes commencent après les colonnes "SALARIES" et une colonne vide
-            $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex);
+        $totalColumns = 2 + $daysInMonth + 1; // A + B + jours + total
 
-            // Définir la couleur en fonction du type de jour non travaillé
-            $fillColor = match ($holiday->type ?? 'Férié') {
-                'Férié' => 'FFFFCC',    // Jaune clair
-                default => 'FF6347',    // Rouge clair
-            };
+        // Pas besoin de format spécial car les valeurs sont déjà formatées
+    }
 
-            // Appliquez le style de remplissage
-            $sheet->getStyle("{$columnLetter}1:{$columnLetter}" . $sheet->getHighestRow())
-                ->getFill()
-                ->setFillType(Fill::FILL_SOLID)
-                ->getStartColor()
-                ->setRGB($fillColor);
+    /**
+     * Formate les heures en supprimant les zéros inutiles
+     * 5.00 -> 5, 7.50 -> 7.5, 10.25 -> 10.25
+     */
+    private function formatHours($hours): string
+    {
+        if (!is_numeric($hours) || $hours == 0) {
+            return '';
         }
+        
+        // Convertir en float puis formater
+        $formatted = (float) $hours;
+        
+        // Si c'est un nombre entier, ne pas afficher de décimales
+        if ($formatted == intval($formatted)) {
+            return (string) intval($formatted);
+        }
+        
+        // Sinon, formater avec décimales mais supprimer les zéros à la fin
+        return rtrim(rtrim(number_format($formatted, 2, '.', ''), '0'), '.');
     }
 }
