@@ -64,6 +64,14 @@
                         <x-icons.employee class="w-4 h-4 mr-3 flex-shrink-0" />
                         <span>Intérimaires</span>
                     </a>
+                    <a href="{{ route('admin.worker-leaves.index') }}"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors
+                           {{ request()->routeIs('admin.worker-leaves.*')
+                                ? 'bg-blue-50 text-blue-700'
+                                : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <x-icons.calendar class="w-4 h-4 mr-3 flex-shrink-0" />
+                        <span>Congés Salariés</span>
+                    </a>
                 </div>
             </div>
 

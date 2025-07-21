@@ -13,6 +13,7 @@ use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\NonWorkingDayController;
 use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\Admin\WorkerLeaveController;
 
 Route::middleware(['verified', 'auth', 'role:driver|leader|admin|super-admin'])->group(function () {
 
@@ -45,6 +46,10 @@ Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin
     Route::resource('interims', InterimController::class);
     Route::resource('projects', ProjectController::class);
     Route::resource('zones', ZoneController::class);
+    
+    // Gestion des congés workers
+    Route::resource('worker-leaves', WorkerLeaveController::class);
+    Route::get('workers/{worker}/leaves', [WorkerLeaveController::class, 'workerLeaves'])->name('workers.leaves');
 
     // Gestion de l'attribution des projets aux drivers
     Route::get('driver-projects', [DriverProjectController::class, 'index'])->name('driver-projects.index');

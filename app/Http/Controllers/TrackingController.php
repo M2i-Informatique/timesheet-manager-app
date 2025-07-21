@@ -7,6 +7,7 @@ use App\Models\Worker;
 use App\Models\Interim;
 use App\Models\TimeSheetable;
 use App\Models\NonWorkingDay;
+use App\Models\WorkerLeave;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Services\Costs\CostsCalculator;
@@ -219,6 +220,34 @@ class TrackingController extends Controller
             })
             ->toArray();
 
+        // Récupérer les congés des salariés pour ce mois
+        $startOfMonth = Carbon::create($year, $month, 1)->startOfMonth();
+        $endOfMonth = Carbon::create($year, $month, 1)->endOfMonth();
+        
+        $workerLeaves = WorkerLeave::with('worker')
+            ->inPeriod($startOfMonth, $endOfMonth)
+            ->get();
+
+        // Formater les congés par worker et par jour
+        $workerLeaveDays = [];
+        $workerLeaveTypes = [];
+        foreach ($workerLeaves as $leave) {
+            $startDate = max($leave->start_date, Carbon::create($year, $month, 1));
+            $endDate = min($leave->end_date, Carbon::create($year, $month, 1)->endOfMonth());
+            
+            $current = $startDate->copy();
+            while ($current->lte($endDate)) {
+                $day = (int)$current->format('j');
+                $workerLeaveDays[$leave->worker_id][$day] = $leave->type_code;
+                $workerLeaveTypes[$leave->worker_id][$day] = [
+                    'type' => $leave->type,
+                    'code' => $leave->type_code,
+                    'color' => $leave->type_color
+                ];
+                $current->addDay();
+            }
+        }
+
         return view('pages.tracking.show', [
             'project'           => $project,
             'month'             => $month,
@@ -239,6 +268,8 @@ class TrackingController extends Controller
             'nonWorkingDays'    => $formattedDays,
             'nonWorkingDayTypes' => $nonWorkingDayTypes,
             'costWorkerTotal'   => $costWorkerTotal,
+            'workerLeaveDays'   => $workerLeaveDays,
+            'workerLeaveTypes'  => $workerLeaveTypes,
 
         ]);
     }

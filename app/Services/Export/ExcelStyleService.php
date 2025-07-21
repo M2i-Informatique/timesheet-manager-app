@@ -316,6 +316,54 @@ class ExcelStyleService
     }
 
     /**
+     * Applique les couleurs spécifiques aux congés salariés
+     */
+    public function applyWorkerLeaveColoring(Worksheet $sheet, array $workerRows, int $totalColumns): void
+    {
+        // Mapping des codes de congés vers leurs couleurs
+        $leaveColors = [
+            'CP' => '006400',    // Congés payés - Vert foncé
+            'RTT' => '0066CC',   // RTT - Bleu
+            'CSP' => 'FF8C00',   // Congé sans solde - Orange
+            'AM' => 'DC143C',    // Arrêt maladie/accident - Rouge
+            'AI' => 'DC143C',    // Attestation isolation - Rouge
+            'PM' => 'FFB6C1',    // Congé paternité/maternité - Rose
+            'AP' => '90EE90',    // Activité partielle - Vert clair
+            'INT' => '90EE90'    // Intempéries - Vert clair
+        ];
+
+        foreach ($workerRows as $row) {
+            for ($col = 3; $col <= $totalColumns - 1; $col++) {
+                $columnLetter = Coordinate::stringFromColumnIndex($col);
+                $cellValue = $sheet->getCell("{$columnLetter}{$row}")->getValue();
+                
+                if ($cellValue && isset($leaveColors[$cellValue])) {
+                    $sheet->getStyle("{$columnLetter}{$row}")
+                        ->getFill()
+                        ->setFillType(Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setRGB($leaveColors[$cellValue]);
+                        
+                    // Appliquer du texte blanc pour contraste
+                    $sheet->getStyle("{$columnLetter}{$row}")
+                        ->getFont()
+                        ->getColor()
+                        ->setRGB('FFFFFF');
+                        
+                    // Centrer le texte et le mettre en gras
+                    $sheet->getStyle("{$columnLetter}{$row}")
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                        
+                    $sheet->getStyle("{$columnLetter}{$row}")
+                        ->getFont()
+                        ->setBold(true);
+                }
+            }
+        }
+    }
+
+    /**
      * Supprime les bordures et le fond des lignes vides
      */
     public function removeEmptyRowsStyling(Worksheet $sheet, int $totalRows, string $highestColumn): void

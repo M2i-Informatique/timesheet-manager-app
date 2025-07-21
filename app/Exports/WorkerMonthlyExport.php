@@ -6,10 +6,12 @@ use App\Models\Worker;
 use App\Models\TimeSheetable;
 use App\Models\Project;
 use App\Models\Zone;
+use App\Models\WorkerLeave;
 use App\Services\Export\ExcelStyleService;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -17,7 +19,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
+class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitle
 {
     protected $month;
     protected $year;
@@ -114,6 +116,14 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                 ->whereMonth('date', $this->month)
                 ->with('project.zone') // Charger la relation project.zone
                 ->get();
+                
+            // Récupérer les congés pour ce worker ce mois
+            $startOfMonth = Carbon::create($this->year, $this->month, 1)->startOfMonth();
+            $endOfMonth = Carbon::create($this->year, $this->month, 1)->endOfMonth();
+            
+            $workerLeaves = WorkerLeave::where('worker_id', $worker->id)
+                ->inPeriod($startOfMonth, $endOfMonth)
+                ->get();
             
             // DEBUG: Afficher le nombre de timesheets trouvés
             error_log("Nombre de timesheets trouvés: " . $timeSheets->count());
@@ -126,16 +136,35 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
             for ($day = 1; $day <= $daysInMonth; $day++) {
                 $workerDayStatus[$day] = '';
             }
+            
+            // *** Créer un tableau pour les congés de ce worker ***
+            $workerLeaveDays = [];
+            foreach ($workerLeaves as $leave) {
+                $startDate = max($leave->start_date, $startOfMonth);
+                $endDate = min($leave->end_date, $endOfMonth);
+                
+                $current = $startDate->copy();
+                while ($current->lte($endDate)) {
+                    $day = (int)$current->format('j');
+                    $workerLeaveDays[$day] = $leave->type_code;
+                    $current->addDay();
+                }
+            }
 
             // Parcourir les pointages pour déterminer les absences et heures
             foreach ($timeSheets as $sheet) {
                 $day = $sheet->date->day;
                 $hours = $sheet->hours;
 
-                // Si heures = 0, marquer "abs" pour ce jour
-                if ($hours == 0) {
+                // Si heures = 0, marquer "abs" pour ce jour (sauf si en congé)
+                if ($hours == 0 && !isset($workerLeaveDays[$day])) {
                     $workerDayStatus[$day] = 'abs';
                 }
+            }
+            
+            // Appliquer les congés par-dessus les statuts existants
+            foreach ($workerLeaveDays as $day => $leaveCode) {
+                $workerDayStatus[$day] = $leaveCode;
             }
 
             // *** Ajouter une ligne pour le nom du worker (TOUJOURS) ***
@@ -440,6 +469,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                 // *** Appliquer les styles spécifiques aux workers ***
                 $this->styleService->applyWorkerRowStyles($sheet, $this->workerRows, $highestColumn);
                 $this->styleService->applyAbsenceColoring($sheet, $this->workerRows, $totalColumns);
+                $this->styleService->applyWorkerLeaveColoring($sheet, $this->workerRows, $totalColumns);
                 // *** Appliquer la coloration conditionnelle des tarifs selon jour/nuit (par-dessus l'orange) ***
                 $totalColumnIndex = 2 + $daysInMonth + 1; // Limite aux colonnes de jours + total
                 $this->styleService->applyProjectHoursColoring($sheet, 2, $highestRow, $totalColumns, $totalColumnIndex);
@@ -944,5 +974,21 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
         }
         
         return $daysCount;
+    }
+
+    /**
+     * Définit le nom du sheet Excel
+     */
+    public function title(): string
+    {
+        $monthNames = [
+            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+        ];
+        
+        $monthName = $monthNames[$this->month] ?? 'Mois';
+        
+        return "Salariés {$monthName} {$this->year}";
     }
 }

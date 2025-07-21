@@ -7,6 +7,7 @@ use App\Services\Export\ExcelStyleService;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -14,7 +15,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class BlankMonthlyExport implements FromArray, WithStyles, WithEvents
+class BlankMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitle
 {
     protected $month;
     protected $year;
@@ -181,5 +182,25 @@ class BlankMonthlyExport implements FromArray, WithStyles, WithEvents
                 "=IF(SUMPRODUCT(--(({$sumRange})<>\"\")),SUM({$sumRange}),\"\")"
             );
         }
+    }
+
+    /**
+     * Définit le nom du sheet Excel
+     */
+    public function title(): string
+    {
+        $monthNames = [
+            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+        ];
+        
+        $monthName = $monthNames[$this->month] ?? 'Mois';
+        
+        if ($this->project) {
+            return "Pointage {$this->project->code} {$monthName} {$this->year}";
+        }
+        
+        return "Pointage {$monthName} {$this->year}";
     }
 }
