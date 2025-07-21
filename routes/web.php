@@ -44,7 +44,7 @@ Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin
     Route::resource('workers', WorkerController::class);
     Route::resource('interims', InterimController::class);
     Route::resource('projects', ProjectController::class);
-    Route::resource('zones', ZoneController::class)->only(['index']);
+    Route::resource('zones', ZoneController::class);
 
     // Gestion de l'attribution des projets aux drivers
     Route::get('driver-projects', [DriverProjectController::class, 'index'])->name('driver-projects.index');
@@ -65,5 +65,4 @@ Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin
 Route::middleware(['verified', 'auth', 'role:super-admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('settings', SettingController::class);
-    Route::resource('zones', ZoneController::class);
 });
