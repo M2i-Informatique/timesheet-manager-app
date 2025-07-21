@@ -85,8 +85,8 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
             $headerRow[] = $this->formatZoneRate($rate);
         }
         
-        // *** Ajouter la colonne PANIER avec affichage vertical ***
-        $headerRow[] = "P\nA\nN\nI\nE\nR";
+        // *** Ajouter la colonne PANIER ***
+        $headerRow[] = "PANIER";
         
         $data[] = $headerRow;
 
@@ -401,6 +401,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
 
                 // *** Appliquer le texte vertical centré au header "DEPLACEMENT" ***
                 $this->styleService->applyVerticalText($sheet, 'B1');
+
+                // *** Appliquer le texte vertical centré au header "PANIER" ***
+                $this->styleService->applyVerticalText($sheet, "{$panierColumn}1");
 
                 // *** Appliquer le texte multi-lignes centré au header "TOTAL HEURES TRAVAILLEES" ***
                 $totalColumnIndex = 2 + $daysInMonth + 1; // Index de la colonne TOTAL
