@@ -85,8 +85,8 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
             $headerRow[] = $this->formatZoneRate($rate);
         }
         
-        // *** Ajouter la colonne PANIER ***
-        $headerRow[] = 'PANIER';
+        // *** Ajouter la colonne PANIER avec affichage vertical ***
+        $headerRow[] = "P\nA\nN\nI\nE\nR";
         
         $data[] = $headerRow;
 
@@ -415,6 +415,15 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
 
                 // *** Centrer tous les headers ***
                 $this->styleService->applyCenteredAlignment($sheet, "A1:{$highestColumn}1");
+
+                // *** Appliquer le background jaune à la cellule PANIER (dernière colonne) ***
+                $panierColumnIndex = $totalColumns; // PANIER est la dernière colonne
+                $panierColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($panierColumnIndex);
+                $sheet->getStyle("{$panierColumn}1")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setRGB('FFF3C7'); // Jaune comme les workers
 
                 // *** Figer la première ligne (header) pour qu'elle reste visible au scroll ***
                 $sheet->freezePane('A2');
