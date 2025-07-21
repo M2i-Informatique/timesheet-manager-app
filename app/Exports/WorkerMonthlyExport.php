@@ -41,6 +41,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
     
     // Propriété pour stocker le numéro de ligne du total général
     protected $totalGeneralRow;
+    
+    // Propriété pour stocker les workers
+    protected $workers;
 
     public function __construct($month, $year, $holidays = [], ExcelStyleService $styleService = null)
     {
@@ -48,6 +51,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
         $this->year = $year;
         $this->holidays = $holidays;
         $this->styleService = $styleService ?? app(ExcelStyleService::class);
+        
+        // Charger les workers
+        $this->workers = Worker::all();
     }
 
     /**
