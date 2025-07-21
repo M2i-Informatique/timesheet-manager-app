@@ -167,6 +167,89 @@ class ExcelStyleService
     }
 
     /**
+     * Applique des bordures épaisses noires (2px) pour délimiter les sections importantes
+     */
+    public function applySectionBorders(Worksheet $sheet, int $totalRows, int $totalColumnIndex, int $panierColumnIndex): void
+    {
+        $totalColumn = Coordinate::stringFromColumnIndex($totalColumnIndex);
+        $panierColumn = Coordinate::stringFromColumnIndex($panierColumnIndex);
+        
+        // Bordure épaisse en bas de la première ligne (header)
+        $sheet->getStyle("A1:{$panierColumn}1")
+            ->getBorders()
+            ->getBottom()
+            ->setBorderStyle(Border::BORDER_THICK)
+            ->getColor()
+            ->setRGB('000000'); // Noir
+            
+        // Encadrer entièrement la colonne DEPLACEMENT (B)
+        $sheet->getStyle("B1:B{$totalRows}")
+            ->getBorders()
+            ->getOutline()
+            ->setBorderStyle(Border::BORDER_THICK)
+            ->getColor()
+            ->setRGB('000000'); // Noir
+            
+        // Encadrer entièrement la colonne TOTAL HEURES
+        $sheet->getStyle("{$totalColumn}1:{$totalColumn}{$totalRows}")
+            ->getBorders()
+            ->getOutline()
+            ->setBorderStyle(Border::BORDER_THICK)
+            ->getColor()
+            ->setRGB('000000'); // Noir
+            
+        // Encadrer entièrement la colonne PANIER
+        $sheet->getStyle("{$panierColumn}1:{$panierColumn}{$totalRows}")
+            ->getBorders()
+            ->getOutline()
+            ->setBorderStyle(Border::BORDER_THICK)
+            ->getColor()
+            ->setRGB('000000'); // Noir
+    }
+
+    /**
+     * Applique des bordures épaisses pour séparer chaque section de worker
+     */
+    public function applyWorkerSeparatorBorders(Worksheet $sheet, array $workerRows, array $workerTotalRows, string $highestColumn): void
+    {
+        // Bordure épaisse EN HAUT de chaque ligne nom de worker
+        foreach ($workerRows as $workerRow) {
+            $sheet->getStyle("A{$workerRow}:{$highestColumn}{$workerRow}")
+                ->getBorders()
+                ->getTop()
+                ->setBorderStyle(Border::BORDER_THICK)
+                ->getColor()
+                ->setRGB('000000'); // Noir
+        }
+        
+        // Bordure épaisse EN BAS de chaque ligne total de worker
+        foreach ($workerTotalRows as $totalRow) {
+            $sheet->getStyle("A{$totalRow}:{$highestColumn}{$totalRow}")
+                ->getBorders()
+                ->getBottom()
+                ->setBorderStyle(Border::BORDER_THICK)
+                ->getColor()
+                ->setRGB('000000'); // Noir
+        }
+    }
+
+    /**
+     * Applique le style jaune et vertical à la cellule PANIER
+     */
+    public function applyPanierHeaderStyle(Worksheet $sheet, string $cell): void
+    {
+        // Appliquer le fond jaune comme les workers
+        $sheet->getStyle($cell)
+            ->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()
+            ->setRGB('FFF3C7'); // Jaune
+            
+        // Appliquer le texte vertical comme DEPLACEMENT
+        $this->applyVerticalText($sheet, $cell);
+    }
+
+    /**
      * Applique les couleurs pour les heures jour/nuit et absences (pour WorkerMonthlyExport)
      */
     public function applyProjectHoursColoring(Worksheet $sheet, int $startRow, int $endRow, int $totalColumns, int $limitColumn = null): void

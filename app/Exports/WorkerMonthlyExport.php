@@ -38,6 +38,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
     
     // Propriété pour stocker les tarifs de zones uniques
     protected $zoneRates = [];
+    
+    // Propriété pour stocker le numéro de ligne du total général
+    protected $totalGeneralRow;
 
     public function __construct($month, $year, $holidays = [], ExcelStyleService $styleService = null)
     {
@@ -88,16 +91,26 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
         // *** Ajouter la colonne PANIER ***
         $headerRow[] = "PANIER";
         
+        // *** Ajouter la colonne COMMENTAIRES ***
+        $headerRow[] = "COMMENTAIRES";
+        
         $data[] = $headerRow;
 
         // Parcourir chaque worker
         foreach ($workers as $worker) {
-            // Récupérer les pointages pour le mois et l'année spécifiés
+            // DEBUG: Afficher le worker en cours
+            error_log("=== DEBUT WORKER: {$worker->first_name} {$worker->last_name} (ID: {$worker->id}) ===");
+            
+            // Récupérer les pointages pour le mois et l'année spécifiés avec les relations
             $timeSheets = TimeSheetable::where('timesheetable_type', Worker::class)
                 ->where('timesheetable_id', $worker->id)
                 ->whereYear('date', $this->year)
                 ->whereMonth('date', $this->month)
+                ->with('project.zone') // Charger la relation project.zone
                 ->get();
+            
+            // DEBUG: Afficher le nombre de timesheets trouvés
+            error_log("Nombre de timesheets trouvés: " . $timeSheets->count());
 
             // Calculer le total des heures pour le worker
             $totalWorkerHours = $timeSheets->sum('hours');
@@ -136,6 +149,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
             }
             
             // *** Ajouter colonne PANIER vide ***
+            $workerNameRow[] = null;
+            
+            // *** Ajouter colonne COMMENTAIRES vide ***
             $workerNameRow[] = null;
 
             // Avant d'ajouter la ligne du salarié, enregistrer le numéro de ligne
@@ -205,16 +221,21 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                     }
                     $dayRow[] = $totalProjectDayHours > 0 ? $this->formatHours($totalProjectDayHours) : null;
                     
-                    // *** Ajouter les jours dans la colonne du tarif de zone correspondant ***
+                    // *** Ajouter le nombre de jours dans la colonne du tarif de zone correspondant ***
                     foreach ($this->zoneRates as $rate) {
-                        if ($zoneRate && abs($rate - $zoneRate) < 0.01) { // Comparaison avec tolérance
-                            $dayRow[] = $this->calculateDaysFromHours($totalProjectDayHours);
+                        if ($zoneRate && round($rate, 2) == round($zoneRate, 2)) { // Comparaison exacte avec arrondi
+                            // Compter les jours où ce worker a travaillé sur ce projet (jour)
+                            $projectDays = $this->countProjectDays($worker->id, $project->id, $projectDayHours);
+                            $dayRow[] = $projectDays > 0 ? $projectDays : null;
                         } else {
                             $dayRow[] = null;
                         }
                     }
                     
                     // *** Ajouter colonne PANIER vide pour les lignes de projet ***
+                    $dayRow[] = null;
+                    
+                    // *** Ajouter colonne COMMENTAIRES vide pour les lignes de projet ***
                     $dayRow[] = null;
                     
                     $data[] = $dayRow;
@@ -232,16 +253,21 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                     }
                     $nightRow[] = $totalProjectNightHours > 0 ? $this->formatHours($totalProjectNightHours) : null;
                     
-                    // *** Ajouter les jours dans la colonne du tarif de zone correspondant ***
+                    // *** Ajouter le nombre de jours dans la colonne du tarif de zone correspondant ***
                     foreach ($this->zoneRates as $rate) {
-                        if ($zoneRate && abs($rate - $zoneRate) < 0.01) { // Comparaison avec tolérance
-                            $nightRow[] = $this->calculateDaysFromHours($totalProjectNightHours);
+                        if ($zoneRate && round($rate, 2) == round($zoneRate, 2)) { // Comparaison exacte avec arrondi
+                            // Compter les jours où ce worker a travaillé sur ce projet (nuit)
+                            $projectDays = $this->countProjectDays($worker->id, $project->id, $projectNightHours);
+                            $nightRow[] = $projectDays > 0 ? $projectDays : null;
                         } else {
                             $nightRow[] = null;
                         }
                     }
                     
                     // *** Ajouter colonne PANIER vide pour les lignes de projet ***
+                    $nightRow[] = null;
+                    
+                    // *** Ajouter colonne COMMENTAIRES vide pour les lignes de projet ***
                     $nightRow[] = null;
                     
                     $data[] = $nightRow;
@@ -272,13 +298,20 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                 
                 // *** Calculer les totaux par tarif de zone pour ce worker (en jours) ***
                 $workerZoneTotals = $this->calculateWorkerZoneDays($timeSheets);
+                
                 foreach ($this->zoneRates as $rate) {
-                    $workerTotalRow[] = isset($workerZoneTotals[$rate]) ? $workerZoneTotals[$rate] : null;
+                    $rateKey = (string) round($rate, 2); // Utiliser string comme clé
+                    // Toujours afficher 0 si le worker n'a pas travaillé dans ce tarif
+                    $value = isset($workerZoneTotals[$rateKey]) && $workerZoneTotals[$rateKey] > 0 ? $workerZoneTotals[$rateKey] : '0';
+                    $workerTotalRow[] = $value;
                 }
                 
                 // *** Calculer le total des jours pour la colonne PANIER ***
                 $totalDays = array_sum($workerZoneTotals);
-                $workerTotalRow[] = $totalDays > 0 ? $totalDays : null;
+                $workerTotalRow[] = $totalDays > 0 ? $totalDays : '0';
+                
+                // *** Ajouter colonne COMMENTAIRES vide pour la ligne de total ***
+                $workerTotalRow[] = null;
                 
                 $data[] = $workerTotalRow;
                 
@@ -297,7 +330,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
             }
             
             // *** Ajouter une ligne vide après chaque worker pour une meilleure lisibilité ***
-            $data[] = array_fill(0, $daysInMonth + 3 + count($this->zoneRates) + 1, ''); // +1 pour colonne PANIER
+            $data[] = array_fill(0, $daysInMonth + 3 + count($this->zoneRates) + 2, ''); // +2 pour colonnes PANIER et COMMENTAIRES
         }
 
         // *** Ajouter une ligne totale pour tout le mois ***
@@ -320,14 +353,22 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
         // *** Calculer les totaux généraux par tarif de zone (en jours) ***
         $generalZoneTotals = $this->calculateGeneralZoneDays();
         foreach ($this->zoneRates as $rate) {
-            $totalRow[] = isset($generalZoneTotals[$rate]) ? $generalZoneTotals[$rate] : null;
+            $rateKey = (string) round($rate, 2);
+            $value = isset($generalZoneTotals[$rateKey]) && $generalZoneTotals[$rateKey] > 0 ? $generalZoneTotals[$rateKey] : '0';
+            $totalRow[] = $value;
         }
         
         // *** Calculer le total général des jours pour la colonne PANIER ***
         $totalGeneralDays = array_sum($generalZoneTotals);
-        $totalRow[] = $totalGeneralDays > 0 ? $totalGeneralDays : null;
+        $totalRow[] = $totalGeneralDays > 0 ? $totalGeneralDays : '0';
+        
+        // *** Ajouter colonne COMMENTAIRES vide pour la ligne de total général ***
+        $totalRow[] = null;
         
         $data[] = $totalRow;
+        
+        // Enregistrer le numéro de ligne du total général
+        $this->totalGeneralRow = count($data);
 
         return $data;
     }
@@ -364,7 +405,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
 
                 $highestRow = $sheet->getHighestRow();
                 $daysInMonth = Carbon::create($this->year, $this->month, 1)->daysInMonth;
-                $totalColumns = 2 + $daysInMonth + 1 + count($this->zoneRates) + 1; // 2 colonnes (A et B) + jours + total + zones + panier
+                $totalColumns = 2 + $daysInMonth + 1 + count($this->zoneRates) + 2; // 2 colonnes (A et B) + jours + total + zones + panier + commentaires
                 $highestColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns);
 
                 // *** Appliquer la largeur de colonnes spécifique à WorkerMonthly ***
@@ -381,6 +422,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                     ->getBorders()
                     ->getAllBorders()
                     ->setBorderStyle(Border::BORDER_THIN);
+
 
                 // *** Appliquer la coloration des weekends et fériés ***
                 $this->styleService->applyWeekendColoring($sheet, $this->month, $this->year, $highestRow, 2);
@@ -402,9 +444,6 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                 // *** Appliquer le texte vertical centré au header "DEPLACEMENT" ***
                 $this->styleService->applyVerticalText($sheet, 'B1');
 
-                // *** Appliquer le texte vertical centré au header "PANIER" ***
-                $this->styleService->applyVerticalText($sheet, "{$panierColumn}1");
-
                 // *** Appliquer le texte multi-lignes centré au header "TOTAL HEURES TRAVAILLEES" ***
                 $totalColumnIndex = 2 + $daysInMonth + 1; // Index de la colonne TOTAL
                 $totalColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumnIndex);
@@ -419,17 +458,41 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                 // *** Centrer tous les headers ***
                 $this->styleService->applyCenteredAlignment($sheet, "A1:{$highestColumn}1");
 
-                // *** Appliquer le background jaune à la cellule PANIER (dernière colonne) ***
-                $panierColumnIndex = $totalColumns; // PANIER est la dernière colonne
+                // *** Appliquer le style PANIER (jaune + vertical) ***
+                $panierColumnIndex = $totalColumns - 1; // PANIER est l'avant-dernière colonne (COMMENTAIRES est la dernière)
                 $panierColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($panierColumnIndex);
-                $sheet->getStyle("{$panierColumn}1")
-                    ->getFill()
-                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()
-                    ->setRGB('FFF3C7'); // Jaune comme les workers
+                $this->styleService->applyPanierHeaderStyle($sheet, "{$panierColumn}1");
+                
+                // *** Configurer la colonne COMMENTAIRES ***
+                $commentairesColumnIndex = $totalColumns; // COMMENTAIRES est maintenant la dernière colonne
+                $commentairesColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($commentairesColumnIndex);
+                
+                // Style de la cellule header COMMENTAIRES (pas de couleur de fond)
+                $this->styleService->applyCenteredAlignment($sheet, "{$commentairesColumn}1");
 
-                // *** Figer la première ligne (header) pour qu'elle reste visible au scroll ***
-                $sheet->freezePane('A2');
+                // *** Appliquer le background orange aux en-têtes des colonnes de tarifs ***
+                $totalColumnIndex = 2 + $daysInMonth + 1; // Index de la colonne TOTAL
+                for ($i = $totalColumnIndex + 1; $i < $panierColumnIndex; $i++) { // Colonnes entre TOTAL et PANIER
+                    $tarifColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+                    $this->styleService->applyColumnColoring($sheet, $tarifColumn, 1, 1, 'F4A471'); // Orange comme DEPLACEMENT
+                }
+
+                // *** Figer la première ligne ET les deux premières colonnes (A et B) pour qu'elles restent visibles au scroll ***
+                $sheet->freezePane('C2'); // Fige tout ce qui est à gauche de C et au-dessus de 2 (donc colonnes A et B)
+                
+                // *** Fusionner les cellules COMMENTAIRES pour chaque section de worker ***
+                foreach ($this->workerGroups as $group) {
+                    $startRow = $group['start'];
+                    $endRow = $group['end'];
+                    // Fusionner les cellules de la colonne COMMENTAIRES pour ce worker
+                    $sheet->mergeCells("{$commentairesColumn}{$startRow}:{$commentairesColumn}{$endRow}");
+                    
+                    // Centrer le texte dans la cellule fusionnée
+                    $this->styleService->applyCenteredAlignment($sheet, "{$commentairesColumn}{$startRow}");
+                }
+                
+                // *** Colonne COMMENTAIRES sans bordures épaisses ni fond gris ***
+                // (Pas de styling spécial, garde les bordures normales du tableau)
                 
                 // *** Styles pour les lignes de total des workers ***
                 foreach ($this->workerTotalRows as $row) {
@@ -444,18 +507,68 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                         ->getStartColor()
                         ->setRGB('E8E8E8'); // Gris clair
                     
-                    // Background bleu ciel UNIQUEMENT sur la cellule de total (par-dessus le gris)
-                    $sheet->getStyle("{$highestColumn}{$row}")
+                    // Background bleu ciel sur la cellule TOTAL HEURES (par-dessus le gris)
+                    $sheet->getStyle("{$totalColumn}{$row}")
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setRGB('87CEEB'); // Bleu ciel
                     
-                    // *** SUPPRIMER TOUTES LES BORDURES DE LA LIGNE DE TOTAL D'ABORD ***
-                    $sheet->getStyle("A{$row}:{$highestColumn}{$row}")
+                    // Bordure noire sur la cellule TOTAL HEURES bleue
+                    $sheet->getStyle("{$totalColumn}{$row}")
                         ->getBorders()
                         ->getAllBorders()
-                        ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
+                        ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                        ->getColor()
+                        ->setRGB('000000'); // Noir
+                    
+                    // Background jaune sur les cellules de tarifs de zone (par-dessus le gris)
+                    for ($i = $totalColumnIndex + 1; $i < $panierColumnIndex; $i++) {
+                        $tarifColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+                        $sheet->getStyle("{$tarifColumn}{$row}")
+                            ->getFill()
+                            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                            ->getStartColor()
+                            ->setRGB('FFFF00'); // Jaune
+                        
+                        // Bordures sur tous les bords de chaque cellule de tarif jaune
+                        $sheet->getStyle("{$tarifColumn}{$row}")
+                            ->getBorders()
+                            ->getAllBorders()
+                            ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                            ->getColor()
+                            ->setRGB('000000'); // Noir
+                    }
+                    
+                    // Background jaune sur la cellule PANIER (par-dessus le gris)
+                    $sheet->getStyle("{$panierColumn}{$row}")
+                        ->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setRGB('FFFF00'); // Jaune
+                    
+                    // Bordure noire sur la cellule PANIER jaune
+                    $sheet->getStyle("{$panierColumn}{$row}")
+                        ->getBorders()
+                        ->getAllBorders()
+                        ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                        ->getColor()
+                        ->setRGB('000000'); // Noir
+                    
+                    // *** Supprimer les bordures des colonnes des dates (colonnes des jours) ***
+                    for ($i = 3; $i < $totalColumnIndex; $i++) { // De la colonne C jusqu'à la colonne avant TOTAL
+                        $dateColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+                        $sheet->getStyle("{$dateColumn}{$row}")
+                            ->getBorders()
+                            ->getAllBorders()
+                            ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
+                    }
+                    
+                    // *** NE PAS SUPPRIMER LES BORDURES POUR GARDER LES BORDURES DES TARIFS ***
+                    // $sheet->getStyle("A{$row}:{$highestColumn}{$row}")
+                    //     ->getBorders()
+                    //     ->getAllBorders()
+                    //     ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
                     
                     // *** AJOUTER SEULEMENT LES BORDURES VOULUES ***
                     // Bordure normale UNIQUEMENT sur la cellule bleu ciel (total)
@@ -475,18 +588,93 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
                         ->setRGB('000000'); // Noir
                 }
                 
-                // *** Appliquer le style gris à la ligne TOTAL finale ***
-                $sheet->getStyle("A{$highestRow}:{$highestColumn}{$highestRow}")
-                    ->getFill()
-                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()
-                    ->setRGB('E8E8E8'); // Gris clair
+                // *** Appliquer le background bleu à la cellule TOTAL HEURES de la ligne TOTAL GENERAL ***
+                $totalColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumnIndex);
+                
+                // *** Supprimer le background de toutes les autres cellules de la colonne TOTAL HEURES ***
+                for ($row = 2; $row < $highestRow; $row++) {
+                    // Vérifier si ce n'est pas une ligne de total de worker (qui a déjà son propre style)
+                    if (!in_array($row, $this->workerTotalRows)) {
+                        $sheet->getStyle("{$totalColumn}{$row}")
+                            ->getFill()
+                            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_NONE);
+                    }
+                }
 
                 // *** Supprimer les bordures et le fond des lignes vides ***
                 $this->styleService->removeEmptyRowsStyling($sheet, $highestRow, $highestColumn);
 
-                // *** Mettre en gras la dernière ligne (Total) ***
-                $this->styleService->applyBoldToRow($sheet, $highestRow, $highestColumn);
+                // *** Styles pour la ligne TOTAL GÉNÉRAL (même que les lignes totales des workers) ***
+                $totalGeneralRow = $this->totalGeneralRow;
+                
+                // Gras sur toute la ligne
+                $sheet->getStyle("A{$totalGeneralRow}:{$highestColumn}{$totalGeneralRow}")->getFont()->setBold(true);
+                
+                // Background gris sur toute la ligne
+                $sheet->getStyle("A{$totalGeneralRow}:{$highestColumn}{$totalGeneralRow}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setRGB('E8E8E8'); // Gris clair
+                
+                // Background bleu ciel sur la cellule TOTAL HEURES (par-dessus le gris)
+                $sheet->getStyle("{$totalColumn}{$totalGeneralRow}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setRGB('87CEEB'); // Bleu ciel
+                
+                // Bordure noire sur la cellule TOTAL HEURES bleue
+                $sheet->getStyle("{$totalColumn}{$totalGeneralRow}")
+                    ->getBorders()
+                    ->getAllBorders()
+                    ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                    ->getColor()
+                    ->setRGB('000000'); // Noir
+                
+                // Background jaune sur les cellules de tarifs de zone (par-dessus le gris)
+                for ($i = $totalColumnIndex + 1; $i < $panierColumnIndex; $i++) {
+                    $tarifColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+                    $sheet->getStyle("{$tarifColumn}{$totalGeneralRow}")
+                        ->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setRGB('FFFF00'); // Jaune
+                    
+                    // Bordures sur tous les bords de chaque cellule de tarif jaune
+                    $sheet->getStyle("{$tarifColumn}{$totalGeneralRow}")
+                        ->getBorders()
+                        ->getAllBorders()
+                        ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                        ->getColor()
+                        ->setRGB('000000'); // Noir
+                }
+                
+                // Background jaune sur la cellule PANIER (par-dessus le gris)
+                $sheet->getStyle("{$panierColumn}{$totalGeneralRow}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setRGB('FFFF00'); // Jaune
+                
+                // Bordure noire sur la cellule PANIER jaune
+                $sheet->getStyle("{$panierColumn}{$totalGeneralRow}")
+                    ->getBorders()
+                    ->getAllBorders()
+                    ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                    ->getColor()
+                    ->setRGB('000000'); // Noir
+                
+                // *** Supprimer le fond et les bordures de la colonne COMMENTAIRES pour le TOTAL GÉNÉRAL ***
+                $commentairesColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns);
+                $sheet->getStyle("{$commentairesColumn}{$totalGeneralRow}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_NONE); // Fond transparent
+                
+                $sheet->getStyle("{$commentairesColumn}{$totalGeneralRow}")
+                    ->getBorders()
+                    ->getAllBorders()
+                    ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE); // Pas de bordures
             },
         ];
     }
@@ -499,25 +687,39 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
     {
         $daysInMonth = Carbon::create($this->year, $this->month, 1)->daysInMonth;
         $totalColumnIndex = 2 + $daysInMonth + 1; // Index de la colonne TOTAL (A=1, B=2, jours, puis TOTAL)
+        $panierColumnIndex = $totalColumns - 1; // PANIER est l'avant-dernière colonne (COMMENTAIRES est la dernière)
         
-        $sheet->getColumnDimension('A')->setAutoSize(true); // SALARIES / Chantiers
-        $sheet->getColumnDimension('B')->setWidth(8);      // Colonne B pour tarifs zone
-
-        // Auto-ajuster les colonnes des jours uniquement
-        for ($i = 3; $i < $totalColumnIndex; $i++) { // Colonnes C à avant TOTAL (jours seulement)
+        // Colonne A (noms) - auto-ajuster
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        
+        // Colonne B (DEPLACEMENT) - ajuster au contenu
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        
+        // Colonnes des jours - auto-ajuster
+        for ($i = 3; $i <= $totalColumnIndex - 1; $i++) { // Colonnes des jours
             $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
         
-        // Largeur ajustée pour la colonne TOTAL
+        // Colonne TOTAL HEURES - auto-ajuster
         $totalColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumnIndex);
-        $sheet->getColumnDimension($totalColumn)->setWidth(18); // Largeur suffisante pour "TRAVAILLEES"
+        $sheet->getColumnDimension($totalColumn)->setAutoSize(true);
         
-        // Largeur pour les colonnes de zones (après TOTAL)
-        for ($i = $totalColumnIndex + 1; $i <= $totalColumns; $i++) {
-            $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
-            $sheet->getColumnDimension($column)->setWidth(8); // Largeur pour tarifs de zones et PANIER
+        // Colonnes de tarifs de zone - ajuster au contenu
+        for ($i = $totalColumnIndex + 1; $i < $panierColumnIndex; $i++) {
+            $tarifColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+            $sheet->getColumnDimension($tarifColumn)->setAutoSize(true);
         }
+        
+        // Colonne PANIER - ajuster au contenu
+        $panierColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($panierColumnIndex);
+        $sheet->getColumnDimension($panierColumn)->setAutoSize(true);
+        
+        // Colonne COMMENTAIRES - largeur fixe de 80px
+        $commentairesColumnIndex = $totalColumns; // COMMENTAIRES est la dernière colonne
+        $commentairesColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($commentairesColumnIndex);
+        $sheet->getColumnDimension($commentairesColumn)->setWidth(80);
+        $sheet->getColumnDimension($commentairesColumn)->setAutoSize(false); // Forcer à désactiver l'autosize
     }
 
     /**
@@ -589,7 +791,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
         $rates = Zone::distinct()
             ->pluck('rate')
             ->map(function ($rate) {
-                return floatval($rate);
+                return round(floatval($rate), 2); // Arrondir à 2 décimales pour éviter les problèmes de précision
             })
             ->sort()
             ->values()
@@ -614,9 +816,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
         $zoneTotals = [];
         
         foreach ($timeSheets as $timeSheet) {
-            $project = Project::with('zone')->find($timeSheet->project_id);
-            if ($project && $project->zone) {
-                $zoneRate = floatval($project->zone->rate);
+            // Utiliser les relations déjà chargées
+            if ($timeSheet->project && $timeSheet->project->zone) {
+                $zoneRate = round(floatval($timeSheet->project->zone->rate), 2);
                 $zoneTotals[$zoneRate] = ($zoneTotals[$zoneRate] ?? 0) + $timeSheet->hours;
             }
         }
@@ -653,14 +855,25 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
      */
     private function calculateWorkerZoneDays($timeSheets): array
     {
-        $zoneDays = [];
+        $zoneDaysByDate = [];
         
+        // Grouper par zone rate et date pour compter les jours distincts
         foreach ($timeSheets as $timeSheet) {
-            $project = Project::with('zone')->find($timeSheet->project_id);
-            if ($project && $project->zone && $timeSheet->hours > 0) {
-                $zoneRate = floatval($project->zone->rate);
-                $zoneDays[$zoneRate] = ($zoneDays[$zoneRate] ?? 0) + 1; // Compter 1 jour par timesheet avec heures > 0
+            // Utiliser les relations déjà chargées
+            if ($timeSheet->project && $timeSheet->project->zone && $timeSheet->hours > 0) {
+                $zoneRate = round(floatval($timeSheet->project->zone->rate), 2); // Même arrondi que getUniqueZoneRates
+                $dateString = $timeSheet->date->format('Y-m-d'); // Convertir Carbon en string
+                
+                // Marquer ce jour comme travaillé dans cette zone - utiliser string pour éviter conversion
+                $zoneRateKey = (string) $zoneRate;
+                $zoneDaysByDate[$zoneRateKey][$dateString] = true;
             }
+        }
+        
+        // Compter le nombre de jours distincts par zone
+        $zoneDays = [];
+        foreach ($zoneDaysByDate as $zoneRateKey => $dates) {
+            $zoneDays[$zoneRateKey] = count($dates); // Nombre de jours distincts
         }
         
         return $zoneDays;
@@ -674,17 +887,21 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
         $zoneDays = [];
         
         foreach ($this->zoneRates as $rate) {
-            $count = TimeSheetable::where('timesheetable_type', Worker::class)
+            // Compter les jours distincts (date unique) où au moins un worker a travaillé dans cette zone
+            $distinctDays = TimeSheetable::where('timesheetable_type', Worker::class)
                 ->whereYear('date', $this->year)
                 ->whereMonth('date', $this->month)
                 ->where('hours', '>', 0)
                 ->whereHas('project.zone', function ($query) use ($rate) {
                     $query->where('rate', $rate);
                 })
-                ->count();
+                ->distinct('date')
+                ->count('date');
             
-            if ($count > 0) {
-                $zoneDays[$rate] = $count;
+            // Utiliser une clé string comme pour les autres fonctions
+            $rateKey = (string) round($rate, 2);
+            if ($distinctDays > 0) {
+                $zoneDays[$rateKey] = $distinctDays;
             }
         }
         
@@ -697,5 +914,22 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
     private function calculateDaysFromHours($hours): int
     {
         return $hours > 0 ? 1 : 0;
+    }
+    
+    /**
+     * Compte le nombre de jours où un worker a travaillé sur un projet spécifique
+     */
+    private function countProjectDays($workerId, $projectId, $hoursArray): int
+    {
+        $daysCount = 0;
+        
+        // Compter les jours où il y a des heures > 0
+        foreach ($hoursArray as $day => $hours) {
+            if ($hours > 0) {
+                $daysCount++;
+            }
+        }
+        
+        return $daysCount;
     }
 }
