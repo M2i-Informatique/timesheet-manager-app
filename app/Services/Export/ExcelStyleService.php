@@ -169,7 +169,7 @@ class ExcelStyleService
     /**
      * Applique les couleurs pour les heures jour/nuit et absences (pour WorkerMonthlyExport)
      */
-    public function applyProjectHoursColoring(Worksheet $sheet, int $startRow, int $endRow, int $totalColumns): void
+    public function applyProjectHoursColoring(Worksheet $sheet, int $startRow, int $endRow, int $totalColumns, int $limitColumn = null): void
     {
         for ($row = $startRow; $row <= $endRow; $row++) {
             $cellAValue = $sheet->getCell("A{$row}")->getValue();
@@ -181,10 +181,10 @@ class ExcelStyleService
             if (strpos($cellAValue, '    ') === 0) {
                 if (strpos($trimmedCellAValue, '(Nuit)') !== false) {
                     // Ligne des heures de nuit - fond violet
-                    $this->applyHoursCellColoring($sheet, $row, $totalColumns, 'E6CCFF');
+                    $this->applyHoursCellColoring($sheet, $row, $totalColumns, 'E6CCFF', $limitColumn);
                 } else {
                     // Ligne des heures de jour - fond vert
-                    $this->applyHoursCellColoring($sheet, $row, $totalColumns, 'CCFFCC');
+                    $this->applyHoursCellColoring($sheet, $row, $totalColumns, 'CCFFCC', $limitColumn);
                 }
             }
         }
@@ -193,9 +193,11 @@ class ExcelStyleService
     /**
      * Applique la couleur de fond aux cellules contenant des valeurs numériques
      */
-    private function applyHoursCellColoring(Worksheet $sheet, int $row, int $totalColumns, string $color): void
+    private function applyHoursCellColoring(Worksheet $sheet, int $row, int $totalColumns, string $color, int $limitColumn = null): void
     {
-        for ($col = 3; $col <= $totalColumns - 1; $col++) { // Exclure la colonne Total
+        $endColumn = $limitColumn ?? ($totalColumns - 1);
+        
+        for ($col = 3; $col <= $endColumn; $col++) { // Exclure la colonne Total
             $columnLetter = Coordinate::stringFromColumnIndex($col);
             $cellValue = $sheet->getCell("{$columnLetter}{$row}")->getValue();
             
