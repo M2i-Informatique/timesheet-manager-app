@@ -881,27 +881,34 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents
     
     /**
      * Calcule les totaux généraux par tarif de zone (en jours)
+     * Somme des jours de tous les workers pour chaque zone
      */
     private function calculateGeneralZoneDays(): array
     {
         $zoneDays = [];
         
+        // Initialiser avec des zéros pour toutes les zones
         foreach ($this->zoneRates as $rate) {
-            // Compter les jours distincts (date unique) où au moins un worker a travaillé dans cette zone
-            $distinctDays = TimeSheetable::where('timesheetable_type', Worker::class)
+            $rateKey = (string) round($rate, 2);
+            $zoneDays[$rateKey] = 0;
+        }
+        
+        // Sommer les jours de chaque worker pour chaque zone
+        foreach ($this->workers as $worker) {
+            $timeSheets = TimeSheetable::where('timesheetable_type', Worker::class)
+                ->where('timesheetable_id', $worker->id)
                 ->whereYear('date', $this->year)
                 ->whereMonth('date', $this->month)
-                ->where('hours', '>', 0)
-                ->whereHas('project.zone', function ($query) use ($rate) {
-                    $query->where('rate', $rate);
-                })
-                ->distinct('date')
-                ->count('date');
+                ->with('project.zone')
+                ->get();
+                
+            $workerZoneDays = $this->calculateWorkerZoneDays($timeSheets);
             
-            // Utiliser une clé string comme pour les autres fonctions
-            $rateKey = (string) round($rate, 2);
-            if ($distinctDays > 0) {
-                $zoneDays[$rateKey] = $distinctDays;
+            // Additionner les jours de ce worker aux totaux généraux
+            foreach ($workerZoneDays as $rateKey => $days) {
+                if (isset($zoneDays[$rateKey])) {
+                    $zoneDays[$rateKey] += $days;
+                }
             }
         }
         
