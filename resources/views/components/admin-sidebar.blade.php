@@ -70,7 +70,7 @@
                                 ? 'bg-blue-50 text-blue-700'
                                 : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
                         <x-icons.calendar class="w-4 h-4 mr-3 flex-shrink-0" />
-                        <span>Congés Salariés</span>
+                        <span>Congés</span>
                     </a>
                 </div>
             </div>
