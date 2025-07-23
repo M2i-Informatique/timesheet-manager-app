@@ -37,7 +37,8 @@ class WorkerLeave extends Model
             'attestation_isolation' => 'Attestation d\'isolation',
             'conge_paternite_maternite' => 'Congé paternité/maternité',
             'activite_partielle' => 'Activité partielle',
-            'intemperies' => 'Intempéries'
+            'intemperies' => 'Intempéries',
+            'autre' => 'Autre'
         ];
     }
 
@@ -54,7 +55,8 @@ class WorkerLeave extends Model
             'attestation_isolation' => 'AI',
             'conge_paternite_maternite' => 'PM',
             'activite_partielle' => 'AP',
-            'intemperies' => 'INT'
+            'intemperies' => 'INT',
+            'autre' => 'AUT'
         ];
     }
 
@@ -64,14 +66,15 @@ class WorkerLeave extends Model
     public static function getTypeColors(): array
     {
         return [
-            'conge_paye' => '#006400',           // Vert foncé
-            'rtt' => '#0066CC',                 // Bleu
-            'conge_sans_solde' => '#FF8C00',    // Orange
-            'arret_maladie_accident' => '#DC143C', // Rouge
-            'attestation_isolation' => '#DC143C',   // Rouge
-            'conge_paternite_maternite' => '#FFB6C1', // Rose
-            'activite_partielle' => '#90EE90',      // Vert clair
-            'intemperies' => '#90EE90'              // Vert clair
+            'conge_paye' => '#92D050',               // Vert
+            'rtt' => '#00B0F0',                     // Bleu ciel
+            'conge_sans_solde' => '#FFC000',        // Jaune/Orange
+            'arret_maladie_accident' => '#FF0000',  // Rouge
+            'attestation_isolation' => '#FF0000',   // Rouge
+            'conge_paternite_maternite' => '#FFCCFF', // Rose
+            'activite_partielle' => '#FF66FF',      // Magenta
+            'intemperies' => '#99FF66',             // Vert lime
+            'autre' => '#9370DB'                    // Violet
         ];
     }
 

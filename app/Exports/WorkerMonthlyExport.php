@@ -131,14 +131,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
             // Calculer le total des heures pour le worker
             $totalWorkerHours = $timeSheets->sum('hours');
 
-            // *** Créer un tableau pour stocker le statut de chaque jour ***
-            $workerDayStatus = [];
-            for ($day = 1; $day <= $daysInMonth; $day++) {
-                $workerDayStatus[$day] = '';
-            }
-            
-            // *** Créer un tableau pour les congés de ce worker ***
+            // *** Créer un tableau pour les congés de ce worker (pour ligne du nom) ***
             $workerLeaveDays = [];
+            $workerLeaveComments = [];
             foreach ($workerLeaves as $leave) {
                 $startDate = max($leave->start_date, $startOfMonth);
                 $endDate = min($leave->end_date, $endOfMonth);
@@ -147,32 +142,28 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                 while ($current->lte($endDate)) {
                     $day = (int)$current->format('j');
                     $workerLeaveDays[$day] = $leave->type_code;
+                    
+                    // Collecter les raisons s'ils existent
+                    if ($leave->reason) {
+                        $workerLeaveComments[] = $leave->reason;
+                    }
                     $current->addDay();
                 }
             }
-
-            // Parcourir les pointages pour déterminer les absences et heures
-            foreach ($timeSheets as $sheet) {
-                $day = $sheet->date->day;
-                $hours = $sheet->hours;
-
-                // Si heures = 0, marquer "abs" pour ce jour (sauf si en congé)
-                if ($hours == 0 && !isset($workerLeaveDays[$day])) {
-                    $workerDayStatus[$day] = 'abs';
-                }
-            }
             
-            // Appliquer les congés par-dessus les statuts existants
-            foreach ($workerLeaveDays as $day => $leaveCode) {
-                $workerDayStatus[$day] = $leaveCode;
+            // Compiler tous les commentaires uniques pour ce worker avec préfixe
+            $workerCommentText = null;
+            if (!empty($workerLeaveComments)) {
+                $uniqueComments = array_unique($workerLeaveComments);
+                $workerCommentText = 'Motif / Commentaire congés : ' . implode(' | ', $uniqueComments);
             }
 
             // *** Ajouter une ligne pour le nom du worker (TOUJOURS) ***
             $workerNameRow = [$worker->last_name . ' ' . $worker->first_name, ''];
 
-            // Remplir les colonnes des jours avec les statuts
+            // Afficher les congés sur la ligne du nom du salarié
             for ($day = 1; $day <= $daysInMonth; $day++) {
-                $workerNameRow[] = $workerDayStatus[$day];
+                $workerNameRow[] = isset($workerLeaveDays[$day]) ? $workerLeaveDays[$day] : '';
             }
 
             // Ne pas afficher le total sur la ligne du nom
@@ -186,8 +177,8 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
             // *** Ajouter colonne PANIER vide ***
             $workerNameRow[] = null;
             
-            // *** Ajouter colonne COMMENTAIRES vide ***
-            $workerNameRow[] = null;
+            // *** Ajouter colonne COMMENTAIRES avec les commentaires des congés ***
+            $workerNameRow[] = $workerCommentText;
 
             // Avant d'ajouter la ligne du salarié, enregistrer le numéro de ligne
             $currentRow = count($data) + 1; // Numéro de ligne actuel
@@ -197,6 +188,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
             $workerGroupStart = $currentRow;
 
             $data[] = $workerNameRow;
+
 
             // *** Ajouter les lignes des projets sous chaque worker ***
             // Regrouper les pointages par projet
@@ -249,10 +241,33 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                 $zoneRateDisplay = $zoneRate ? rtrim(rtrim(number_format($zoneRate, 2, '.', ''), '0'), '.') : '';
 
                 // *** Ligne des heures de jour ***
-                if ($totalProjectDayHours > 0) {
+                // Modifier la condition pour inclure les lignes avec des absences (heures = 0)
+                $hasAbsencesDay = false;
+                foreach ($projectTimeSheets as $sheet) {
+                    if ($sheet->category == 'day' && $sheet->hours == 0 && !isset($workerLeaveDays[$sheet->date->day])) {
+                        $hasAbsencesDay = true;
+                        break;
+                    }
+                }
+                
+                if ($totalProjectDayHours > 0 || $hasAbsencesDay) {
                     $dayRow = ['    ' . $projectDetails, $zoneRateDisplay]; // Tarif zone dans colonne B
                     for ($day = 1; $day <= $daysInMonth; $day++) {
-                        $dayRow[] = isset($projectDayHours[$day]) ? $this->formatHours($projectDayHours[$day]) : null;
+                        if (isset($projectDayHours[$day]) && $projectDayHours[$day] > 0) {
+                            $dayRow[] = $this->formatHours($projectDayHours[$day]);
+                        } else {
+                            // Vérifier s'il y a une absence (heures = 0) ce jour-là sur ce projet
+                            $hasAbsenceThisDay = $projectTimeSheets->where('date.day', $day)
+                                ->where('category', 'day')
+                                ->where('hours', 0)
+                                ->isNotEmpty();
+                            
+                            if ($hasAbsenceThisDay && !isset($workerLeaveDays[$day])) {
+                                $dayRow[] = 'abs';
+                            } else {
+                                $dayRow[] = null;
+                            }
+                        }
                     }
                     $dayRow[] = $totalProjectDayHours > 0 ? $this->formatHours($totalProjectDayHours) : null;
                     
@@ -281,10 +296,33 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                 }
 
                 // *** Ligne des heures de nuit (si présentes) ***
-                if ($totalProjectNightHours > 0) {
+                // Modifier la condition pour inclure les lignes avec des absences (heures = 0)
+                $hasAbsencesNight = false;
+                foreach ($projectTimeSheets as $sheet) {
+                    if ($sheet->category == 'night' && $sheet->hours == 0 && !isset($workerLeaveDays[$sheet->date->day])) {
+                        $hasAbsencesNight = true;
+                        break;
+                    }
+                }
+                
+                if ($totalProjectNightHours > 0 || $hasAbsencesNight) {
                     $nightRow = ['    ' . $projectDetails . ' (Nuit)', $zoneRateDisplay]; // Tarif zone dans colonne B
                     for ($day = 1; $day <= $daysInMonth; $day++) {
-                        $nightRow[] = isset($projectNightHours[$day]) ? $this->formatHours($projectNightHours[$day]) : null;
+                        if (isset($projectNightHours[$day]) && $projectNightHours[$day] > 0) {
+                            $nightRow[] = $this->formatHours($projectNightHours[$day]);
+                        } else {
+                            // Vérifier s'il y a une absence (heures = 0) ce jour-là sur ce projet
+                            $hasAbsenceThisDay = $projectTimeSheets->where('date.day', $day)
+                                ->where('category', 'night')
+                                ->where('hours', 0)
+                                ->isNotEmpty();
+                            
+                            if ($hasAbsenceThisDay && !isset($workerLeaveDays[$day])) {
+                                $nightRow[] = 'abs';
+                            } else {
+                                $nightRow[] = null;
+                            }
+                        }
                     }
                     $nightRow[] = $totalProjectNightHours > 0 ? $this->formatHours($totalProjectNightHours) : null;
                     
@@ -468,7 +506,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
 
                 // *** Appliquer les styles spécifiques aux workers ***
                 $this->styleService->applyWorkerRowStyles($sheet, $this->workerRows, $highestColumn);
-                $this->styleService->applyAbsenceColoring($sheet, $this->workerRows, $totalColumns);
+                $this->styleService->applyAbsenceColoringAllRows($sheet, $highestRow, $totalColumns);
                 $this->styleService->applyWorkerLeaveColoring($sheet, $this->workerRows, $totalColumns);
                 // *** Appliquer la coloration conditionnelle des tarifs selon jour/nuit (par-dessus l'orange) ***
                 $totalColumnIndex = 2 + $daysInMonth + 1; // Limite aux colonnes de jours + total

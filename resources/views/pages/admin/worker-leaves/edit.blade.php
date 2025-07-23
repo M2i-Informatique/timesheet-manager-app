@@ -12,7 +12,11 @@
             <span>Modifier congé</span>
         </div>
         <h1 class="text-xl font-semibold text-gray-900">
-            Modifier le congé de {{ $workerLeave->worker->first_name }} {{ $workerLeave->worker->last_name }}
+            @if($workerLeave->worker)
+                Modifier le congé de {{ $workerLeave->worker->first_name }} {{ $workerLeave->worker->last_name }}
+            @else
+                Modifier le congé (salarié supprimé)
+            @endif
         </h1>
     </div>
 
@@ -101,6 +105,7 @@
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+
                 </div>
 
                 <!-- Informations actuelles -->
@@ -113,7 +118,13 @@
                         </div>
                         <div>
                             <span class="text-gray-500">Créé par :</span>
-                            <span class="font-medium">{{ $workerLeave->createdBy->first_name }} {{ $workerLeave->createdBy->last_name }}</span>
+                            <span class="font-medium">
+                                @if($workerLeave->createdBy)
+                                    {{ $workerLeave->createdBy->first_name }} {{ $workerLeave->createdBy->last_name }}
+                                @else
+                                    Non renseigné
+                                @endif
+                            </span>
                         </div>
                         <div>
                             <span class="text-gray-500">Créé le :</span>

@@ -101,7 +101,11 @@
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">
-                                    {{ $leave->worker->first_name }} {{ $leave->worker->last_name }}
+                                    @if($leave->worker)
+                                        {{ $leave->worker->first_name }} {{ $leave->worker->last_name }}
+                                    @else
+                                        <span class="text-red-500">Salarié supprimé</span>
+                                    @endif
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -118,7 +122,11 @@
                                 {{ $leave->days_count }} jour{{ $leave->days_count > 1 ? 's' : '' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $leave->createdBy->first_name }} {{ $leave->createdBy->last_name }}
+                                @if($leave->createdBy)
+                                    {{ $leave->createdBy->first_name }} {{ $leave->createdBy->last_name }}
+                                @else
+                                    Non renseigné
+                                @endif
                                 <div class="text-xs text-gray-500">{{ $leave->created_at->format('d/m/Y') }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">

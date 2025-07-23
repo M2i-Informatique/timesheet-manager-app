@@ -55,6 +55,7 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Commentaire</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions
                         </th>
                     </tr>
@@ -66,7 +67,20 @@
                                 {{ $day->date->format('d/m/Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    @if($day->type === 'Férié') bg-yellow-100 text-yellow-800
+                                    @elseif($day->type === 'RTT Imposé') bg-blue-100 text-blue-800
+                                    @else bg-red-100 text-red-800 @endif">
+                                    {{ $day->getDisplayCode() }}
+                                </span>
                                 {{ $day->type }}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($day->comment)
+                                    <span class="text-sm text-gray-600">{{ $day->comment }}</span>
+                                @else
+                                    <span class="text-sm text-gray-400">-</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <a href="{{ route('admin.non-working-days.edit', $day) }}"
@@ -85,7 +99,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="px-6 py-4 text-center text-gray-500">
+                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">
                                 Aucun jour non travaillé enregistré
                             </td>
                         </tr>

@@ -13,7 +13,11 @@
         </div>
         <div class="flex items-center justify-between">
             <h1 class="text-xl font-semibold text-gray-900">
-                Congé de {{ $workerLeave->worker->first_name }} {{ $workerLeave->worker->last_name }}
+                @if($workerLeave->worker)
+                    Congé de {{ $workerLeave->worker->first_name }} {{ $workerLeave->worker->last_name }}
+                @else
+                    Congé (salarié supprimé)
+                @endif
             </h1>
             <div class="flex space-x-2">
                 <a href="{{ route('admin.worker-leaves.edit', $workerLeave) }}" 
@@ -53,21 +57,25 @@
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Salarié</dt>
                             <dd class="mt-1 text-sm text-gray-900">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-8 w-8">
-                                        <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-                                            <span class="text-sm font-medium text-gray-700">
-                                                {{ substr($workerLeave->worker->first_name, 0, 1) }}{{ substr($workerLeave->worker->last_name, 0, 1) }}
-                                            </span>
+                                @if($workerLeave->worker)
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-8 w-8">
+                                            <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                                                <span class="text-sm font-medium text-gray-700">
+                                                    {{ substr($workerLeave->worker->first_name, 0, 1) }}{{ substr($workerLeave->worker->last_name, 0, 1) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">
+                                                {{ $workerLeave->worker->first_name }} {{ $workerLeave->worker->last_name }}
+                                            </p>
+                                            <p class="text-sm text-gray-500">{{ $workerLeave->worker->category }}</p>
                                         </div>
                                     </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-900">
-                                            {{ $workerLeave->worker->first_name }} {{ $workerLeave->worker->last_name }}
-                                        </p>
-                                        <p class="text-sm text-gray-500">{{ $workerLeave->worker->category }}</p>
-                                    </div>
-                                </div>
+                                @else
+                                    <span class="text-red-500">Salarié supprimé</span>
+                                @endif
                             </dd>
                         </div>
 
@@ -147,7 +155,11 @@
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Créé par</dt>
                             <dd class="mt-1 text-sm text-gray-900">
-                                {{ $workerLeave->createdBy->first_name }} {{ $workerLeave->createdBy->last_name }}
+                                @if($workerLeave->createdBy)
+                                    {{ $workerLeave->createdBy->first_name }} {{ $workerLeave->createdBy->last_name }}
+                                @else
+                                    Non renseigné
+                                @endif
                             </dd>
                         </div>
 

@@ -651,6 +651,7 @@
                 case 'Férié':
                     return 'FER';
                 case 'RTT Imposé':
+                case 'rtt': // Support de l'ancien format
                     return 'RTT';
                 case 'Fermeture':
                     return 'FRM';

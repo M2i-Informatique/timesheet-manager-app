@@ -48,7 +48,9 @@ Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin
     Route::resource('zones', ZoneController::class);
     
     // Gestion des congés workers
-    Route::resource('worker-leaves', WorkerLeaveController::class);
+    Route::resource('worker-leaves', WorkerLeaveController::class)->parameters([
+        'worker-leaves' => 'workerLeave'
+    ]);
     Route::get('workers/{worker}/leaves', [WorkerLeaveController::class, 'workerLeaves'])->name('workers.leaves');
 
     // Gestion de l'attribution des projets aux drivers

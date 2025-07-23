@@ -111,6 +111,7 @@ class WorkerLeaveController extends Controller
      */
     public function edit(WorkerLeave $workerLeave): View
     {
+        $workerLeave->load(['worker', 'createdBy']);
         $workers = Worker::orderBy('last_name')->get();
         $types = WorkerLeave::getTypes();
 
