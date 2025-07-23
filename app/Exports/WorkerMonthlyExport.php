@@ -244,7 +244,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                 // Modifier la condition pour inclure les lignes avec des absences (heures = 0)
                 $hasAbsencesDay = false;
                 foreach ($projectTimeSheets as $sheet) {
-                    if ($sheet->category == 'day' && $sheet->hours == 0 && !isset($workerLeaveDays[$sheet->date->day])) {
+                    if ($sheet->category == 'day' && $sheet->hours == 0) {
                         $hasAbsencesDay = true;
                         break;
                     }
@@ -262,7 +262,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                                 ->where('hours', 0)
                                 ->isNotEmpty();
                             
-                            if ($hasAbsenceThisDay && !isset($workerLeaveDays[$day])) {
+                            if ($hasAbsenceThisDay) {
                                 $dayRow[] = 'abs';
                             } else {
                                 $dayRow[] = null;
@@ -299,7 +299,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                 // Modifier la condition pour inclure les lignes avec des absences (heures = 0)
                 $hasAbsencesNight = false;
                 foreach ($projectTimeSheets as $sheet) {
-                    if ($sheet->category == 'night' && $sheet->hours == 0 && !isset($workerLeaveDays[$sheet->date->day])) {
+                    if ($sheet->category == 'night' && $sheet->hours == 0) {
                         $hasAbsencesNight = true;
                         break;
                     }
@@ -317,7 +317,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                                 ->where('hours', 0)
                                 ->isNotEmpty();
                             
-                            if ($hasAbsenceThisDay && !isset($workerLeaveDays[$day])) {
+                            if ($hasAbsenceThisDay) {
                                 $nightRow[] = 'abs';
                             } else {
                                 $nightRow[] = null;

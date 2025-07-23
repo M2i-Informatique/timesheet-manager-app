@@ -95,7 +95,7 @@
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Date de début</dt>
                             <dd class="mt-1 text-sm text-gray-900">
-                                {{ $workerLeave->start_date->format('l j F Y') }}
+                                {{ $workerLeave->start_date->locale('fr')->isoFormat('dddd D MMMM YYYY') }}
                                 <span class="text-gray-500">({{ $workerLeave->start_date->format('d/m/Y') }})</span>
                             </dd>
                         </div>
@@ -104,7 +104,7 @@
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Date de fin</dt>
                             <dd class="mt-1 text-sm text-gray-900">
-                                {{ $workerLeave->end_date->format('l j F Y') }}
+                                {{ $workerLeave->end_date->locale('fr')->isoFormat('dddd D MMMM YYYY') }}
                                 <span class="text-gray-500">({{ $workerLeave->end_date->format('d/m/Y') }})</span>
                             </dd>
                         </div>
