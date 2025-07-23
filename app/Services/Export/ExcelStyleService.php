@@ -117,8 +117,8 @@ class ExcelStyleService
 
             // Définir la couleur en fonction du type
             $fillColor = match ($holiday->type ?? 'Férié') {
-                'Férié' => 'FFFFCC',    // Jaune clair
-                default => 'FF6347',    // Rouge clair
+                'Férié' => 'FFE0B2',    // Orange clair
+                default => 'FFE0B2',    // Orange clair
             };
 
             // Déterminer la ligne de départ selon le type d'export
@@ -243,7 +243,7 @@ class ExcelStyleService
             ->getFill()
             ->setFillType(Fill::FILL_SOLID)
             ->getStartColor()
-            ->setRGB('FFF3C7'); // Jaune
+            ->setRGB('FFFF00'); // Jaune vif
             
         // Appliquer le texte vertical comme DEPLACEMENT
         $this->applyVerticalText($sheet, $cell);
@@ -295,7 +295,7 @@ class ExcelStyleService
     }
 
     /**
-     * Applique le fond rouge aux cellules contenant "abs"
+     * Applique le fond rouge aux cellules contenant "abs" (ancienne version - lignes workers seulement)
      */
     public function applyAbsenceColoring(Worksheet $sheet, array $workerRows, int $totalColumns): void
     {
@@ -310,6 +310,79 @@ class ExcelStyleService
                         ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setRGB('FFCCCC'); // Rouge
+                }
+            }
+        }
+    }
+
+    /**
+     * Applique le fond rouge aux cellules contenant "abs" sur toutes les lignes
+     */
+    public function applyAbsenceColoringAllRows(Worksheet $sheet, int $totalRows, int $totalColumns): void
+    {
+        // Parcourir toutes les lignes (à partir de la ligne 2 pour éviter les headers)
+        for ($row = 2; $row <= $totalRows; $row++) {
+            for ($col = 3; $col <= $totalColumns - 3; $col++) { // -3 pour exclure TOTAL, PANIER, COMMENTAIRES
+                $columnLetter = Coordinate::stringFromColumnIndex($col);
+                $cellValue = $sheet->getCell("{$columnLetter}{$row}")->getValue();
+                
+                if ($cellValue === 'abs') {
+                    $sheet->getStyle("{$columnLetter}{$row}")
+                        ->getFill()
+                        ->setFillType(Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setRGB('FFCCCC'); // Rouge
+                }
+            }
+        }
+    }
+
+    /**
+     * Applique les couleurs spécifiques aux congés salariés
+     */
+    public function applyWorkerLeaveColoring(Worksheet $sheet, array $workerRows, int $totalColumns): void
+    {
+        // Récupérer les couleurs depuis le modèle WorkerLeave
+        $typeColors = \App\Models\WorkerLeave::getTypeColors();
+        $typeCodes = \App\Models\WorkerLeave::getTypeCodes();
+        
+        // Inverser le mapping pour obtenir type par code
+        $codeToType = array_flip($typeCodes);
+        
+        // Mapping des codes de congés vers leurs couleurs (sans #)
+        $leaveColors = [];
+        foreach ($typeCodes as $type => $code) {
+            if (isset($typeColors[$type])) {
+                $leaveColors[$code] = ltrim($typeColors[$type], '#');
+            }
+        }
+
+        foreach ($workerRows as $row) {
+            for ($col = 3; $col <= $totalColumns - 1; $col++) {
+                $columnLetter = Coordinate::stringFromColumnIndex($col);
+                $cellValue = $sheet->getCell("{$columnLetter}{$row}")->getValue();
+                
+                if ($cellValue && isset($leaveColors[$cellValue])) {
+                    $sheet->getStyle("{$columnLetter}{$row}")
+                        ->getFill()
+                        ->setFillType(Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setRGB($leaveColors[$cellValue]);
+                        
+                    // Appliquer du texte noir pour contraste
+                    $sheet->getStyle("{$columnLetter}{$row}")
+                        ->getFont()
+                        ->getColor()
+                        ->setRGB('000000');
+                        
+                    // Centrer le texte et désactiver le gras
+                    $sheet->getStyle("{$columnLetter}{$row}")
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                        
+                    $sheet->getStyle("{$columnLetter}{$row}")
+                        ->getFont()
+                        ->setBold(false);
                 }
             }
         }

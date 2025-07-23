@@ -33,12 +33,47 @@
                             class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                     </div>
 
-                    <div class="mb-6">
+                    <div class="mb-4">
                         <label for="type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                        <input type="text" id="type" name="type" value="{{ old('type') }}" required
-                            placeholder="Ex: Férié, Congé, etc."
+                        <select id="type" name="type" required
                             class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            <option value="">Sélectionnez un type</option>
+                            @foreach(\App\Models\NonWorkingDay::TYPES as $key => $label)
+                                <option value="{{ $key }}" {{ old('type') == $key ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
+
+                    <div class="mb-6" id="comment-field" style="display: none;">
+                        <label for="comment" class="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
+                        <textarea id="comment" name="comment" rows="3"
+                            placeholder="Précisez la raison de la fermeture..."
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">{{ old('comment') }}</textarea>
+                    </div>
+
+                    <script>
+                        document.getElementById('type').addEventListener('change', function() {
+                            const commentField = document.getElementById('comment-field');
+                            const commentInput = document.getElementById('comment');
+                            
+                            if (this.value === 'Fermeture') {
+                                commentField.style.display = 'block';
+                            } else {
+                                commentField.style.display = 'none';
+                                commentInput.value = '';
+                            }
+                        });
+
+                        // Vérifier au chargement de la page
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const typeSelect = document.getElementById('type');
+                            if (typeSelect.value === 'Fermeture') {
+                                document.getElementById('comment-field').style.display = 'block';
+                            }
+                        });
+                    </script>
 
                     <div class="flex justify-end">
                         <button type="submit"

@@ -9,7 +9,22 @@ class NonWorkingDay extends Model
 {
     protected $fillable = [
         'date',
-        'type'
+        'type',
+        'comment'
+    ];
+
+    // Types disponibles pour le select
+    const TYPES = [
+        'Férié' => 'Férié',
+        'RTT Imposé' => 'RTT Imposé', 
+        'Fermeture' => 'Fermeture'
+    ];
+
+    // Codes d'affichage pour le tracking
+    const DISPLAY_CODES = [
+        'Férié' => 'FER',
+        'RTT Imposé' => 'RTT',
+        'Fermeture' => 'FRM'
     ];
 
     protected $casts = [
@@ -19,5 +34,13 @@ class NonWorkingDay extends Model
     public function getNonWorkingDays(): Collection
     {
         return $this->all();
+    }
+
+    /**
+     * Retourne le code d'affichage pour le tracking
+     */
+    public function getDisplayCode(): string
+    {
+        return self::DISPLAY_CODES[$this->type] ?? 'FRM';
     }
 }

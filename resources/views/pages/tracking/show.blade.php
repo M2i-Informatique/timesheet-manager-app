@@ -33,7 +33,7 @@
     @endif
 
     <!-- Section d'informations avec légende -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Colonne d'informations importantes -->
         <div class="bg-white rounded-xl shadow-lg p-5 border border-gray-100 transition-all duration-300 hover:shadow-xl">
             <div class="flex items-center gap-2 mb-4 font-bold text-gray-800">
@@ -124,6 +124,62 @@
                     <div class="flex items-center">
                         <span>
                             Les jours non travaillés sont affichés en orange dans le tableau. La saisie d'heures pendant ces jours sera également affichée en orange.
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Légende des congés salariés -->
+        <div class="bg-white rounded-xl shadow-lg p-5 border border-gray-100 transition-all duration-300 hover:shadow-xl">
+            <div class="flex items-center gap-2 mb-4 font-bold text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    class="w-5 h-5 text-green-600">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5a2.25 2.25 0 002.25-2.25m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5a2.25 2.25 0 012.25 2.25v7.5M3 16.5l7.5-7.5 7.5 7.5" />
+                </svg>
+                <span>Légende des congés salariés</span>
+            </div>
+            <div class="p-4 rounded-lg bg-green-50">
+                <ul class="space-y-2">
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-2 py-1 rounded text-white font-bold text-xs" style="background-color: #006400;">CP</div>
+                        <span class="font-medium text-gray-800 text-sm">Congés payés</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-2 py-1 rounded text-white font-bold text-xs" style="background-color: #0066CC;">RTT</div>
+                        <span class="font-medium text-gray-800 text-sm">RTT</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-2 py-1 rounded text-white font-bold text-xs" style="background-color: #FF8C00;">CSP</div>
+                        <span class="font-medium text-gray-800 text-sm">Congé sans solde</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-2 py-1 rounded text-white font-bold text-xs" style="background-color: #DC143C;">AM</div>
+                        <span class="font-medium text-gray-800 text-sm">Arrêt maladie/accident</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-2 py-1 rounded text-white font-bold text-xs" style="background-color: #DC143C;">AI</div>
+                        <span class="font-medium text-gray-800 text-sm">Attestation isolation</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-2 py-1 rounded text-white font-bold text-xs" style="background-color: #FFB6C1;">PM</div>
+                        <span class="font-medium text-gray-800 text-sm">Congé paternité/maternité</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-2 py-1 rounded text-white font-bold text-xs" style="background-color: #90EE90;">AP</div>
+                        <span class="font-medium text-gray-800 text-sm">Activité partielle</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="flex-shrink-0 px-2 py-1 rounded text-white font-bold text-xs" style="background-color: #90EE90;">INT</div>
+                        <span class="font-medium text-gray-800 text-sm">Intempéries</span>
+                    </li>
+                </ul>
+                <div class="mt-4 p-3 bg-white rounded-lg border border-green-100 text-sm text-gray-600">
+                    <div class="flex items-center">
+                        <span>
+                            Les congés sont affichés avec leur code et couleur spécifique. Les cellules en congé sont en lecture seule.
                         </span>
                     </div>
                 </div>
@@ -587,12 +643,15 @@
         let entriesData = @json($entriesData);
         let nonWorkingDays = @json($nonWorkingDays ?? []);
         let nonWorkingDayTypes = @json($nonWorkingDayTypes ?? []);
+        let workerLeaveDays = @json($workerLeaveDays ?? []);
+        let workerLeaveTypes = @json($workerLeaveTypes ?? []);
 
         function getTypeAbbreviation(type) {
             switch (type) {
                 case 'Férié':
                     return 'FER';
                 case 'RTT Imposé':
+                case 'rtt': // Support de l'ancien format
                     return 'RTT';
                 case 'Fermeture':
                     return 'FRM';
@@ -757,6 +816,10 @@
                         const dayNum = col - 2;
                         const date = new Date(year, month - 1, dayNum);
                         const dayOfWeek = date.getDay();
+                        
+                        // Récupérer l'ID et le type de l'employé
+                        const employeeId = instance.getDataAtRowProp(row, 0);
+                        const employeeType = instance.getDataAtRowProp(row, 1);
 
                         // Weekend => gris
                         if (dayOfWeek === 0 || dayOfWeek === 6) {
@@ -766,8 +829,22 @@
                         // Jour non travaillé ?
                         const isNonWorkingDay = (dayNum in nonWorkingDayTypes);
                         const nonWorkingType = isNonWorkingDay ? nonWorkingDayTypes[dayNum] : null;
+                        
+                        // Congé worker ?
+                        const isWorkerOnLeave = employeeType === 'worker' && 
+                                               workerLeaveTypes[employeeId] && 
+                                               workerLeaveTypes[employeeId][dayNum];
+                        const leaveInfo = isWorkerOnLeave ? workerLeaveTypes[employeeId][dayNum] : null;
 
-                        if (value !== null && value !== '') {
+                        if (isWorkerOnLeave) {
+                            // Worker en congé - afficher le code et rendre la cellule read-only
+                            td.textContent = leaveInfo.code;
+                            td.style.backgroundColor = leaveInfo.color;
+                            td.style.color = '#FFFFFF';
+                            td.style.fontWeight = 'bold';
+                            td.style.textAlign = 'center';
+                            cellProperties.readOnly = true;
+                        } else if (value !== null && value !== '') {
                             if (parseFloat(value) === 0) {
                                 td.textContent = 'abs';
                                 td.classList.add('absent');
