@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Log;
 class WorkerHoursService
 {
     /**
-     * Calculate a detailed breakdown of hours for workers.
+     * Récupère les heures des travailleurs avec des filtres optionnels.
      *
-     * Filters:
-     *   - id: Optional worker ID
-     *   - category: Optional timesheet category filter (e.g. "day" or "night")
-     *   - startDate: Optional start date filter
-     *   - endDate: Optional end date filter
+     * Filtres disponibles :
+     *   - id: ID du travailleur (facultatif)
+     *   - category: Catégorie de la feuille de temps (facultatif)
+     *   - startDate: Date de début (facultatif)
+     *   - endDate: Date de fin (facultatif)
      *
      * @param string|null $id
      * @param string|null $category
@@ -32,8 +32,8 @@ class WorkerHoursService
             $query->where('id', $id);
         }
 
-        // Instead of filtering the worker's category,
-        // we filter on the timesheet category if provided.
+        // Au lieu de filtrer la catégorie du travailleur,
+        // nous filtrons sur la catégorie de la feuille de temps si elle est fournie.
         if ($category) {
             $query->whereHas('timesheets', function ($q) use ($category) {
                 $q->where('category', $category);
@@ -61,7 +61,7 @@ class WorkerHoursService
                 $timesheetsQuery->where('date', '<=', $endDate);
             }
 
-            // Optionally, if you want to also apply the filter on the timesheet category here:
+            // Filtrer par catégorie de feuille de temps si fourni
             if ($category) {
                 $timesheetsQuery->where('category', $category);
             }

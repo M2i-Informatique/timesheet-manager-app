@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Log;
 class ProjectCostsService extends CostsCalculator
 {
     /**
-     * Get a detailed breakdown of costs for projects.
+     * Récupère les coûts des projets avec des filtres optionnels.
      *
-     * Filters:
-     *   - id: Optional project ID
-     *   - category: Optional project category (e.g. "mh" or "go")
-     *   - startDate: Optional start date filter
-     *   - endDate: Optional end date filter
+     * Filtres disponibles :
+     *   - id: ID du projet (facultatif)
+     *   - category: Catégorie du projet (facultatif)
+     *   - startDate: Date de début (facultatif)
+     *   - endDate: Date de fin (facultatif)
      *
      * @param string|null $id
      * @param string|null $category

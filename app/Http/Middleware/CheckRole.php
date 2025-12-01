@@ -15,6 +15,7 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, $role): Response
     {
+        // Vérifier si l'utilisateur est authentifié et possède le rôle requis
         if (!$request->user() || !$request->user()->hasRole($role)) {
             abort(403, 'Accès non autorisé.');
         }

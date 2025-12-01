@@ -22,7 +22,7 @@ class CostsCalculator
     }
 
     /**
-     * Calculate the hourly day cost for a worker on a project.
+     * Calculer le coût horaire journalier d'un travailleur sur un projet.
      *
      * @param Worker  $worker
      * @param Project $project
@@ -49,7 +49,7 @@ class CostsCalculator
     }
 
     /**
-     * Calculate the hourly night cost for a worker on a project.
+     * Calculer le coût horaire nocturne d'un travailleur sur un projet.
      *
      * @param Worker  $worker
      * @param Project $project
@@ -62,7 +62,7 @@ class CostsCalculator
     }
 
     /**
-     * Calculate the total cost for a worker on a project over a given period.
+     * Calculer le coût total pour un travailleur sur un projet sur une période donnée.
      *
      * @param Worker  $worker
      * @param Project $project
@@ -88,7 +88,7 @@ class CostsCalculator
     }
 
     /**
-     * Calculate the total cost (and total hours) for all workers on a project.
+     * Calculez le coût total (et le nombre total d'heures) pour tous les travailleurs affectés à un projet.
      *
      * @param Project     $project
      * @param string|null $startDate
@@ -155,7 +155,7 @@ class CostsCalculator
     }
 
     /**
-     * Calculate a detailed breakdown of costs for a project.
+     * Calculez le coût détaillé pour un projet, y compris les coûts par travailleur et les heures des interims.
      *
      * @param Project     $project
      * @param string|null $startDate
@@ -340,7 +340,7 @@ class CostsCalculator
     }
 
     /**
-     * Check if the worker is of category ETAM.
+     * Déterminer si un travailleur appartient à la catégorie 'etam'.
      *
      * @param Worker $worker
      * @return bool

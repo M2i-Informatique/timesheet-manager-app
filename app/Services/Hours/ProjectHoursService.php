@@ -10,13 +10,13 @@ use Illuminate\Support\Facades\Log;
 class ProjectHoursService
 {
     /**
-     * Calculate a detailed breakdown of hours for projects.
+     * Récupère les heures des projets avec des filtres optionnels.
      *
-     * Filters:
-     *   - id: Optional project ID
-     *   - category: Optional project category
-     *   - startDate: Optional start date filter
-     *   - endDate: Optional end date filter
+     * Filtres disponibles :
+     *   - id: ID du projet (facultatif)
+     *   - category: Catégorie du projet (facultatif)
+     *   - startDate: Date de début (facultatif)
+     *   - endDate: Date de fin (facultatif)
      *
      * @param string|null $id
      * @param string|null $category
@@ -46,7 +46,7 @@ class ProjectHoursService
             $workersData = [];
             $interimsData = [];
 
-            // Retrieve workers and their timesheets (with date filtering)
+            // Récupérer les travailleurs et leurs feuilles de temps
             $workers = $project->workers()->with(['timesheets' => function ($query) use ($project, $startDate, $endDate) {
                 $query->where('project_id', $project->id);
                 if ($startDate && $endDate) {
@@ -58,7 +58,7 @@ class ProjectHoursService
                 }
             }])->get();
 
-            // Retrieve interims and their timesheets
+            // Récupérer les interims et leurs feuilles de temps
             $interims = $project->interims()->with(['timesheets' => function ($query) use ($project, $startDate, $endDate) {
                 $query->where('project_id', $project->id);
                 if ($startDate && $endDate) {
@@ -70,7 +70,7 @@ class ProjectHoursService
                 }
             }])->get();
 
-            // Process workers data
+            // Traiter les données des travailleurs
             foreach ($workers as $worker) {
                 $workerHours = 0.0;
                 $timesheetData = [];
@@ -97,7 +97,7 @@ class ProjectHoursService
                 }
             }
 
-            // Process interims data
+            // Traiter les données des interims
             foreach ($interims as $interim) {
                 $interimHours = 0.0;
                 $timesheetData = [];

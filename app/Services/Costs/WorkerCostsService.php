@@ -8,16 +8,16 @@ use Illuminate\Support\Facades\Log;
 class WorkerCostsService extends CostsCalculator
 {
     /**
-     * Get a detailed breakdown of costs for workers.
+     * Récupère les coûts des travailleurs avec des filtres optionnels.
      *
-     * Filters:
-     *   - id: Optional worker ID
-     *   - category: Optional worker category filter (if applicable)
-     *   - startDate: Optional start date filter
-     *   - endDate: Optional end date filter
+     * Filtres disponibles :
+     *   - id: ID du travailleur (facultatif)
+     *   - category: Catégorie du travailleur (facultatif)
+     *   - startDate: Date de début (facultatif)
+     *   - endDate: Date de fin (facultatif)
      *
-     * The cost for each worker is calculated across all timesheets. Each timesheet's cost is
-     * computed based on its associated project.
+     * Le coût de chaque travailleur est calculé sur l'ensemble des feuilles de temps. Le coût de chaque feuille de temps est
+     * calculé en fonction de son projet associé.
      *
      * @param string|null $id
      * @param string|null $category
@@ -35,7 +35,7 @@ class WorkerCostsService extends CostsCalculator
             $query->where('id', $id);
         }
 
-        // Filter by worker's category (e.g. "worker" or "etam")
+        // Filtrer par catégorie si fourni
         if ($category) {
             $query->where('category', $category);
         }
@@ -51,7 +51,7 @@ class WorkerCostsService extends CostsCalculator
             $workerTotalCost = 0.0;
             $workerTimesheetDetails = [];
 
-            // Filter timesheets by date for each worker
+            // Filtrer les feuilles de temps du travailleur par date si des filtres sont fournis
             $timesheetsQuery = $worker->timesheets();
 
             if ($startDate && $endDate) {
@@ -69,8 +69,8 @@ class WorkerCostsService extends CostsCalculator
             foreach ($timesheets as $timesheet) {
                 Log::info("    Timesheet ID: {$timesheet->id}, Project ID: {$timesheet->project_id}, Date: {$timesheet->date}, Category: {$timesheet->category}, Hours: {$timesheet->hours}");
 
-                // Get the associated project for the timesheet.
-                // Ensure that the Timesheet model has a "project" relationship.
+                // Récupérer le projet associé à la feuille de temps.
+                // Assurez-vous que le modèle Timesheet a une relation "project".
                 $project = $timesheet->project;
                 if (!$project) {
                     Log::warning("    No project found for timesheet ID: {$timesheet->id}");

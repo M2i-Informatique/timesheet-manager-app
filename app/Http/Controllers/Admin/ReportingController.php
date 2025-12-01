@@ -45,7 +45,7 @@ class ReportingController extends Controller
      */
     public function index(Request $request)
     {
-        // Check if dashboard view is requested
+        // Vérifier si l'affichage du tableau de bord est demandé
         if ($request->input('view') === 'dashboard' || !$request->has('report_type')) {
             return $this->dashboard($request);
         }
@@ -53,7 +53,7 @@ class ReportingController extends Controller
         $projects = Project::where('status', 'active')->orderBy('code')->get();
         $workers = Worker::where('status', 'active')->orderBy('last_name')->get();
 
-        // Default to current month
+        // Par défaut, le mois en cours
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->format('Y-m-d'));
         $projectId = $request->input('project_id');

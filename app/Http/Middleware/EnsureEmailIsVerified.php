@@ -19,6 +19,7 @@ class EnsureEmailIsVerified
      */
     public function handle($request, Closure $next, $redirectToRoute = null)
     {
+        // Vérifier si l'utilisateur est authentifié et si son email est vérifié
         if (
             !$request->user() ||
             ($request->user() instanceof MustVerifyEmail &&
