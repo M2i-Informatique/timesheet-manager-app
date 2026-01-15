@@ -6,16 +6,71 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Worker;
 use App\Models\Project;
+use App\Services\Hours\WorkerHoursService;
+use App\Exports\WorkerYearlyExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 class WorkerController extends Controller
 {
+    protected $workerHoursService;
+
+    public function __construct(WorkerHoursService $workerHoursService)
+    {
+        $this->workerHoursService = $workerHoursService;
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Récupérer les filtres
+        $month = $request->input('month', now()->month);
+        $year = $request->input('year', now()->year);
+        $projectCategory = $request->input('project_category'); // 'mh' ou 'go'
+
         $workers = Worker::orderBy('last_name')->paginate(10);
-        return view('pages.admin.workers.index', compact('workers'));
+
+        // Calculer les heures pour les travailleurs de la page courante
+        $workersHours = [];
+        $startDate = Carbon::create($year, $month, 1)->startOfMonth()->format('Y-m-d');
+        $endDate = Carbon::create($year, $month, 1)->endOfMonth()->format('Y-m-d');
+
+        foreach ($workers as $worker) {
+            // On utilise le service pour calculer les heures avec les filtres
+            // Signature: getWorkerHours($id, $timesheetCategory, $startDate, $endDate, $projectCategory)
+            $data = $this->workerHoursService->getWorkerHours(
+                $worker->id,
+                null, // Pas de filtre sur day/night
+                $startDate,
+                $endDate,
+                $projectCategory // Filtre MH/GO
+            );
+
+            // Le service retourne un array, on prend le premier élément s'il existe
+            if (!empty($data)) {
+                $workersHours[$worker->id] = $data[0]['total_hours'];
+            } else {
+                $workersHours[$worker->id] = 0;
+            }
+        }
+
+        return view('pages.admin.workers.index', compact('workers', 'month', 'year', 'projectCategory', 'workersHours'));
+    }
+
+    /**
+     * Exporte le récapitulatif annuel des travailleurs.
+     */
+    public function exportYearly(Request $request)
+    {
+        $year = $request->input('year', now()->year);
+        // On garde la catégorie dans le nom du fichier si elle est demandée, bien que l'export contienne tout
+        $projectCategory = $request->input('project_category'); 
+
+        $filename = 'recap_salaries_' . $year . '.xlsx';
+
+        return Excel::download(new WorkerYearlyExport($year), $filename);
     }
 
     /**

@@ -12,19 +12,21 @@ class WorkerHoursService
      *
      * Filtres disponibles :
      *   - id: ID du travailleur (facultatif)
-     *   - category: Catégorie de la feuille de temps (facultatif)
+     *   - timesheetCategory: Catégorie de la feuille de temps (day/night) (facultatif)
      *   - startDate: Date de début (facultatif)
      *   - endDate: Date de fin (facultatif)
+     *   - projectCategory: Catégorie du projet (mh/go) (facultatif)
      *
      * @param string|null $id
-     * @param string|null $category
+     * @param string|null $timesheetCategory
      * @param string|null $startDate
      * @param string|null $endDate
+     * @param string|null $projectCategory
      * @return array
      */
-    public function getWorkerHours(?string $id, ?string $category, ?string $startDate, ?string $endDate): array
+    public function getWorkerHours(?string $id, ?string $timesheetCategory, ?string $startDate, ?string $endDate, ?string $projectCategory = null): array
     {
-        Log::info("getWorkerHours - Start with filters: ID={$id}, Category={$category}, StartDate={$startDate}, EndDate={$endDate}");
+        Log::info("getWorkerHours - Start with filters: ID={$id}, TimesheetCategory={$timesheetCategory}, StartDate={$startDate}, EndDate={$endDate}, ProjectCategory={$projectCategory}");
 
         $query = Worker::query();
 
@@ -32,11 +34,17 @@ class WorkerHoursService
             $query->where('id', $id);
         }
 
-        // Au lieu de filtrer la catégorie du travailleur,
-        // nous filtrons sur la catégorie de la feuille de temps si elle est fournie.
-        if ($category) {
-            $query->whereHas('timesheets', function ($q) use ($category) {
-                $q->where('category', $category);
+        // Filtrer les workers qui ont des timesheets correspondants à la catégorie (day/night)
+        if ($timesheetCategory) {
+            $query->whereHas('timesheets', function ($q) use ($timesheetCategory) {
+                $q->where('category', $timesheetCategory);
+            });
+        }
+
+        // Filtrer les workers qui ont des timesheets sur des projets de la catégorie (mh/go)
+        if ($projectCategory) {
+            $query->whereHas('timesheets.project', function ($q) use ($projectCategory) {
+                $q->where('category', $projectCategory);
             });
         }
 
@@ -46,8 +54,8 @@ class WorkerHoursService
         Log::info("Found " . $workers->count() . " workers matching filters");
 
         foreach ($workers as $worker) {
-            Log::info("Processing Worker ID: {$worker->id}, Name: {$worker->first_name} {$worker->last_name}");
-
+            // Log::info("Processing Worker ID: {$worker->id}, Name: {$worker->first_name} {$worker->last_name}");
+            
             $workerHours   = 0.0;
             $timesheetData = [];
 
@@ -61,18 +69,23 @@ class WorkerHoursService
                 $timesheetsQuery->where('date', '<=', $endDate);
             }
 
-            // Filtrer par catégorie de feuille de temps si fourni
-            if ($category) {
-                $timesheetsQuery->where('category', $category);
+            // Filtrer par catégorie de feuille de temps (day/night)
+            if ($timesheetCategory) {
+                $timesheetsQuery->where('category', $timesheetCategory);
+            }
+            
+            // FILTRE AJOUTÉ : Filtrer par catégorie de projet (mh/go)
+            if ($projectCategory) {
+                $timesheetsQuery->whereHas('project', function ($q) use ($projectCategory) {
+                    $q->where('category', $projectCategory);
+                });
             }
 
             $timesheets = $timesheetsQuery->get();
 
-            Log::info("  Found " . $timesheets->count() . " timesheets for worker");
+            // Log::info("  Found " . $timesheets->count() . " timesheets for worker");
 
             foreach ($timesheets as $timesheet) {
-                Log::info("    Timesheet ID: {$timesheet->id}, Project ID: {$timesheet->project_id}, Date: {$timesheet->date}, Category: {$timesheet->category}, Hours: {$timesheet->hours}");
-
                 $workerHours += $timesheet->hours;
                 $timesheetData[] = [
                     'date'     => $timesheet->date->format('Y-m-d'),
@@ -81,14 +94,12 @@ class WorkerHoursService
                 ];
             }
 
-            Log::info("  Worker total hours: {$workerHours}");
-
             if ($workerHours > 0) {
                 $results[] = [
                     'id'          => $worker->id,
                     'first_name'  => $worker->first_name,
                     'last_name'   => $worker->last_name,
-                    'category'    => $worker->category,
+                    'category'    => $worker->category, // Catégorie du worker (Ouvrier/ETAM)
                     'total_hours' => $workerHours,
                     'timesheets'  => $timesheetData,
                 ];

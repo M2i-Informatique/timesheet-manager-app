@@ -42,6 +42,7 @@ Route::middleware(['verified', 'auth', 'role:leader|admin|super-admin'])->prefix
 });
 
 Route::middleware(['verified', 'auth', 'role:admin|super-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('workers/export-yearly', [WorkerController::class, 'exportYearly'])->name('workers.export-yearly');
     Route::resource('workers', WorkerController::class);
     Route::resource('interims', InterimController::class);
     Route::resource('projects', ProjectController::class);
