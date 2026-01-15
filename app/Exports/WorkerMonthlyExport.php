@@ -96,6 +96,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
             $headerRow[] = $this->formatZoneRate($rate);
         }
         
+        // *** Ajouter la colonne AUTRE (pour Zone 7 Majorée) ***
+        $headerRow[] = "AUTRE";
+        
         // *** Ajouter la colonne PANIER ***
         $headerRow[] = "PANIER";
         
@@ -174,6 +177,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                 $workerNameRow[] = null;
             }
             
+            // *** Ajouter colonne AUTRE vide ***
+            $workerNameRow[] = null;
+            
             // *** Ajouter colonne PANIER vide ***
             $workerNameRow[] = null;
             
@@ -238,6 +244,12 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
 
                 // Récupérer le tarif de zone du projet
                 $zoneRate = $project->zone ? $project->zone->rate : null;
+                
+                // Si c'est une zone au km (Zone 7 Majorée), on affiche le montant calculé (rate * distance)
+                if ($project->zone && $project->zone->is_per_km && $project->distance) {
+                    $zoneRate = $project->zone->rate * $project->distance;
+                }
+                
                 $zoneRateDisplay = $zoneRate ? rtrim(rtrim(number_format($zoneRate, 2, '.', ''), '0'), '.') : '';
 
                 // *** Ligne des heures de jour ***
@@ -273,13 +285,22 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                     
                     // *** Ajouter le nombre de jours dans la colonne du tarif de zone correspondant ***
                     foreach ($this->zoneRates as $rate) {
-                        if ($zoneRate && round($rate, 2) == round($zoneRate, 2)) { // Comparaison exacte avec arrondi
+                        // On vérifie aussi que ce n'est PAS une zone au km (car elles vont dans AUTRE)
+                        if ($zoneRate && !$project->zone->is_per_km && round($rate, 2) == round($zoneRate, 2)) {
                             // Compter les jours où ce worker a travaillé sur ce projet (jour)
                             $projectDays = $this->countProjectDays($worker->id, $project->id, $projectDayHours);
                             $dayRow[] = $projectDays > 0 ? $projectDays : null;
                         } else {
                             $dayRow[] = null;
                         }
+                    }
+                    
+                    // *** Remplir la colonne AUTRE (pour Zone 7 Majorée) ***
+                    if ($zoneRate && $project->zone->is_per_km) {
+                        $projectDays = $this->countProjectDays($worker->id, $project->id, $projectDayHours);
+                        $dayRow[] = $projectDays > 0 ? $projectDays : null;
+                    } else {
+                        $dayRow[] = null;
                     }
                     
                     // *** Ajouter colonne PANIER vide pour les lignes de projet ***
@@ -328,13 +349,22 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                     
                     // *** Ajouter le nombre de jours dans la colonne du tarif de zone correspondant ***
                     foreach ($this->zoneRates as $rate) {
-                        if ($zoneRate && round($rate, 2) == round($zoneRate, 2)) { // Comparaison exacte avec arrondi
+                        // On vérifie aussi que ce n'est PAS une zone au km (car elles vont dans AUTRE)
+                        if ($zoneRate && !$project->zone->is_per_km && round($rate, 2) == round($zoneRate, 2)) {
                             // Compter les jours où ce worker a travaillé sur ce projet (nuit)
                             $projectDays = $this->countProjectDays($worker->id, $project->id, $projectNightHours);
                             $nightRow[] = $projectDays > 0 ? $projectDays : null;
                         } else {
                             $nightRow[] = null;
                         }
+                    }
+                    
+                    // *** Remplir la colonne AUTRE (pour Zone 7 Majorée) ***
+                    if ($zoneRate && $project->zone->is_per_km) {
+                        $projectDays = $this->countProjectDays($worker->id, $project->id, $projectNightHours);
+                        $nightRow[] = $projectDays > 0 ? $projectDays : null;
+                    } else {
+                        $nightRow[] = null;
                     }
                     
                     // *** Ajouter colonne PANIER vide pour les lignes de projet ***
@@ -378,6 +408,26 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                     $value = isset($workerZoneTotals[$rateKey]) && $workerZoneTotals[$rateKey] > 0 ? $workerZoneTotals[$rateKey] : '0';
                     $workerTotalRow[] = $value;
                 }
+                
+                // *** Calculer le total pour la colonne AUTRE (Zone 7 Majorée) ***
+                $autreTotal = 0;
+                // Parcourir les totaux calculés pour trouver ceux qui correspondent à des zones au km
+                // Note: calculateWorkerZoneDays retourne tous les totaux, y compris ceux des zones au km
+                // Il faut filtrer ceux qui ne sont PAS dans $this->zoneRates
+                
+                // Créer un tableau des clés de zones standard pour vérification rapide
+                $standardZoneKeys = [];
+                foreach ($this->zoneRates as $rate) {
+                    $standardZoneKeys[(string) round($rate, 2)] = true;
+                }
+                
+                foreach ($workerZoneTotals as $rateKey => $days) {
+                    if (!isset($standardZoneKeys[$rateKey])) {
+                        $autreTotal += $days;
+                    }
+                }
+                
+                $workerTotalRow[] = $autreTotal > 0 ? $autreTotal : '0';
                 
                 // *** Calculer le total des jours pour la colonne PANIER ***
                 $totalDays = array_sum($workerZoneTotals);
@@ -431,6 +481,23 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
             $totalRow[] = $value;
         }
         
+        // *** Calculer le total général pour la colonne AUTRE ***
+        $autreGeneralTotal = 0;
+        
+        // Créer un tableau des clés de zones standard
+        $standardZoneKeys = [];
+        foreach ($this->zoneRates as $rate) {
+            $standardZoneKeys[(string) round($rate, 2)] = true;
+        }
+        
+        foreach ($generalZoneTotals as $rateKey => $days) {
+            if (!isset($standardZoneKeys[$rateKey])) {
+                $autreGeneralTotal += $days;
+            }
+        }
+        
+        $totalRow[] = $autreGeneralTotal > 0 ? $autreGeneralTotal : '0';
+        
         // *** Calculer le total général des jours pour la colonne PANIER ***
         $totalGeneralDays = array_sum($generalZoneTotals);
         $totalRow[] = $totalGeneralDays > 0 ? $totalGeneralDays : '0';
@@ -478,7 +545,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
 
                 $highestRow = $sheet->getHighestRow();
                 $daysInMonth = Carbon::create($this->year, $this->month, 1)->daysInMonth;
-                $totalColumns = 2 + $daysInMonth + 1 + count($this->zoneRates) + 2; // 2 colonnes (A et B) + jours + total + zones + panier + commentaires
+                $totalColumns = 2 + $daysInMonth + 1 + count($this->zoneRates) + 1 + 2; // 2 colonnes (A et B) + jours + total + zones + AUTRE + panier + commentaires
                 $highestColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns);
 
                 // *** Appliquer la largeur de colonnes spécifique à WorkerMonthly ***
@@ -544,9 +611,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                 // Style de la cellule header COMMENTAIRES (pas de couleur de fond)
                 $this->styleService->applyCenteredAlignment($sheet, "{$commentairesColumn}1");
 
-                // *** Appliquer le background orange aux en-têtes des colonnes de tarifs ***
+                // *** Appliquer le background orange aux en-têtes des colonnes de tarifs et AUTRE ***
                 $totalColumnIndex = 2 + $daysInMonth + 1; // Index de la colonne TOTAL
-                for ($i = $totalColumnIndex + 1; $i < $panierColumnIndex; $i++) { // Colonnes entre TOTAL et PANIER
+                for ($i = $totalColumnIndex + 1; $i < $panierColumnIndex; $i++) { // Colonnes entre TOTAL et PANIER (inclut zones et AUTRE)
                     $tarifColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
                     $this->styleService->applyColumnColoring($sheet, $tarifColumn, 1, 1, 'F4A471'); // Orange comme DEPLACEMENT
                 }
@@ -596,7 +663,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                         ->getColor()
                         ->setRGB('000000'); // Noir
                     
-                    // Background jaune sur les cellules de tarifs de zone (par-dessus le gris)
+                    // Background jaune sur les cellules de tarifs de zone et AUTRE (par-dessus le gris)
                     for ($i = $totalColumnIndex + 1; $i < $panierColumnIndex; $i++) {
                         $tarifColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
                         $sheet->getStyle("{$tarifColumn}{$row}")
@@ -706,7 +773,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
                     ->getColor()
                     ->setRGB('000000'); // Noir
                 
-                // Background jaune sur les cellules de tarifs de zone (par-dessus le gris)
+                // Background jaune sur les cellules de tarifs de zone et AUTRE (par-dessus le gris)
                 for ($i = $totalColumnIndex + 1; $i < $panierColumnIndex; $i++) {
                     $tarifColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
                     $sheet->getStyle("{$tarifColumn}{$totalGeneralRow}")
@@ -812,7 +879,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
         
         // Alignement des colonnes des heures, totaux et zones (C à fin) au centre
         $daysInMonth = Carbon::create($this->year, $this->month, 1)->daysInMonth;
-        $totalColumnsForAlignment = 2 + $daysInMonth + 1 + count($this->zoneRates) + 1; // A + B + jours + total + zones + panier
+        $totalColumnsForAlignment = 2 + $daysInMonth + 1 + count($this->zoneRates) + 1 + 1; // A + B + jours + total + zones + AUTRE + panier
         for ($i = 3; $i <= $totalColumnsForAlignment; $i++) {
             $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
             $sheet->getStyle("{$column}2:{$column}{$highestRow}")
@@ -859,10 +926,12 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
     /**
      * Récupère tous les tarifs de zones uniques utilisés ce mois
      */
-    private function getUniqueZoneRates(): array
+    public function getUniqueZoneRates(): array
     {
         // Récupérer tous les tarifs de zones (pas seulement ceux utilisés ce mois)
-        $rates = Zone::distinct()
+        // EXCLURE les zones avec is_per_km = true (Zone 7 Majorée) car elles vont dans la colonne AUTRE
+        $rates = Zone::where('is_per_km', false)
+            ->distinct()
             ->pluck('rate')
             ->map(function ($rate) {
                 return round(floatval($rate), 2); // Arrondir à 2 décimales pour éviter les problèmes de précision
@@ -961,7 +1030,7 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
     {
         $zoneDays = [];
         
-        // Initialiser avec des zéros pour toutes les zones
+        // Initialiser avec des zéros pour toutes les zones standard
         foreach ($this->zoneRates as $rate) {
             $rateKey = (string) round($rate, 2);
             $zoneDays[$rateKey] = 0;
@@ -982,6 +1051,9 @@ class WorkerMonthlyExport implements FromArray, WithStyles, WithEvents, WithTitl
             foreach ($workerZoneDays as $rateKey => $days) {
                 if (isset($zoneDays[$rateKey])) {
                     $zoneDays[$rateKey] += $days;
+                } else {
+                    // Si la clé n'existe pas (ex: Zone 7 Majorée qui n'est pas dans zoneRates), on l'initialise
+                    $zoneDays[$rateKey] = $days;
                 }
             }
         }

@@ -42,7 +42,18 @@ class CostsCalculator
             return $salaryCharged + $hourlyBasketCharged;
         }
 
-        $zoneRate = $project->zone ? $project->zone->rate : 0;
+        // Calcul de l'indemnité de zone
+        $zoneRate = 0;
+        if ($project->zone) {
+            if ($project->zone->is_per_km && $project->distance) {
+                // Zone 7 Majorée : calcul au kilomètre (0.17€ x distance)
+                $zoneRate = $project->zone->rate * $project->distance;
+            } else {
+                // Zones standard : taux fixe journalier
+                $zoneRate = $project->zone->rate;
+            }
+        }
+        
         $hourlyZoneCharged = ($zoneRate * $this->rateCharge) / ($worker->contract_hours / 5);
 
         return $salaryCharged + $hourlyBasketCharged + $hourlyZoneCharged;
