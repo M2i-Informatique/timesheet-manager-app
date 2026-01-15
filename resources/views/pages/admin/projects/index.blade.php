@@ -83,8 +83,9 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 @foreach ($projects as $project)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap font-medium">
+                <tr class="hover:bg-blue-50 cursor-pointer transition-colors" 
+                    onclick="window.location='{{ route('tracking.show', ['project_id' => $project->id, 'month' => now()->month, 'year' => now()->year]) }}'">
+                    <td class="px-6 py-4 whitespace-nowrap font-medium text-blue-600">
                         {{ $project->code }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -116,7 +117,7 @@
                             {{ $project->status === 'active' ? 'Actif' : 'Inactif' }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium" onclick="event.stopPropagation()">
                         <a href="{{ route('admin.projects.show', $project) }}"
                             class="text-indigo-600 hover:text-indigo-900 mr-3">Voir</a>
                         <a href="{{ route('admin.projects.edit', $project) }}"
