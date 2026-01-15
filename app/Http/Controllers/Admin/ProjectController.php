@@ -9,16 +9,43 @@ use App\Models\Worker;
 use App\Models\Interim;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\TimeSheetable;
+use Carbon\Carbon;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::with('zone')->orderBy('code')->paginate(10);
-        return view('pages.admin.projects.index', compact('projects'));
+        $category = $request->input('category');
+        $withHoursOnly = $request->input('with_hours') === '1';
+
+        $query = Project::with('zone')->orderBy('code');
+
+        // Filtre par catégorie (MH/GO)
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        // Filtre pour n'afficher que les chantiers avec des heures sur le mois en cours
+        if ($withHoursOnly) {
+            $startOfMonth = Carbon::now()->startOfMonth();
+            $endOfMonth = Carbon::now()->endOfMonth();
+
+            $projectIdsWithHours = TimeSheetable::whereBetween('date', [$startOfMonth, $endOfMonth])
+                ->select('project_id')
+                ->distinct()
+                ->pluck('project_id')
+                ->toArray();
+
+            $query->whereIn('id', $projectIdsWithHours);
+        }
+
+        $projects = $query->paginate(10)->appends($request->query());
+
+        return view('pages.admin.projects.index', compact('projects', 'category', 'withHoursOnly'));
     }
 
     /**

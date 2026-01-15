@@ -11,6 +11,45 @@
         </a>
     </div>
 
+    <!-- Barre de filtres -->
+    <div class="bg-white shadow-md rounded-lg p-4 mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <!-- Filtre par catégorie MH/GO -->
+            <div class="flex items-center">
+                <span class="mr-2 text-sm font-medium text-gray-700">Catégorie :</span>
+                <span class="inline-flex divide-x divide-gray-300 overflow-hidden rounded border border-gray-200 bg-white shadow-sm">
+                    <a href="{{ route('admin.projects.index', array_merge(request()->except('category'), ['category' => ''])) }}"
+                        class="px-3 py-1.5 text-sm {{ !$category ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
+                        Tous
+                    </a>
+                    <a href="{{ route('admin.projects.index', array_merge(request()->except('category'), ['category' => 'mh'])) }}"
+                        class="px-3 py-1.5 text-sm {{ $category === 'mh' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
+                        MH
+                    </a>
+                    <a href="{{ route('admin.projects.index', array_merge(request()->except('category'), ['category' => 'go'])) }}"
+                        class="px-3 py-1.5 text-sm {{ $category === 'go' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
+                        GO
+                    </a>
+                </span>
+            </div>
+
+            <!-- Filtre par heures sur le mois en cours -->
+            <div class="flex items-center">
+                <span class="mr-2 text-sm font-medium text-gray-700">Affichage :</span>
+                <a href="{{ route('admin.projects.index', array_merge(request()->except('with_hours'), ['with_hours' => $withHoursOnly ? '' : '1'])) }}"
+                    class="inline-flex items-center px-3 py-1.5 text-sm rounded border transition-colors
+                        {{ $withHoursOnly 
+                            ? 'bg-green-50 text-green-700 border-green-300 font-bold' 
+                            : 'bg-white text-gray-700 border-gray-200 hover:bg-green-50 hover:text-green-700 font-medium' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Avec heures ce mois ({{ now()->locale('fr')->translatedFormat('F Y') }})
+                </a>
+            </div>
+        </div>
+    </div>
+
     @if (session('success'))
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
         {{ session('success') }}
