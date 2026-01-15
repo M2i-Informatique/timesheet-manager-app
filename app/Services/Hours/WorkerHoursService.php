@@ -3,6 +3,7 @@
 namespace App\Services\Hours;
 
 use App\Models\Worker;
+use App\Models\Interim;
 use Illuminate\Support\Facades\Log;
 
 class WorkerHoursService
@@ -22,9 +23,10 @@ class WorkerHoursService
      * @param string|null $startDate
      * @param string|null $endDate
      * @param string|null $projectCategory
+     * @param string|null $category
      * @return array
      */
-    public function getWorkerHours(?string $id, ?string $timesheetCategory, ?string $startDate, ?string $endDate, ?string $projectCategory = null): array
+    public function getWorkerHours(?string $id, ?string $timesheetCategory, ?string $startDate, ?string $endDate, ?string $projectCategory = null, ?string $category = null): array
     {
         Log::info("getWorkerHours - Start with filters: ID={$id}, TimesheetCategory={$timesheetCategory}, StartDate={$startDate}, EndDate={$endDate}, ProjectCategory={$projectCategory}");
 
@@ -34,21 +36,17 @@ class WorkerHoursService
             $query->where('id', $id);
         }
 
-        // Filtrer les workers qui ont des timesheets correspondants à la catégorie (day/night)
-        if ($timesheetCategory) {
-            $query->whereHas('timesheets', function ($q) use ($timesheetCategory) {
-                $q->where('category', $timesheetCategory);
-            });
+        if ($category && $category !== 'interim') {
+            if ($category === 'dubocq') {
+                $query->whereIn('category', ['worker', 'etam']);
+            } else {
+                $query->where('category', $category);
+            }
         }
 
-        // Filtrer les workers qui ont des timesheets sur des projets de la catégorie (mh/go)
-        if ($projectCategory) {
-            $query->whereHas('timesheets.project', function ($q) use ($projectCategory) {
-                $q->where('category', $projectCategory);
-            });
-        }
-
-        $workers = $query->get();
+        // Si la catégorie est spécifiquement 'interim', on ne récupère pas les workers
+        $workers = ($category === 'interim') ? collect([]) : $query->get();
+        
         $results = [];
 
         Log::info("Found " . $workers->count() . " workers matching filters");
@@ -103,6 +101,76 @@ class WorkerHoursService
                     'total_hours' => $workerHours,
                     'timesheets'  => $timesheetData,
                 ];
+            }
+        }
+
+        // Récupérer les intérimaires si la catégorie est vide ou 'interim'
+        // Si le filtre est 'dubocq', 'worker' ou 'etam', on n'affiche pas les interims
+        if (!$category || $category === 'interim') {
+            $interimQuery = Interim::query();
+            
+            // Appliquer les mêmes filtres de timesheets/projets si possible
+            // Note: Interim a une relation 'timesheets' morphMany comme Worker
+            
+            if ($timesheetCategory) {
+                $interimQuery->whereHas('timesheets', function ($q) use ($timesheetCategory) {
+                    $q->where('category', $timesheetCategory);
+                });
+            }
+
+            if ($projectCategory) {
+                $interimQuery->whereHas('timesheets.project', function ($q) use ($projectCategory) {
+                    $q->where('category', $projectCategory);
+                });
+            }
+
+            $interims = $interimQuery->get();
+
+            foreach ($interims as $interim) {
+                $interimHours = 0.0;
+                $timesheetData = [];
+
+                $timesheetsQuery = $interim->timesheets();
+
+                if ($startDate && $endDate) {
+                    $timesheetsQuery->whereBetween('date', [$startDate, $endDate]);
+                } elseif ($startDate) {
+                    $timesheetsQuery->where('date', '>=', $startDate);
+                } elseif ($endDate) {
+                    $timesheetsQuery->where('date', '<=', $endDate);
+                }
+
+                if ($timesheetCategory) {
+                    $timesheetsQuery->where('category', $timesheetCategory);
+                }
+                
+                if ($projectCategory) {
+                    $timesheetsQuery->whereHas('project', function ($q) use ($projectCategory) {
+                        $q->where('category', $projectCategory);
+                    });
+                }
+
+                $timesheets = $timesheetsQuery->get();
+
+                foreach ($timesheets as $timesheet) {
+                    $interimHours += $timesheet->hours;
+                    $timesheetData[] = [
+                        'date'     => $timesheet->date->format('Y-m-d'),
+                        'category' => $timesheet->category,
+                        'hours'    => $timesheet->hours,
+                    ];
+                }
+
+                if ($interimHours > 0) {
+                    $results[] = [
+                        'id'          => $interim->id,
+                        'first_name'  => 'Intérim',
+                        'last_name'   => $interim->agency,
+                        'category'    => 'interim',
+                        'total_hours' => $interimHours,
+                        'timesheets'  => $timesheetData,
+                    ];
+                }
             }
         }
 

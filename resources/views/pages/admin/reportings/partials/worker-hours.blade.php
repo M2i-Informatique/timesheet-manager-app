@@ -58,6 +58,18 @@
                     'report_type' => $reportType,
                     'project_id' => $projectId,
                     'worker_id' => $workerId,
+                    'category' => 'dubocq',
+                    'start_date' => $startDate,
+                    'end_date' => $endDate
+                ]) }}"
+                class="px-3 py-1.5 text-sm {{ $category === 'dubocq' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
+                Employés Dubocq
+            </a>
+            <a
+                href="{{ route('admin.reporting.index', [
+                    'report_type' => $reportType,
+                    'project_id' => $projectId,
+                    'worker_id' => $workerId,
                     'category' => 'worker',
                     'start_date' => $startDate,
                     'end_date' => $endDate
@@ -76,6 +88,18 @@
                 ]) }}"
                 class="px-3 py-1.5 text-sm {{ $category === 'etam' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
                 ETAM
+            </a>
+            <a
+                href="{{ route('admin.reporting.index', [
+                    'report_type' => $reportType,
+                    'project_id' => $projectId,
+                    'worker_id' => $workerId,
+                    'category' => 'interim',
+                    'start_date' => $startDate,
+                    'end_date' => $endDate
+                ]) }}"
+                class="px-3 py-1.5 text-sm {{ $category === 'interim' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
+                Intérim
             </a>
         </span>
     </span>
@@ -205,6 +229,8 @@
                         Ouvrier
                         @elseif($worker['category'] === 'etam')
                         ETAM
+                        @elseif($worker['category'] === 'interim')
+                        Intérim
                         @else
                         Autre
                         @endif

@@ -3,6 +3,7 @@
 namespace App\Services\Costs;
 
 use App\Models\Worker;
+use App\Models\Interim;
 use Illuminate\Support\Facades\Log;
 
 class WorkerCostsService extends CostsCalculator
@@ -35,12 +36,17 @@ class WorkerCostsService extends CostsCalculator
             $query->where('id', $id);
         }
 
-        // Filtrer par catégorie si fourni
-        if ($category) {
-            $query->where('category', $category);
+        // Filtrer par catégorie si fourni (et différent de 'interim')
+        if ($category && $category !== 'interim') {
+            if ($category === 'dubocq') {
+                $query->whereIn('category', ['worker', 'etam']);
+            } else {
+                $query->where('category', $category);
+            }
         }
 
-        $workers = $query->get();
+        // Si la catégorie est spécifiquement 'interim', on ne récupère pas les workers
+        $workers = ($category === 'interim') ? collect([]) : $query->get();
         $results = [];
 
         Log::info("Found " . $workers->count() . " workers matching filters");
@@ -108,6 +114,60 @@ class WorkerCostsService extends CostsCalculator
                     'total_cost'   => $workerTotalCost,
                     'timesheets'   => $workerTimesheetDetails,
                 ];
+            }
+        }
+
+        // Récupérer les intérimaires si la catégorie est vide ou 'interim'
+        // Pas de filtre coût/heure complexe pour eux, juste taux * heures
+        if (!$category || $category === 'interim') {
+            $interimQuery = Interim::query();
+            // Pas de filtre timesheetCategory ou projectCategory ici dans la signature actuelle de getWorkerCosts
+            
+            $interims = $interimQuery->get();
+
+            foreach ($interims as $interim) {
+                $interimTotalCost = 0.0;
+                $timesheetDetails = [];
+                $hourlyRate = $interim->hourly_rate; // Taux fixe pour l'intérim
+
+                $timesheetsQuery = $interim->timesheets();
+
+                if ($startDate && $endDate) {
+                    $timesheetsQuery->whereBetween('date', [$startDate, $endDate]);
+                } elseif ($startDate) {
+                    $timesheetsQuery->where('date', '>=', $startDate);
+                } elseif ($endDate) {
+                    $timesheetsQuery->where('date', '<=', $endDate);
+                }
+
+                $timesheets = $timesheetsQuery->get();
+                
+                foreach ($timesheets as $timesheet) {
+                    // Pour les intérims, on ne distingue pas jour/nuit pour le taux, c'est le taux horaire fixe
+                    // Mais on garde la info category pour l'affichage
+                    
+                    $cost = $hourlyRate * $timesheet->hours;
+                    $interimTotalCost += $cost;
+
+                    $timesheetDetails[] = [
+                        'date'        => $timesheet->date->format('Y-m-d'),
+                        'category'    => $timesheet->category,
+                        'hours'       => $timesheet->hours,
+                        'hourly_cost' => $hourlyRate,
+                        'cost'        => $cost,
+                    ];
+                }
+
+                if ($interimTotalCost > 0) {
+                     $results[] = [
+                        'id'           => $interim->id,
+                        'first_name'   => 'Intérim',
+                        'last_name'    => $interim->agency,
+                        'category'     => 'interim',
+                        'total_cost'   => $interimTotalCost,
+                        'timesheets'   => $timesheetDetails,
+                    ];
+                }
             }
         }
 

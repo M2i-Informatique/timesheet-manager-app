@@ -83,15 +83,8 @@ class ReportingController extends Controller
                 break;
 
             case 'worker_hours':
-                // Passer null comme catégorie pour ne pas filtrer par catégorie de timesheet
-                $reportData = $this->workerHoursService->getWorkerHours($workerId, null, $startDate, $endDate);
-
-                // FILTRAGE POUR CORRESPONDRE À LA CATÉGORIE DE TRAVAILLEUR SÉLECTIONNÉE
-                if ($category) {
-                    $reportData = array_filter($reportData, function ($worker) use ($category) {
-                        return isset($worker['category']) && $worker['category'] === $category;
-                    });
-                }
+                // Passer null comme catégorie de timesheet, null comme projectCategory, et $category pour filtrer les workers
+                $reportData = $this->workerHoursService->getWorkerHours($workerId, null, $startDate, $endDate, null, $category);
 
                 // TRIAGE DES TRAVAILLEURS PAR NOM DE FAMILLE
                 usort($reportData, function ($a, $b) {
@@ -107,15 +100,8 @@ class ReportingController extends Controller
                 break;
 
             case 'worker_costs':
-                // Passer null comme catégorie pour ne pas filtrer par catégorie de timesheet
-                $reportData = $this->workerCostsService->getWorkerCosts($workerId, null, $startDate, $endDate);
-
-                // FILTRAGE POUR CORRESPONDRE À LA CATÉGORIE DE TRAVAILLEUR SÉLECTIONNÉE
-                if ($category) {
-                    $reportData = array_filter($reportData, function ($worker) use ($category) {
-                        return isset($worker['category']) && $worker['category'] === $category;
-                    });
-                }
+                // Passer $category pour filtrer par catégorie de travailleur
+                $reportData = $this->workerCostsService->getWorkerCosts($workerId, $category, $startDate, $endDate);
 
                 // TRIAGE DES TRAVAILLEURS PAR NOM DE FAMILLE
                 usort($reportData, function ($a, $b) {
