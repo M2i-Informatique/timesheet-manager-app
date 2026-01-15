@@ -148,10 +148,11 @@ class CostsCalculator
             }
         }
 
-        // Calculer juste les heures des interims sans les coûts
+        // Calculer les heures et les coûts des interims (Heures * Taux horaire)
         foreach ($interims as $interim) {
             foreach ($interim->timesheets as $timesheet) {
                 $totalInterimHours += $timesheet->hours;
+                $totalCost += $timesheet->hours * $interim->hourly_rate;
             }
         }
 
@@ -269,12 +270,19 @@ class CostsCalculator
             }
         }
 
-        // Traiter les données des interims (juste pour les heures, pas pour les coûts)
+        // Traiter les données des interims (heures ET coûts)
         foreach ($interims as $interim) {
             $interimTotalHours = 0.0;
+            $interimTotalCost = 0.0;
             $interimTimesheetDetails = [];
+            
+            // Le coût horaire de l'intérimaire est fixe (son taux horaire)
+            // Pas de panier ni de zone
+            $hourlyCost = $interim->hourly_rate;
 
             foreach ($interim->timesheets as $timesheet) {
+                $cost = round($hourlyCost * $timesheet->hours, 2);
+                
                 $interimTimesheetDetails[] = [
                     'type' => 'timesheets',
                     'id' => $timesheet->id,
@@ -282,15 +290,16 @@ class CostsCalculator
                         'date' => $timesheet->date->format('Y-m-d'),
                         'category' => $timesheet->category,
                         'hours' => $timesheet->hours,
-                        'hourly_cost' => 0, // Pas de coût pour les interims
-                        'cost' => 0,       // Pas de coût pour les interims
+                        'hourly_cost' => $hourlyCost,
+                        'cost' => $cost,
                     ],
                     'hours' => $timesheet->hours,
-                    'hourly_cost' => 0,
-                    'cost' => 0,
+                    'hourly_cost' => $hourlyCost,
+                    'cost' => $cost,
                 ];
 
                 $interimTotalHours += $timesheet->hours;
+                $interimTotalCost += $cost;
             }
 
             if ($interimTotalHours > 0) {
@@ -305,11 +314,11 @@ class CostsCalculator
                         'timesheets' => $interimTimesheetDetails,
                     ],
                     'total_hours' => $interimTotalHours,
-                    'total_cost' => 0, // Pas de coût pour les interims
+                    'total_cost' => $interimTotalCost,
                 ];
 
                 $totalInterimHours += $interimTotalHours;
-                // Pas d'ajout au coût total du projet
+                $totalProjectCost += $interimTotalCost; // Ajouter au coût total du projet
             }
         }
 

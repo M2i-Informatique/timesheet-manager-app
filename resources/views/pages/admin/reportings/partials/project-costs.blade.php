@@ -307,7 +307,7 @@
                 @if (isset($project['relationships']['interims']) && count($project['relationships']['interims']) > 0)
                 <tr class="bg-green-50 hidden detail-{{ $project['id'] ?? $loop->index }}">
                     <td colspan="6" class="px-6 py-2 text-sm font-semibold text-green-800">
-                        Intérims ({{ count($project['relationships']['interims']) }}) - Heures comptabilisées, coûts exclus
+                        Intérims ({{ count($project['relationships']['interims']) }})
                     </td>
                 </tr>
 
@@ -330,7 +330,7 @@
                         {{ number_format($interim['total_hours'], 2, ',', ' ') }} h
                     </td>
                     <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-700">
-                        <span class="text-gray-400 italic">Non comptabilisé</span>
+                         {{ number_format($interim['total_cost'], 2, ',', ' ') }} €
                     </td>
                 </tr>
                 @endforeach
