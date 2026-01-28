@@ -18,17 +18,36 @@
             <div class="flex items-center">
                 <span class="mr-2 text-sm font-medium text-gray-700">Catégorie :</span>
                 <span class="inline-flex divide-x divide-gray-300 overflow-hidden rounded border border-gray-200 bg-white shadow-sm">
-                    <a href="{{ route('admin.projects.index', array_merge(request()->except('category'), ['category' => ''])) }}"
+                    <a href="{{ route('admin.projects.index', array_merge(request()->except(['category', 'page']), ['category' => ''])) }}"
                         class="px-3 py-1.5 text-sm {{ !$category ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
                         Tous
                     </a>
-                    <a href="{{ route('admin.projects.index', array_merge(request()->except('category'), ['category' => 'mh'])) }}"
+                    <a href="{{ route('admin.projects.index', array_merge(request()->except(['category', 'page']), ['category' => 'mh'])) }}"
                         class="px-3 py-1.5 text-sm {{ $category === 'mh' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
                         MH
                     </a>
-                    <a href="{{ route('admin.projects.index', array_merge(request()->except('category'), ['category' => 'go'])) }}"
+                    <a href="{{ route('admin.projects.index', array_merge(request()->except(['category', 'page']), ['category' => 'go'])) }}"
                         class="px-3 py-1.5 text-sm {{ $category === 'go' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
                         GO
+                    </a>
+                </span>
+            </div>
+
+            <!-- Filtre par statut Actif/Inactif -->
+            <div class="flex items-center">
+                <span class="mr-2 text-sm font-medium text-gray-700">Statut :</span>
+                <span class="inline-flex divide-x divide-gray-300 overflow-hidden rounded border border-gray-200 bg-white shadow-sm">
+                    <a href="{{ route('admin.projects.index', array_merge(request()->except(['status', 'page']), ['status' => ''])) }}"
+                        class="px-3 py-1.5 text-sm {{ !$status ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
+                        Tous
+                    </a>
+                    <a href="{{ route('admin.projects.index', array_merge(request()->except(['status', 'page']), ['status' => 'active'])) }}"
+                        class="px-3 py-1.5 text-sm {{ $status === 'active' ? 'bg-green-50 text-green-700 font-bold' : 'text-gray-700 hover:bg-green-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
+                        Actif
+                    </a>
+                    <a href="{{ route('admin.projects.index', array_merge(request()->except(['status', 'page']), ['status' => 'inactive'])) }}"
+                        class="px-3 py-1.5 text-sm {{ $status === 'inactive' ? 'bg-red-50 text-red-700 font-bold' : 'text-gray-700 hover:bg-red-50 hover:text-gray-900 font-medium' }} transition-colors focus:relative">
+                        Inactif
                     </a>
                 </span>
             </div>
@@ -36,7 +55,7 @@
             <!-- Filtre par heures sur le mois en cours -->
             <div class="flex items-center">
                 <span class="mr-2 text-sm font-medium text-gray-700">Affichage :</span>
-                <a href="{{ route('admin.projects.index', array_merge(request()->except('with_hours'), ['with_hours' => $withHoursOnly ? '' : '1'])) }}"
+                <a href="{{ route('admin.projects.index', array_merge(request()->except(['with_hours', 'page']), ['with_hours' => $withHoursOnly ? '' : '1'])) }}"
                     class="inline-flex items-center px-3 py-1.5 text-sm rounded border transition-colors
                         {{ $withHoursOnly 
                             ? 'bg-green-50 text-green-700 border-green-300 font-bold' 

@@ -20,6 +20,7 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $category = $request->input('category');
+        $status = $request->input('status');
         $withHoursOnly = $request->input('with_hours') === '1';
 
         $query = Project::with('zone')->orderBy('code');
@@ -27,6 +28,11 @@ class ProjectController extends Controller
         // Filtre par catégorie (MH/GO)
         if ($category) {
             $query->where('category', $category);
+        }
+
+        // Filtre par statut (actif/inactif)
+        if ($status) {
+            $query->where('status', $status);
         }
 
         // Filtre pour n'afficher que les chantiers avec des heures sur le mois en cours
@@ -45,7 +51,7 @@ class ProjectController extends Controller
 
         $projects = $query->paginate(10)->appends($request->query());
 
-        return view('pages.admin.projects.index', compact('projects', 'category', 'withHoursOnly'));
+        return view('pages.admin.projects.index', compact('projects', 'category', 'status', 'withHoursOnly'));
     }
 
     /**

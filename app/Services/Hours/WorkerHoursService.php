@@ -105,8 +105,8 @@ class WorkerHoursService
         }
 
         // Récupérer les intérimaires si la catégorie est vide ou 'interim'
-        // Si le filtre est 'dubocq', 'worker' ou 'etam', on n'affiche pas les interims
-        if (!$category || $category === 'interim') {
+        // Si on filtre par ID d'un worker spécifique, on ne récupère pas les interims
+        if (!$id && (!$category || $category === 'interim')) {
             $interimQuery = Interim::query();
             
             // Appliquer les mêmes filtres de timesheets/projets si possible
