@@ -554,11 +554,6 @@
         position: relative;
     }
 
-    #handsontable {
-        max-height: 600px;
-        overflow: auto;
-    }
-
     .handsontable .htDimmed {
         color: #333 !important;
         font-weight: 600;
@@ -784,7 +779,7 @@
             },
             // On fixe les 3 colonnes seulement en desktop
             fixedColumnsStart: isMobile ? 0 : 3,
-            height: 'auto',
+            height: 600,
             licenseKey: 'non-commercial-and-evaluation',
             stretchH: 'all',
             manualColumnResize: true,
